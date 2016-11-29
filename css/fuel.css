@@ -1,0 +1,34 @@
+body {
+    padding-top: 60px;
+}
+
+.rescue-platform { float: right; }
+
+.rescue-epic {
+    background-image:url(https://media.giphy.com/media/kqcjXv1FFA5IQ/giphy.gif); 
+}
+
+.rescue-codered {
+    background-color: mistyrose !important;
+}
+
+.rescue-inactive {
+    opacity: 0.4 !important;
+    background-color: khaki;
+    /*display: none;*/
+}
+
+.ed-clock {
+    cursor: default;
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+.ed-clock:hover {
+    color: #9d9d9d !important;
+}
