@@ -1,5 +1,5 @@
 <?php include("__header.php"); ?>
-<script src="/js/fr.websocket.js"></script>
+<script src="js/fr.websocket.js"></script>
 <script type="text/javascript">
 	//fr.ws.authCode = fr.client.GetCookie('tokenBearer');
 	fr.ws.initConnection();
