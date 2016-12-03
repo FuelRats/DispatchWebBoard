@@ -7,6 +7,7 @@ fr.client = {
 	init: function() {
         fr.client.RequestRescueList();
         fr.client.UpdateClock();
+        $('#VersionInfo').text('FuelRats Dispatch Board v0.2' + (debug ? ' - DEBUG MODE' :''));
 	},
 	GetCookie: function(name) {
         try {
