@@ -4,7 +4,11 @@
 	//fr.ws.authCode = fr.client.GetCookie('tokenBearer');
 	fr.ws.initConnection();
 </script>
-<div id="rescueBoard"></div>
+<div class="row">
+  <div id="spacer" class="col-md-2"></div>
+  <div id="rescueBoard" class="col-md-8"></div>
+  <div id="rescueDetail" class="col-md-7" style="display:none;"></div>
+</div>
 <!--
 <?php if(!isset($_SESSION['authCodeFetched'])) { ?>
 <h2>Authorization needed</h2>
