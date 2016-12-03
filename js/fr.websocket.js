@@ -1,9 +1,9 @@
-var fr = fr != undefined ? fr : {};
+var fr = fr !== undefined ? fr : {};
 
 fr.ws = {
   socket: null,
   initConnection: function () {
-      fr.ws.socket = new WebSocket('wss://api.fuelrats.com:443');
+      fr.ws.socket = new WebSocket('wss://dev.api.fuelrats.com:443');
       fr.ws.socket.onmessage = fr.ws.onMessage;
       fr.ws.socket.onerror = fr.ws.onError;
       fr.ws.socket.onclose = fr.ws.onClose;
