@@ -1,5 +1,11 @@
 body {
-    padding-top: 60px;
+    padding-top: calc(60px + 0.5rem);
+}
+
+nav.navbar {
+  background-color: #1a1a1a;  
+  border-bottom-color: #d65050;
+  border-bottom-width: 0.5rem;
 }
 
 .rescue-platform { float: right; }
@@ -31,4 +37,18 @@ body {
 
 .ed-clock:hover {
     color: #9d9d9d !important;
+}
+
+.rdetail-header {
+    font-size: 2em;
+    display: flex;
+    justify-content: space-between;
+}
+.rdetail-header div {
+    display: inline;
+}
+
+.font-cred {
+    color: #d65050;
+    font-weight: bold;
 }
