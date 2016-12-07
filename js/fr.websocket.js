@@ -1,9 +1,15 @@
 var fr = fr !== undefined ? fr : {};
+var debug = debug !== undefined ? debug : false;
 
 fr.ws = {
   socket: null,
   initConnection: function () {
-      fr.ws.socket = new WebSocket('wss://dev.api.fuelrats.com:443');
+  	if(!fr.client) {
+  		onError("fr.client is undefined. Cannot setup websocket module.");
+  		return;
+  	}
+  	if (debug) console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE."); 
+      fr.ws.socket = (debug ? new WebSocket('wss://dev.api.fuelrats.com:443') : new WebSocket('wss://api.fuelrats.com:443'));
       fr.ws.socket.onmessage = fr.ws.onMessage;
       fr.ws.socket.onerror = fr.ws.onError;
       fr.ws.socket.onclose = fr.ws.onClose;
@@ -14,49 +20,55 @@ fr.ws = {
   onOpen: function (dc) {
 		fr.ws.subscribe('0xDEADBEEF');
 		if (fr.ws.reconnected) {
+			if (debug) console.log("fr.ws.onOpen - WS Connected!");
 			fr.ws.send('rescues:read', { 'open': 'true' }, { 'updateList': 'true' });
 			fr.ws.reconnected = false;
 		}	
 	},
 	onClose: function (dc) {
 		if(dc.wasClean === false) {
+			if (debug) console.log("fr.ws.onClose - Disconnected from WSocket. Reconnecting...");
 			setTimeout(fr.ws.initConnection, 2000);
 			fr.ws.reconnected = true;
 		}
 	},
 	onMessage: function(data) {
 		var _data = eval('d = ' + data.data);
-		if(_data.meta.action == 'welcome') {
+		if(_data.meta.action === 'welcome') {
 			fr.ws.clientId = _data.meta.id;
 		}
 		fr.client.HandleTPA(_data);
 	},
 	onError: function(error) {
+		console.log("=Websocket Module Error-");
 		console.log(error);
 	},
 	send: function(action, data, meta) {
 		if(fr.ws.socket.readyState != 1) {
-			if(fr.ws.socket.readyState == 0) {
+			if(fr.ws.socket.readyState === 0) {
 			} else if (fr.ws.socket.readyState == 2 || fr.ws.socket.readyState == 3) {
 				fr.ws.initConnection();
 			}
 			setTimeout(function() {fr.ws.send(action, data, meta); }, 1000);
 			return;
 		}
+		if (debug) console.log("fr.ws.send - Sending TPA");
 		fr.ws.socket.send(JSON.stringify({ "action": action, "applicationId": fr.ws.clientId, "data": data, "meta": meta }));		
 	},
 	subscribe: function(stream) {
-		fr.ws.socket.send(JSON.stringify({ 'action': 'stream:subscribe', 'applicationId': stream }))
+  	if (debug) console.log("fr.ws.subscribe - Subscirbing to strem!");
+		fr.ws.socket.send(JSON.stringify({ 'action': 'stream:subscribe', 'applicationId': stream }));
 	},
 	searchNickName: function(nickname, meta) {
 		if(fr.ws.socket.readyState != 1) {
-			if(fr.ws.socket.readyState == 0) {
+			if(fr.ws.socket.readyState === 0) {
 			} else if (fr.ws.socket.readyState == 2 || fr.ws.socket.readyState == 3) {
 				fr.ws.initConnection();
 			}
 			setTimeout(function() {fr.ws.searchNickName(nickname, meta); }, 1000);
 			return;
 		}
+		if (debug) console.log("fr.ws.searchNickName - Searching for nick: " + nickname);
 		fr.ws.socket.send(JSON.stringify({ "action": 'nicknames:search', "applicationId": fr.ws.clientId, "nickname": nickname, "meta": meta }));
 	},
   fetchAuthCode: function (code) {
