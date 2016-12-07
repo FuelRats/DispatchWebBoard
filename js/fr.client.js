@@ -1,5 +1,5 @@
 var fr = fr !== undefined ? fr : {};
-var debug = debug !== undefined ? debug : true;
+var debug = debug !== undefined ? debug : false;
 
 function getTimeSpan(date1, date2) {
     return Math.round(date1 / 1000) - Math.round(date2 / 1000);
