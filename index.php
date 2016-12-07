@@ -5,9 +5,10 @@
 	fr.ws.initConnection();
 </script>
 <div class="row">
-  <div id="spacer" class="col-md-2"></div>
-  <div id="rescueBoard" class="col-md-8"></div>
-  <div id="rescueDetail" class="col-md-7" style="display:none;"></div>
+  <div id="spacer" class="col-md-1"></div>
+  <div id="rescueBoard" class="col-md-5"></div>
+  <div id="rescueDetail" class="col-md-5 fr-detail-hidden"></div>
+  <div id="rescueGeneral" class="col-md-5" style="display:none;"></div>
 </div>
 <!--
 <?php if(!isset($_SESSION['authCodeFetched'])) { ?>
