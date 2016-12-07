@@ -43,12 +43,36 @@ nav.navbar {
     font-size: 2em;
     display: flex;
     justify-content: space-between;
+    padding: 15px 0;
 }
 .rdetail-header div {
     display: inline;
+    vertical-align: middle;
+}
+.rdetail-client .label {
+    padding: .2em .6em;
+    position: relative;
+    top: -3px;
 }
 
-.font-cred {
-    color: #d65050;
-    font-weight: bold;
+.fr-detail-hidden {
+    display: none !important;
+}
+
+#rescueDetail {
+    border: 1px solid #ddd;
+}
+
+.tbl-border-none {
+    border: none !important;
+}
+.tbl-border-left {
+    border-left: 1px solid #ddd;
+}
+.tbl-border-right {
+    border-right: 1px solid #ddd;
+}
+
+.btn-fr-detail .glyphicon {
+    top: 2px;
 }
