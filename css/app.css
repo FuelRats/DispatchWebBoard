@@ -66,11 +66,20 @@ nav.navbar {
 .tbl-border-none {
     border: none !important;
 }
+.tbl-border-top {
+    border-top: 1px solid #ddd;
+}
+.tbl-border-bottom {
+    border-bottom: 1px solid #ddd;
+}
 .tbl-border-left {
     border-left: 1px solid #ddd;
 }
 .tbl-border-right {
     border-right: 1px solid #ddd;
+}
+.tbl-border-box {
+    border:  1px solid #ddd;
 }
 
 .btn-fr-detail .glyphicon {
