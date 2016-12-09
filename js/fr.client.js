@@ -104,10 +104,10 @@ fr.client = {
         }
     },
     AddRescue: function (tpa) {
+        if(!tpa) return;
+
         var table = $('#rescueTable');
         var rescue = tpa;
-
-        if (!rescue.data) return;
 
         if ($('#rescue-' + rescue.id).length > 0) {
             fr.client.UpdateRescue(tpa);
@@ -119,18 +119,19 @@ fr.client = {
         
         for (var r in rats) {
             var rInfo = fr.client.FetchRatInfo(rats[r]);
-            ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
+            ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
         }
         
         var row = $(
         '<tr id="rescue-' + rescue.id + '">' +
-            '<td>' + (rescue.data.boardIndex !== undefined  ? rescue.data.boardIndex : 'X') + '</td>' +
-            '<td title="' + (rescue.data !== undefined ? 'Nick: ' + rescue.data.IRCNick : '') + '">' + rescue.client + ' <span class="rescue-platform">' + (rescue.platform != 'xb' ? 'PC' : 'Xbox') + '</span></td>' +
-            '<td>' + (rescue.system !== null ? rescue.system : 'unknown') + '</td>' +
+            '<td>' + (rescue.data ? rescue.data.boardIndex ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
+            '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
+            '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
             '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\')"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>'
         );
+
         if (rescue.epic) {
             row.addClass('rescue-epic');
         } else {
@@ -156,6 +157,8 @@ fr.client = {
         table.append(row);  
     },
     UpdateRescue: function (tpa) {
+        if(!tpa) return;
+
         var rescueRow = $('#rescue-' + tpa.id);
         var rescue = tpa;
 
@@ -164,13 +167,14 @@ fr.client = {
             
         for (var r in rats) {
             var rInfo = fr.client.FetchRatInfo(rats[r]);
-            ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
-        }        
+            ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
+        }  
 
-        rescueRow.html('<td>' + (rescue.data.boardIndex !== undefined  ? rescue.data.boardIndex : 'X') + '</td>' +
-            '<td title="' + (rescue.data !== undefined ? 'IRC: ' + rescue.data.IRCNick : '') + '">' + rescue.client + ' <span class="rescue-platform">' + (rescue.platform != 'xb' ? 'PC' : 'Xbox') + '</span></td>' +
-            '<td>' + (rescue.system !== null ? rescue.system : 'unknown') + '</td>' +
-            '<td>' + ratHtml.join(', ') + 
+        rescueRow.html(
+            '<td>' + (rescue.data ? rescue.data.boardIndex ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
+            '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
+            '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
+            '<td>' + ratHtml.join(', ') + '</td>' +
             '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\')"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
             '</td>');
         
@@ -247,7 +251,7 @@ fr.client = {
         }
     },
     SetSelectedRescue: function (key) {
-        if(key === null || (fr.client.SelectedRescue !== null && key === fr.client.SelectedRescue.id)) {
+        if(key === null || (fr.client.SelectedRescue && key === fr.client.SelectedRescue.id)) {
             fr.client.SelectedRescue = null;
             if(fr.client.RescueClockTimeoutID !== null) {
                 window.clearInterval(fr.client.RescueClockTimeoutID);
@@ -266,54 +270,53 @@ fr.client = {
         fr.client.UpdateRescueDetail();
     },
     UpdateRescueDetail: function () {
-        $('.btn-fr-detail').removeClass('active').removeClass('btn-info').addClass('btn-default');
+        $('.btn-fr-detail.active').removeClass('active').removeClass('btn-info').addClass('btn-default');     // clear active buttons.
+
         if (!fr.client.SelectedRescue) {
             $('#rescueDetail').addClass('fr-detail-hidden');
             return;
         }
-
         var rescue = fr.client.SelectedRescue;
 
         var detailContent = '<div class="rdetail-header">' +
-                              '<div class="rdetail-client">#' + rescue.data.boardIndex + ' - ' + (rescue.title !== null ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
+                              '<div class="rdetail-client">' + (rescue.data ? rescue.data.boardIndex ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
                               '<div class="rdetail-time-sincecreate">00:00:00</div>' +
                             '</div>' +
                             '<table class="table table-rescue">' +
                                 '<tbody>' +
-                                    '<tr id="RescueInfo-NickName"><td width="90px" class="tbl-border-none" ><strong>IRC Nick:</strong></td><td>' + rescue.data.IRCNick + '</td></tr>' +
-                                    '<tr id="RescueInfo-System"><td class="tbl-border-none"><strong>System:</strong></td><td>' + rescue.system + '</td></tr>' +
-                                    '<tr id="RescueInfo-Platform"><td class="tbl-border-none"><strong>Platform:</strong></td><td>' + rescue.platform.toUpperCase() + '</td></tr>' +
-                                    '<tr id="RescueInfo-Language"><td class="tbl-border-none"><strong>Language:</strong></td><td>' + rescue.data.langID.toUpperCase() + '</td></tr>' +
+                                    (rescue.data ? rescue.data.IRCNick ? '<tr id="RescueInfo-NickName"><td width="90px" class="tbl-border-none" ><strong>IRC Nick:</strong></td><td>' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
+                                    (rescue.system ? '<tr id="RescueInfo-System"><td class="tbl-border-none"><strong>System:</strong></td><td>' + rescue.system + '</td></tr>' : '') +
+                                    (rescue.platform ? '<tr id="RescueInfo-Platform"><td class="tbl-border-none"><strong>Platform:</strong></td><td>' + rescue.platform.toUpperCase() + '</td></tr>' : '') +
+                                    (rescue.data ? rescue.data.langID ? '<tr id="RescueInfo-Language"><td class="tbl-border-none"><strong>Language:</strong></td><td>' + rescue.data.langID.toUpperCase() + '</td></tr>' : '' : '') +
                                     '<tr id="RescueInfo-UUID"><td class="tbl-border-none"><strong>UUID:</strong></td><td>' + rescue.id + '</td></tr>' +
                                     '<tr><td class="tbl-border-none"></td><td></td></tr>';
         // Rats
         var ratHtml = [];
-        for (var r in rescue.rats) {
-            var rInfo = fr.client.FetchRatInfo(rescue.rats[r]);
-            ratHtml.push('<span class="rat-' + rescue.rats[r] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
+        for (var rat in rescue.rats) {
+            var rInfo = fr.client.FetchRatInfo(rescue.rats[rat]);
+            ratHtml.push('<span class="rat-' + rescue.rats[rat] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
         }
-        detailContent += '<tr><td class="tbl-border-none"><strong>Rats:</strong></td><td class="tbl-border-left tbl-border-right">' + (ratHtml.length > 0 ? ratHtml[0] :'') + '</td></tr>';
+        for (var uRat in rescue.unidentifiedRats) {
+            ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span> <span class="label label-warning">unidentified</span>');
+        }
+
+        detailContent += '<tr><td class="tbl-border-none"><strong>Rats:</strong></td><td class="tbl-border-box">' + (ratHtml.length > 0 ? ratHtml[0] : '<i>Unassigned</i>') + '</td></tr>';
         if(ratHtml.length > 1)
             for(var i = 1 ; i < ratHtml.length ; i++)
-                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-left tbl-border-right">' + ratHtml[i] + '</td></tr>';
+                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-box">' + ratHtml[i] + '</td></tr>';
 
-        if(rescue.unidentifiedRats.length > 0)
-            for(var i = 0 ; i < rescue.unidentifiedRats.length ; i++)
-                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-left tbl-border-right">' + rescue.unidentifiedRats[i] + ' <span class="label label-warning">unidentified</span></td></tr>';
-
-        detailContent += '<tr><td class="tbl-border-none"></td><td></td></tr>'; // Separator
+        detailContent += '<tr><td class="tbl-border-none"></td><td class="tbl-border-none"></td></tr>'; // Separator
 
         // Quotes
-        detailContent += '<tr><td class="tbl-border-none"><strong>Quotes:</strong></td><td class="tbl-border-left tbl-border-right">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '') + '</td></tr>';
+        detailContent += '<tr><td class="tbl-border-none"><strong>Quotes:</strong></td><td class="tbl-border-box">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '<i>None</i>') + '</td></tr>';
         if(rescue.quotes.length > 1)
             for(var i = 1 ; i < rescue.quotes.length ; i++)
-                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-left tbl-border-right">' + rescue.quotes[i] + '</td></tr>';
+                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-box">' + rescue.quotes[i] + '</td></tr>';
 
-        detailContent += '<tr><td class="tbl-border-none"></td><td></td></tr></tbody></table>';
-
-        //show the detail section.
+        //update the detail section.
         if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
         $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).removeClass('fr-detail-hidden').animate({opacity: 1}, 500);
-        $('#detailBtn-'+rescue.id).addClass('active').addClass('btn-info').removeClass('btn-default');
+
+        $('#detailBtn-'+rescue.id).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
     }
 };
