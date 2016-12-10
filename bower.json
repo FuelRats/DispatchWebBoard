@@ -1,0 +1,30 @@
+{
+  "name": "fuelrats_dwb",
+  "homepage": "https://github.com/FuelRats/DispatchWebBoard",
+  "authors": [
+    "Clapton",
+    "NoLifeKing"
+  ],
+  "description": "Web Board for Fuel Rats rescue tracking",
+  "main": "index.html",
+  "keywords": [
+    "dispatch",
+    "fuel",
+    "rats",
+    "fuelrats",
+    "rescue",
+    "elite"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
