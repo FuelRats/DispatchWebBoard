@@ -11,12 +11,12 @@
   <link rel="shortcut icon" href="favicon.ico" />
 
   <!-- stylesheets -->
-  <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/app.min.css" />
 
   <!-- Libraries -->
-  <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
 
   <!-- App JS -->
   <script type="text/javascript">
@@ -30,9 +30,6 @@
   <script type="text/javascript" src="http://localhost:35729/livereload.js?snipver=1"></script><!---->
 </head>
 <body>
-  <script type="text/javascript">
-    fr.ws.initConnection();
-  </script>
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -57,9 +54,10 @@
       <div id="columnDetail" class="col-md-6 fr-hidden"><div id="rescueDetail"></div></div>
       <div id="columnGeneral" class="col-md-6 fr-hidden"></div>
     </div>
-    <script type="text/javascript">
-      fr.client.init();
-    </script>
   </div>
+  <script type="text/javascript">
+    fr.ws.initConnection();
+    fr.client.init();
+  </script>
 </body>
 </html>
