@@ -40,7 +40,7 @@ nav.navbar {
 }
 
 .rdetail-header {
-    font-size: 2em;
+    font-size: 1.75em;
     display: flex;
     justify-content: space-between;
     padding: 15px 0;
@@ -49,18 +49,36 @@ nav.navbar {
     display: inline;
     vertical-align: middle;
 }
-.rdetail-client .label {
+.rdetail-header .label {
     padding: .2em .6em;
     position: relative;
     top: -3px;
 }
 
-.fr-detail-hidden {
+.rdetail-body thead, .rdetail-body thead td{
+    padding: 0 !important;
+}
+
+.rdetail-info-title {
+    border: none !important;
+    padding-left: 0 !important;
+    font-weight: bold;
+}
+.rdetail-info-title:after {
+    content: ':';
+}
+
+.rdetail-info-empty {
+    border: none !important;
+}
+
+.fr-hidden {
     display: none !important;
 }
 
 #rescueDetail {
     border: 1px solid #ddd;
+    padding: 0 15px;
 }
 
 .tbl-border-none {
