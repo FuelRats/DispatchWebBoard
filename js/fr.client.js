@@ -9,7 +9,7 @@ fr.client = {
     cId: (debug ? "95a43559-69c3-40a6-86bb-f97d5d028e5e" : "6ae5920a-8764-4338-9877-aa4d9f851e0e"),
 	currentToken: null,
 	CookieBase: 'fr_db_',
-    Rescues: {},
+    CachedRescues: {},
     CachedRats: {},
     SelectedRescue: null,
 	init: function() {
@@ -78,7 +78,7 @@ fr.client = {
         var rTable = $('<table id="rescueTable" class="table table-striped table-bordered"></table>');
         var rHead = $('<thead><th>Case #</th><th>CMDR Name</th><th>System</th><th>Rats</th><th width="45px"></th></thead>');
         rTable.append(rHead);
-        $('#rescueBoard').empty().append(rTable);
+        $('#columnBoard').empty().append(rTable);
     },
     FetchRatInfo: function (ratId) {
         if (fr.client.CachedRats[ratId]) {
@@ -153,7 +153,7 @@ fr.client = {
         var notes = rescue.quotes.join('\n');
         row.attr('title', notes);
         if(debug) console.log("fr.client.AddRescue: Rescue Added to board.");
-        fr.client.Rescues[rescue.id] = rescue;
+        fr.client.CachedRescues[rescue.id] = rescue;
         table.append(row);  
     },
     UpdateRescue: function (tpa) {
@@ -208,12 +208,12 @@ fr.client = {
         if (!rescue.open) {
             setTimeout(function () { rescueRow.hide('slow').remove(); }, 5000);
             if(debug) console.log("fr.client.UpdateRescue - Rescue Removed: " + rescue.id + " : " + rescue.client);
-            delete fr.client.Rescues[rescue.id];
+            delete fr.client.CachedRescues[rescue.id];
             return;
         }
 
         if(debug) console.log("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
-        fr.client.Rescues[rescue.id] = rescue;
+        fr.client.CachedRescues[rescue.id] = rescue;
         if(tpa.id === fr.client.SelectedRescue.id) {
             if(debug) console.log("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
             fr.client.SelectedRescue = rescue;
@@ -247,7 +247,7 @@ fr.client = {
             var tstr = (hours   < 10 ? '0' : '') + hours + 
                  ':' + (minutes < 10 ? '0' : '') + minutes + 
                  ':' + (seconds < 10 ? '0' : '') + seconds;
-            $('.rdetail-time-sincecreate').text(tstr);
+            $('.rdetail-timer').text(tstr);
         }
     },
     SetSelectedRescue: function (key) {
@@ -260,36 +260,37 @@ fr.client = {
             fr.client.UpdateRescueDetail();
             return;
         }
-        if(fr.client.Rescues[key] === null) {
+        if(fr.client.CachedRescues[key] === null) {
             console.log("SetSelectedRescue - invalid key: " + key);
             return;
         }
-        if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.Rescues[key].id);
+        if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
         if(fr.client.RescueClockTimeoutID === null) fr.client.RescueClockTimeoutID = window.setInterval(fr.client.UpdateRescueClock, 500);
-        fr.client.SelectedRescue = fr.client.Rescues[key];
+        fr.client.SelectedRescue = fr.client.CachedRescues[key];
         fr.client.UpdateRescueDetail();
     },
     UpdateRescueDetail: function () {
         $('.btn-fr-detail.active').removeClass('active').removeClass('btn-info').addClass('btn-default');     // clear active buttons.
 
         if (!fr.client.SelectedRescue) {
-            $('#rescueDetail').addClass('fr-detail-hidden');
+            $('#columnDetail').addClass('fr-hidden');
             return;
         }
         var rescue = fr.client.SelectedRescue;
 
         var detailContent = '<div class="rdetail-header">' +
-                              '<div class="rdetail-client">' + (rescue.data ? rescue.data.boardIndex ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
-                              '<div class="rdetail-time-sincecreate">00:00:00</div>' +
+                              '<div class="rdetail-title">' + (rescue.data ? rescue.data.boardIndex ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
+                              '<div class="rdetail-timer">00:00:00</div>' +
                             '</div>' +
-                            '<table class="table table-rescue">' +
+                            '<table class="rdetail-body table table-rescue">' +
+                                '<thead><td width="90px"></td><td></td></thead>' +
                                 '<tbody>' +
-                                    (rescue.data ? rescue.data.IRCNick ? '<tr id="RescueInfo-NickName"><td width="90px" class="tbl-border-none" ><strong>IRC Nick:</strong></td><td>' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
-                                    (rescue.system ? '<tr id="RescueInfo-System"><td class="tbl-border-none"><strong>System:</strong></td><td>' + rescue.system + '</td></tr>' : '') +
-                                    (rescue.platform ? '<tr id="RescueInfo-Platform"><td class="tbl-border-none"><strong>Platform:</strong></td><td>' + rescue.platform.toUpperCase() + '</td></tr>' : '') +
-                                    (rescue.data ? rescue.data.langID ? '<tr id="RescueInfo-Language"><td class="tbl-border-none"><strong>Language:</strong></td><td>' + rescue.data.langID.toUpperCase() + '</td></tr>' : '' : '') +
-                                    '<tr id="RescueInfo-UUID"><td class="tbl-border-none"><strong>UUID:</strong></td><td>' + rescue.id + '</td></tr>' +
-                                    '<tr><td class="tbl-border-none"></td><td></td></tr>';
+                                    (rescue.data ? rescue.data.IRCNick ? '<tr class="rdetail-info"><td class="rdetail-info-title">IRC Nick</td><td class="rdetail-info-value">' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
+                                    (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '</td></tr>' : '') +
+                                    (rescue.platform                   ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td><td class="rdetail-info-value">' + rescue.platform.toUpperCase() + '</td></tr>' : '') +
+                                    (rescue.data ? rescue.data.langID  ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td><td class="rdetail-info-value">' + rescue.data.langID.toUpperCase() + '</td></tr>' : '' : '') +
+                                                                         '<tr class="rdetail-info"><td class="rdetail-info-title">UUID</td><td class="rdetail-info-value">' + rescue.id + '</td></tr>' +
+                                                                         '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>';
         // Rats
         var ratHtml = [];
         for (var rat in rescue.rats) {
@@ -300,22 +301,23 @@ fr.client = {
             ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span> <span class="label label-warning">unidentified</span>');
         }
 
-        detailContent += '<tr><td class="tbl-border-none"><strong>Rats:</strong></td><td class="tbl-border-box">' + (ratHtml.length > 0 ? ratHtml[0] : '<i>Unassigned</i>') + '</td></tr>';
+        detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">' + (ratHtml.length > 0 ? ratHtml[0] : '<i>Unassigned</i>') + '</td></tr>';
         if(ratHtml.length > 1)
             for(var i = 1 ; i < ratHtml.length ; i++)
-                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-box">' + ratHtml[i] + '</td></tr>';
+                detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + ratHtml[i] + '</td></tr>';
 
-        detailContent += '<tr><td class="tbl-border-none"></td><td class="tbl-border-none"></td></tr>'; // Separator
+        detailContent += '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>'; // Separator
 
         // Quotes
-        detailContent += '<tr><td class="tbl-border-none"><strong>Quotes:</strong></td><td class="tbl-border-box">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '<i>None</i>') + '</td></tr>';
+        detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '<i>None</i>') + '</td></tr>';
         if(rescue.quotes.length > 1)
             for(var i = 1 ; i < rescue.quotes.length ; i++)
-                detailContent +='<tr><td class="tbl-border-none"></td><td class="tbl-border-box">' + rescue.quotes[i] + '</td></tr>';
+                detailContent +='<tr class="rdetail-info"><td class="reetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + rescue.quotes[i] + '</td></tr>';
 
         //update the detail section.
         if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
-        $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).removeClass('fr-detail-hidden').animate({opacity: 1}, 500);
+        $('#columnDetail').removeClass('fr-hidden');
+        $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
 
         $('#detailBtn-'+rescue.id).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
     }
