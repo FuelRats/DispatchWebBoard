@@ -16,6 +16,7 @@ fr.client = {
         if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
         fr.client.RequestRescueList();
         fr.client.UpdateClock();
+        window.onpopstate = fr.client.HandlePopState;
 	},
 	GetCookie: function(name) {
         try {
@@ -53,7 +54,8 @@ fr.client = {
         switch (tpa.meta.action) {
             case 'rescues:read':
                 for (var i in tpa.data)
-                    fr.client.AddRescue(tpa.data[i]); 
+                    fr.client.AddRescue(tpa.data[i]);
+                fr.client.ParseQueryString();
                 break;
             case 'rescue:created':
                 fr.client.AddRescue(tpa.data);
@@ -103,6 +105,15 @@ fr.client = {
             rat.html('<i>Not found</i>');
         }
     },
+    ParseQueryString: function () {
+        var ar = $.getUrlParam("ar");
+        if(ar && fr.client.CachedRescues[ar]) {
+            fr.client.SetSelectedRescue(ar, true);
+        }
+    },
+    HandlePopState: function (event) {
+        fr.client.SetSelectedRescue(event.state.ar, true);
+    },
     AddRescue: function (tpa) {
         if(!tpa) return;
 
@@ -128,7 +139,7 @@ fr.client = {
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\')"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\',false)"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>'
         );
 
@@ -175,7 +186,7 @@ fr.client = {
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\')"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\',false)"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
             '</td>');
         
         if (rescue.epic) {
@@ -250,12 +261,16 @@ fr.client = {
             $('.rdetail-timer').text(tstr);
         }
     },
-    SetSelectedRescue: function (key) {
+    SetSelectedRescue: function (key, preventPush) {
         if(key === null || (fr.client.SelectedRescue && key === fr.client.SelectedRescue.id)) {
             fr.client.SelectedRescue = null;
             if(fr.client.RescueClockTimeoutID !== null) {
                 window.clearInterval(fr.client.RescueClockTimeoutID);
                 fr.client.RescueClockTimeoutID = null;
+            }
+            if(history.pushState && !preventPush) {
+                var url = window.location.protocol+ '//' + window.location.host + window.location.pathname;
+                window.history.pushState({"ar":null},'', url);
             }
             fr.client.UpdateRescueDetail();
             return;
@@ -267,6 +282,10 @@ fr.client = {
         if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
         if(fr.client.RescueClockTimeoutID === null) fr.client.RescueClockTimeoutID = window.setInterval(fr.client.UpdateRescueClock, 500);
         fr.client.SelectedRescue = fr.client.CachedRescues[key];
+        if(history.pushState && !preventPush) {
+            var url = window.location.protocol+ '//' + window.location.host + window.location.pathname + '?ar=' + encodeURIComponent(key);
+            window.history.pushState({"ar":key},'', url);
+        }
         fr.client.UpdateRescueDetail();
     },
     UpdateRescueDetail: function () {
