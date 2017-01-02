@@ -233,10 +233,9 @@ fr.client = {
     },
     UpdateClock: function () {
         var nowTime = new Date();
-        nowTime.setUTCFullYear(nowTime.getUTCFullYear() + 1286);
 
-        var edTime = nowTime.getUTCFullYear() +
-           '-' + (nowTime.getUTCMonth()    < 10 ? '0' : '') + nowTime.getUTCMonth()   +
+        var edTime = (nowTime.getUTCFullYear() + 1286) +
+           '-' + ((nowTime.getUTCMonth() + 1)    < 10 ? '0' : '') + (nowTime.getUTCMonth() + 1) +
            '-' + (nowTime.getUTCDate()     < 10 ? '0' : '') + nowTime.getUTCDate()    +
            ' ' + (nowTime.getUTCHours()    < 10 ? '0' : '') + nowTime.getUTCHours()   +
            ':' + (nowTime.getUTCMinutes()  < 10 ? '0' : '') + nowTime.getUTCMinutes() +
