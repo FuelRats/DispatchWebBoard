@@ -106,13 +106,13 @@ fr.client = {
         }
     },
     ParseQueryString: function () {
-        var ar = $.getUrlParam("ar");
-        if(ar && fr.client.CachedRescues[ar]) {
-            fr.client.SetSelectedRescue(ar, true);
+        var activeRescue = $.getUrlParam("a");
+        if(activeRescue && fr.client.CachedRescues[activeRescue]) {
+            fr.client.SetSelectedRescue(activeRescue, true);
         }
     },
     HandlePopState: function (event) {
-        fr.client.SetSelectedRescue(event.state.ar, true);
+        fr.client.SetSelectedRescue(event.state.a, true);
     },
     AddRescue: function (tpa) {
         if(!tpa) return;
@@ -269,7 +269,7 @@ fr.client = {
             }
             if(history.pushState && !preventPush) {
                 var url = window.location.protocol+ '//' + window.location.host + window.location.pathname;
-                window.history.pushState({"ar":null},'', url);
+                window.history.pushState({"a":null},'', url);
             }
             fr.client.UpdateRescueDetail();
             return;
@@ -282,8 +282,8 @@ fr.client = {
         if(fr.client.RescueClockTimeoutID === null) fr.client.RescueClockTimeoutID = window.setInterval(fr.client.UpdateRescueClock, 500);
         fr.client.SelectedRescue = fr.client.CachedRescues[key];
         if(history.pushState && !preventPush) {
-            var url = window.location.protocol+ '//' + window.location.host + window.location.pathname + '?ar=' + encodeURIComponent(key);
-            window.history.pushState({"ar":key},'', url);
+            var url = window.location.protocol+ '//' + window.location.host + window.location.pathname + '?a=' + encodeURIComponent(key);
+            window.history.pushState({"a":key},'', url);
         }
         fr.client.UpdateRescueDetail();
     },
