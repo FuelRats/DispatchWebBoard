@@ -135,7 +135,7 @@ fr.client = {
         
         var row = $(
         '<tr id="rescue-' + rescue.id + '">' +
-            '<td>' + (rescue.data ? rescue.data.boardIndex ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
+            '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
@@ -297,7 +297,7 @@ fr.client = {
         var rescue = fr.client.SelectedRescue;
 
         var detailContent = '<div class="rdetail-header">' +
-                              '<div class="rdetail-title">' + (rescue.data ? rescue.data.boardIndex ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
+                              '<div class="rdetail-title">' + (rescue.data ? rescue.data.boardIndex !== null || resuce.data.boardIndex !== null ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
                               '<div class="rdetail-timer">00:00:00</div>' +
                             '</div>' +
                             '<table class="rdetail-body table table-rescue">' +
