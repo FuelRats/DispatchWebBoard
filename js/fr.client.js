@@ -78,7 +78,7 @@ fr.client = {
     RequestRescueList: function () {
         fr.ws.send('rescues:read', { 'open': 'true' });
         var rTable = $('<table id="rescueTable" class="table table-striped table-bordered"></table>');
-        var rHead = $('<thead><th>Case #</th><th>CMDR Name</th><th>System</th><th>Rats</th><th width="45px"></th></thead>');
+        var rHead = $('<thead><th>#</th><th>CMDR<span class="float-right">Platform</span></th><th>System<span class="float-right">Lang</span></th><th>Rats</th><th width="45px">Info</th></thead>');
         rTable.append(rHead);
         $('#columnBoard').empty().append(rTable);
     },
@@ -137,7 +137,7 @@ fr.client = {
         '<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
             '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
-            '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
+            '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
             '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>'
@@ -184,7 +184,7 @@ fr.client = {
         rescueRow.html(
             '<td>' + (rescue.data ? rescue.data.boardIndex ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
-            '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
+            '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
             '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
             '</td>');
