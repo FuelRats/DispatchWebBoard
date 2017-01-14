@@ -132,6 +132,9 @@ fr.client = {
             var rInfo = fr.client.FetchRatInfo(rats[r]);
             ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
         }
+        for (var uRat in rescue.unidentifiedRats) {
+            ratHtml.push('<span class="rat-unidentified"><i>' + rescue.unidentifiedRats[uRat] + '</i></span>');
+        }
         
         var row = $(
         '<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
@@ -179,7 +182,10 @@ fr.client = {
         for (var r in rats) {
             var rInfo = fr.client.FetchRatInfo(rats[r]);
             ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
-        }  
+        }
+        for (var uRat in rescue.unidentifiedRats) {
+            ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span>');
+        }
 
         rescueRow.html(
             '<td>' + (rescue.data ? rescue.data.boardIndex ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
@@ -274,7 +280,7 @@ fr.client = {
             fr.client.UpdateRescueDetail();
             return;
         }
-        if(fr.client.CachedRescues[key] === null) {
+        if(!fr.client.CachedRescues[key]) {
             console.log("SetSelectedRescue - invalid key: " + key);
             return;
         }
