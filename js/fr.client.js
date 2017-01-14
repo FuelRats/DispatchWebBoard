@@ -120,7 +120,7 @@ fr.client = {
         var table = $('#rescueTable');
         var rescue = tpa;
 
-        if ($('#rescue-' + rescue.id).length > 0) {
+        if ($('#rescue-' + rescue.id.split('-')[0]).length > 0) {
             fr.client.UpdateRescue(tpa);
             return;
         }
@@ -134,12 +134,12 @@ fr.client = {
         }
         
         var row = $(
-        '<tr id="rescue-' + rescue.id + '">' +
+        '<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
             '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\',false)"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>'
         );
 
@@ -164,7 +164,7 @@ fr.client = {
         var notes = rescue.quotes.join('\n');
         row.attr('title', notes);
         if(debug) console.log("fr.client.AddRescue: Rescue Added to board.");
-        fr.client.CachedRescues[rescue.id] = rescue;
+        fr.client.CachedRescues[rescue.id.split('-')[0]] = rescue;
         table.append(row);  
     },
     UpdateRescue: function (tpa) {
@@ -186,7 +186,7 @@ fr.client = {
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + ' <span class="rescue-platform">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id + '\',false)"><button id="detailBtn-'+rescue.id+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
             '</td>');
         
         if (rescue.epic) {
@@ -219,12 +219,12 @@ fr.client = {
         if (!rescue.open) {
             setTimeout(function () { rescueRow.hide('slow').remove(); }, 5000);
             if(debug) console.log("fr.client.UpdateRescue - Rescue Removed: " + rescue.id + " : " + rescue.client);
-            delete fr.client.CachedRescues[rescue.id];
+            delete fr.client.CachedRescues[rescue.id.split('-')[0]];
             return;
         }
 
         if(debug) console.log("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
-        fr.client.CachedRescues[rescue.id] = rescue;
+        fr.client.CachedRescues[rescue.id.split('-')[0]] = rescue;
         if(tpa.id === fr.client.SelectedRescue.id) {
             if(debug) console.log("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
             fr.client.SelectedRescue = rescue;
@@ -337,6 +337,6 @@ fr.client = {
         $('#columnDetail').removeClass('fr-hidden');
         $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
 
-        $('#detailBtn-'+rescue.id).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
+        $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
     }
 };
