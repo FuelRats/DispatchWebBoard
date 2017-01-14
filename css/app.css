@@ -8,7 +8,7 @@ nav.navbar {
   border-bottom-width: 0.5rem;
 }
 
-.rescue-platform { float: right; }
+span.float-right { float: right; }
 
 .rescue-epic {
     background-image:url(https://media.giphy.com/media/kqcjXv1FFA5IQ/giphy.gif); 
