@@ -267,7 +267,7 @@ fr.client = {
         }
     },
     SetSelectedRescue: function (key, preventPush) {
-        if(key === null || (fr.client.SelectedRescue && key === fr.client.SelectedRescue.id)) {
+        if(key === null || (fr.client.SelectedRescue && key === fr.client.SelectedRescue.id.split('-')[0])) {
             fr.client.SelectedRescue = null;
             if(fr.client.RescueClockTimeoutID !== null) {
                 window.clearInterval(fr.client.RescueClockTimeoutID);
