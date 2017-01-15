@@ -173,8 +173,9 @@ fr.client = {
     UpdateRescue: function (tpa) {
         if(!tpa) return;
 
-        var rescueRow = $('#rescue-' + tpa.id);
+        var rescueRow = $('#rescue-' + tpa.id.split('-')[0]);
         var rescue = tpa;
+        if(debug) console.log('Updating Rescue under row ID: #rescue-' + tpa.id.split('-')[0]);
 
         var rats = rescue.rats;
         var ratHtml = [];
