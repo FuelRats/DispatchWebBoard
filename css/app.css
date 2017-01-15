@@ -20,8 +20,7 @@ span.float-right { float: right; }
 
 .rescue-inactive {
     opacity: 0.4 !important;
-    background-color: khaki;
-    /*display: none;*/
+    background-color: khaki !important;
 }
 
 .ed-clock {
