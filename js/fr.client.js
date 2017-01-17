@@ -136,15 +136,13 @@ fr.client = {
             ratHtml.push('<span class="rat-unidentified"><i>' + rescue.unidentifiedRats[uRat] + '</i></span>');
         }
         
-        var row = $(
-        '<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
+        var row = $('<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
             '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + '<span class="float-right">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
             '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
-        '</tr>'
-        );
+        '</tr>');
 
         if (rescue.epic) {
             row.addClass('rescue-epic');
