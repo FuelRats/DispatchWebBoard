@@ -230,7 +230,7 @@ fr.client = {
 
         if(debug) console.log("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
         fr.client.CachedRescues[rescue.id.split('-')[0]] = rescue;
-        if(tpa.id === fr.client.SelectedRescue.id) {
+        if(rescue.id && fr.client.SelectedRescue && rescue.id === fr.client.SelectedRescue.id) {
             if(debug) console.log("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
             fr.client.SelectedRescue = rescue;
             fr.client.UpdateRescueDetail();
