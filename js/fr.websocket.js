@@ -1,19 +1,16 @@
 var fr = fr !== undefined ? fr : {};
 var debug = debug !== undefined ? debug : false;
 
-fr.ws = {
+//config and client are required for ws to be setup. if neither are present, set to null.
+fr.ws = !fr.config || !fr.client ? null : {
   socket: null,
   initConnection: function () {
-  	if(!fr.client) {
-  		onError("fr.client is undefined. Cannot setup websocket module.");
-  		return;
-  	}
-  	if (debug) console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE."); 
-      fr.ws.socket = (debug ? new WebSocket('wss://dev.api.fuelrats.com:443') : new WebSocket('wss://api.fuelrats.com:443'));
-      fr.ws.socket.onmessage = fr.ws.onMessage;
-      fr.ws.socket.onerror = fr.ws.onError;
-      fr.ws.socket.onclose = fr.ws.onClose;
-      fr.ws.socket.onopen = fr.ws.onOpen;
+  	if (debug) console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
+    fr.ws.socket = new WebSocket(fr.config.WebSocketStreamURL);
+    fr.ws.socket.onmessage = fr.ws.onMessage;
+    fr.ws.socket.onerror = fr.ws.onError;
+    fr.ws.socket.onclose = fr.ws.onClose;
+    fr.ws.socket.onopen = fr.ws.onOpen;
   },
 	reconnected: false,
 	clientId: '',

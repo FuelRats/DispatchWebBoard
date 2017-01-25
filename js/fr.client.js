@@ -1,14 +1,13 @@
 var fr = fr !== undefined ? fr : {};
-var debug = debug !== undefined ? debug : true;
+var debug = debug !== undefined ? debug : false;
 
 function getTimeSpan(date1, date2) {
     return Math.round(date1 / 1000) - Math.round(date2 / 1000);
 }
 
-fr.client = {
-    cId: (debug ? "95a43559-69c3-40a6-86bb-f97d5d028e5e" : "6ae5920a-8764-4338-9877-aa4d9f851e0e"),
+// fr.config is required. if not found, set to null.
+fr.client = !fr.config ? null : {
 	currentToken: null,
-	CookieBase: 'fr_db_',
     CachedRescues: {},
     CachedRats: {},
     SelectedRescue: null,
@@ -21,7 +20,7 @@ fr.client = {
 	GetCookie: function(name) {
         try {
             var cookie = document.cookie;
-            name = fr.client.CookieBase + name;
+            name = fr.config.CookieBase + name;
             var valueStart = cookie.indexOf(name + "=") + 1;
             if (valueStart === 0) {
                 return null;
@@ -36,7 +35,7 @@ fr.client = {
         return null;
     },
     SetCookie: function(name, value, expire) {
-        var temp = fr.client.CookieBase + name + "=" + escape(value) + (expire !== 0 ? "; path=/; expires=" + ((new Date((new Date()).getTime() + expire)).toUTCString()) + ";" : "; path=/;");
+        var temp = fr.config.CookieBase + name + "=" + escape(value) + (expire !== 0 ? "; path=/; expires=" + ((new Date((new Date()).getTime() + expire)).toUTCString()) + ";" : "; path=/;");
         document.cookie = temp;
     },
     CanSetCookies: function() {
@@ -46,7 +45,7 @@ fr.client = {
         return can;
     },
     DelCookie: function(name) {
-        document.cookie = fr.client.CookieBase + name + '=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = fr.config.CookieBase + name + '=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     },
     HandleTPA: function (tpa) {
         if(debug) console.log("fr.client.HandleTPA - New TPA");
