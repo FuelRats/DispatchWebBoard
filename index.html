@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- bootstrap-required Meta -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- page meta -->
+  <title>Fuel Rats - Dispatch Board</title>
+  <link rel="shortcut icon" href="favicon.ico" />
+
+  <!-- stylesheets -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/app.min.css" />
+
+  <!-- Libraries -->
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+  <!-- App JS -->
+  <script type="text/javascript">
+    // https://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+    // Query string parsing extension.
+    $.extend({getUrlParams:function(){for(var r,n=[],t=window.location.href.slice(window.location.href.indexOf("?")+1).split("&"),e=0;e<t.length;e++)r=t[e].split("="),n.push(r[0]),n[r[0]]=r[1];return n},getUrlParam:function(r){return $.getUrlParams()[r]}});
+  </script>
+  <script type="text/javascript" src="config/fr.config.js"></script>
+  <script type="text/javascript" src="js/fr.client.min.js"></script>
+  <script type="text/javascript" src="js/fr.websocket.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#" style="padding: 5px;"><img src="images/fuelrats.png" style="height: 40px; display: inline-block;" /> FuelRats Dispatch Board</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse navbar-right">
+        <ul class="nav navbar-nav">
+          <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;">clock</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="pageContent" class="container-fluid">
+    <div class="row">
+      <div id="columnBoard" class="col-md-6"></div>
+      <div id="columnDetail" class="col-md-6 fr-hidden"><div id="rescueDetail"></div></div>
+      <div id="columnGeneral" class="col-md-6 fr-hidden"></div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    fr.ws.initConnection();
+    fr.client.init();
+  </script>
+</body>
+</html>
