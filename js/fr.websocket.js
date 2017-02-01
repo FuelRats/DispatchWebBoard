@@ -4,13 +4,18 @@ var debug = debug !== undefined ? debug : false;
 //config and client are required for ws to be setup. if neither are present, set to null.
 fr.ws = !fr.config || !fr.client ? null : {
   socket: null,
+  initComp: false,
   initConnection: function () {
-  	if (debug) console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
-    fr.ws.socket = new WebSocket(fr.config.WebSocketStreamURL);
-    fr.ws.socket.onmessage = fr.ws.onMessage;
-    fr.ws.socket.onerror = fr.ws.onError;
-    fr.ws.socket.onclose = fr.ws.onClose;
-    fr.ws.socket.onopen = fr.ws.onOpen;
+  	if(!fr.ws.initComp) {
+  		if (debug) console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
+    	fr.ws.socket = new WebSocket(fr.config.WebSocketStreamURL);
+    	fr.ws.socket.onmessage = fr.ws.onMessage;
+    	fr.ws.socket.onerror = fr.ws.onError;
+    	fr.ws.socket.onclose = fr.ws.onClose;
+    	fr.ws.socket.onopen = fr.ws.onOpen;
+  	} else {
+  		if (debug) console.log("fr.ws.initConnection - init completed already!");
+  	}
   },
 	reconnected: false,
 	clientId: '',
