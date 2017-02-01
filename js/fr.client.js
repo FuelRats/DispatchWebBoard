@@ -11,11 +11,18 @@ fr.client = !fr.config ? null : {
     CachedRescues: {},
     CachedRats: {},
     SelectedRescue: null,
+    initComp: false,
 	init: function() {
-        if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
-        fr.client.RequestRescueList();
-        fr.client.UpdateClock();
-        window.onpopstate = fr.client.HandlePopState;
+        if(!fr.client.initComp) {
+            if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
+            fr.client.RequestRescueList();
+            fr.client.UpdateClock();
+            window.onpopstate = fr.client.HandlePopState;
+            $('#navbar-brand-title').text(fr.config.WindowTitle);
+            fr.client.initComp = true;
+        } else {
+            if (debug) console.log("fr.client.init - init completed already!");
+        }
 	},
 	GetCookie: function(name) {
         try {
