@@ -11,12 +11,19 @@ fr.client = !fr.config || !fr.ws ? null : {
     CachedRescues: {},
     CachedRats: {},
     SelectedRescue: null,
+    initComp: false,
 	init: function() {
-        if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
-        window.onpopstate = fr.client.HandlePopState;
-        fr.ws.HandleTPA = fr.client.HandleTPA;
-        fr.client.RequestRescueList();
-        fr.client.UpdateClock();
+        if(!fr.client.initComp) {
+            if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
+            window.onpopstate = fr.client.HandlePopState;
+            fr.ws.HandleTPA = fr.client.HandleTPA;
+            fr.client.RequestRescueList();
+            fr.client.UpdateClock();
+            $('#navbar-brand-title').text(fr.config.WebPageTitle);
+            fr.client.initComp = true;
+        } else {
+            if (debug) console.log("fr.client.init - init completed already!");
+        }
 	},
 	GetCookie: function(name) {
         try {
