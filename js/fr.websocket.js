@@ -30,7 +30,7 @@ fr.ws = !fr.config || !fr.client ? null : {
 	onClose: function (dc) {
 		if(dc.wasClean === false) {
 			if (debug) console.log("fr.ws.onClose - Disconnected from WSocket. Reconnecting...");
-			setTimeout(fr.ws.initConnection, 2000);
+			setTimeout(fr.ws.initConnection, 60000);
 			fr.ws.reconnected = true;
 		}
 	},
