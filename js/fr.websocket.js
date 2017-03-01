@@ -1,8 +1,8 @@
 var fr = fr !== undefined ? fr : {};
 var debug = debug !== undefined ? debug : false;
 
-//config and client are required for ws to be setup. if neither are present, set to null.
-fr.ws = !fr.config || !fr.client ? null : {
+// fr.config is required.
+fr.ws = !fr.config ? null : {
   socket: null,
   initComp: false,
   initConnection: function () {
@@ -39,14 +39,15 @@ fr.ws = !fr.config || !fr.client ? null : {
 		if(_data.meta.action === 'welcome') {
 			fr.ws.clientId = _data.meta.id;
 		}
-		fr.client.HandleTPA(_data);
+		fr.ws.HandleTPA(_data);
 	},
+	HandleTPA: function(tpa) {},
 	onError: function(error) {
-		console.log("=Websocket Module Error-");
+		console.log("=Websocket Module Error=");
 		console.log(error);
 	},
 	send: function(action, data, meta) {
-		if(fr.ws.socket.readyState != 1) {
+		if(fr.ws.socket.readyState !== 1) {
 			if(fr.ws.socket.readyState === 0) {
 			} else if (fr.ws.socket.readyState == 2 || fr.ws.socket.readyState == 3) {
 				fr.ws.initConnection();

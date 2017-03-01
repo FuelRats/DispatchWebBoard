@@ -5,8 +5,8 @@ function getTimeSpan(date1, date2) {
     return Math.round(date1 / 1000) - Math.round(date2 / 1000);
 }
 
-// fr.config is required. if not found, set to null.
-fr.client = !fr.config ? null : {
+// fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null. TODO: Add sysapi
+fr.client = !fr.config || !fr.ws ? null : {
 	currentToken: null,
     CachedRescues: {},
     CachedRats: {},
@@ -15,10 +15,11 @@ fr.client = !fr.config ? null : {
 	init: function() {
         if(!fr.client.initComp) {
             if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
+            window.onpopstate = fr.client.HandlePopState;
+            fr.ws.HandleTPA = fr.client.HandleTPA;
             fr.client.RequestRescueList();
             fr.client.UpdateClock();
-            window.onpopstate = fr.client.HandlePopState;
-            $('#navbar-brand-title').text(fr.config.WindowTitle);
+            $('#navbar-brand-title').text(fr.config.WebPageTitle);
             fr.client.initComp = true;
         } else {
             if (debug) console.log("fr.client.init - init completed already!");
@@ -79,7 +80,6 @@ fr.client = !fr.config ? null : {
                 console.log("Unhandled TPA: " + tpa);
                 break;
         }
-          
     },
     RequestRescueList: function () {
         fr.ws.send('rescues:read', { 'open': 'true' });
