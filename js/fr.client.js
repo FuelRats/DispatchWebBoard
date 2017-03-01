@@ -17,9 +17,10 @@ fr.client = !fr.config || !fr.ws ? null : {
             if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
             window.onpopstate = fr.client.HandlePopState;
             fr.ws.HandleTPA = fr.client.HandleTPA;
-            fr.client.RequestRescueList();
+            fr.ws.send('rescues:read', { 'open': 'true' });
             fr.client.UpdateClock();
             $('#navbar-brand-title').text(fr.config.WebPageTitle);
+            $('.version-info').text(fr.config.VersionInfo);
             fr.client.initComp = true;
         } else {
             if (debug) console.log("fr.client.init - init completed already!");
@@ -80,13 +81,6 @@ fr.client = !fr.config || !fr.ws ? null : {
                 console.log("Unhandled TPA: " + tpa);
                 break;
         }
-    },
-    RequestRescueList: function () {
-        fr.ws.send('rescues:read', { 'open': 'true' });
-        var rTable = $('<table id="rescueTable" class="table table-striped table-bordered"></table>');
-        var rHead = $('<thead><th>#</th><th>CMDR<span class="float-right">Platform</span></th><th>System<span class="float-right">Lang</span></th><th>Rats</th><th width="45px">Info</th></thead>');
-        rTable.append(rHead);
-        $('#columnBoard').empty().append(rTable);
     },
     FetchRatInfo: function (ratId) {
         if (fr.client.CachedRats[ratId]) {
