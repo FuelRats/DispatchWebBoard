@@ -20,7 +20,7 @@ fr.client = !fr.config || !fr.ws ? null : {
             fr.ws.send('rescues:read', { 'open': 'true' });
             fr.client.UpdateClock();
             $('#navbar-brand-title').text(fr.config.WebPageTitle);
-            $('.version-info').text(fr.config.VersionInfo);
+            $('.version-info').text(fr.config.VersionInfo).prop('title', fr.config.VersionInfoTooltip ? fr.config.VersionInfoTooltip : "" );
             fr.client.initComp = true;
         } else {
             if (debug) console.log("fr.client.init - init completed already!");
