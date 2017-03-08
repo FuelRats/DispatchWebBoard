@@ -86,14 +86,56 @@ fr.client = !fr.config || !fr.ws ? null : {
     },
     AddRescue: function (tpa) {
         if(!tpa) return;
-
-        var table = $('#rescueTable');
         var rescue = tpa;
-
-        if ($('#rescue-' + rescue.id.split('-')[0]).length > 0) {
+        var sid = rescue.id.split('-')[0];
+        // Ensure rescue doesn't already exist. If so, pass to update logic instead.
+        if ($('#rescue-' + sid).length > 0) {
             fr.client.UpdateRescue(tpa);
             return;
         }
+        if(debug) console.log("fr.client.AddRescue: Rescue Added to board.");
+        fr.client.CachedRescues[sid] = rescue;
+        $('#rescueTable').append(fr.client.GetRescueTableRow(tpa)); 
+    },
+    UpdateRescue: function (tpa) {
+        if(!tpa) return;
+        var rescue = tpa;
+        var sid = rescue.id.split('-')[0];
+
+        var rescueRow = $('#rescue-' + sid);
+
+        if(!rescueRow) {
+            if(debug) console.log("fr.client.UpdateRescue: Attempted to update a non-existant rescue.");
+            if(debug) console.log(rescue);
+            return;
+        }
+
+        if (!rescue.open) {
+            setTimeout(function () { rescueRow.hide('slow').remove(); }, 5000);
+            if(debug) console.log("fr.client.UpdateRescue - Rescue Removed: " + rescue.id + " : " + rescue.client);
+            delete fr.client.CachedRescues[sid];
+            return;
+        }
+
+        if(debug) console.log("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
+        rescueRow.replaceWith(fr.client.GetRescueTableRow(tpa));
+        
+        $('#rescue-' + sid).animate({opacity: 0.2}, 100)
+                           .animate({opacity: 1}, 500);
+
+        fr.client.CachedRescues[sid] = rescue;
+        if(rescue.id && fr.client.SelectedRescue && rescue.id === fr.client.SelectedRescue.id) {
+            if(debug) console.log("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
+            fr.client.SelectedRescue = rescue;
+            fr.client.UpdateRescueDetail();
+        }
+    },
+    /**
+     * Forms the rescue table row HTML.
+     * @param {Object} rescue - Object containing rescue info
+     */
+    GetRescueTableRow: function (rescue) {
+        if (!rescue) return;
 
         var rats = rescue.rats;
         var ratHtml = [];
@@ -134,77 +176,7 @@ fr.client = !fr.config || !fr.ws ? null : {
 
         var notes = rescue.quotes.join('\n');
         row.attr('title', notes);
-        if(debug) console.log("fr.client.AddRescue: Rescue Added to board.");
-        fr.client.CachedRescues[rescue.id.split('-')[0]] = rescue;
-        table.append(row);  
-    },
-    UpdateRescue: function (tpa) {
-        if(!tpa) return;
-
-        var rescueRow = $('#rescue-' + tpa.id.split('-')[0]);
-        var rescue = tpa;
-        if(debug) console.log('Updating Rescue under row ID: #rescue-' + tpa.id.split('-')[0]);
-
-        var rats = rescue.rats;
-        var ratHtml = [];
-            
-        for (var r in rats) {
-            var rInfo = fr.client.FetchRatInfo(rats[r]);
-            ratHtml.push('<span class="rat-' + rats[r] + '">' + (rInfo ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
-        }
-        for (var uRat in rescue.unidentifiedRats) {
-            ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span>');
-        }
-
-        rescueRow.html(
-            '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
-            '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + '<span class="float-right">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
-            '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
-            '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>'
-        );
-        
-        if (rescue.epic) {
-            rescueRow.addClass('rescue-epic');
-        } else {
-            rescueRow.removeClass('rescue-epic');
-        }
-
-        if (rescue.codeRed) {
-            rescueRow.addClass('rescue-codered');
-        } else {
-            rescueRow.removeClass('rescue-codered');
-        }
-
-        if (!rescue.active) {
-            rescueRow.addClass('rescue-inactive');
-        } else {
-            rescueRow.removeClass('rescue-inactive');
-        }
-
-        var notes = rescue.quotes.join('\n');
-        rescueRow.attr('title', notes);
-
-        rescueRow.animate({
-            opacity: 0.3
-        }, 500).animate({
-            opacity: 1
-        }, 500);
-
-        if (!rescue.open) {
-            setTimeout(function () { rescueRow.hide('slow').remove(); }, 5000);
-            if(debug) console.log("fr.client.UpdateRescue - Rescue Removed: " + rescue.id + " : " + rescue.client);
-            delete fr.client.CachedRescues[rescue.id.split('-')[0]];
-            return;
-        }
-
-        if(debug) console.log("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
-        fr.client.CachedRescues[rescue.id.split('-')[0]] = rescue;
-        if(rescue.id && fr.client.SelectedRescue && rescue.id === fr.client.SelectedRescue.id) {
-            if(debug) console.log("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
-            fr.client.SelectedRescue = rescue;
-            fr.client.UpdateRescueDetail();
-        }
+        return row;
     },
     UpdateClock: function () {
         var nowTime = new Date();
