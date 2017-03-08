@@ -50,9 +50,19 @@
   </nav>
   <div id="pageContent" class="container-fluid">
     <div class="row">
-      <div id="columnBoard" class="col-md-6"></div>
-      <div id="columnDetail" class="col-md-6 fr-hidden"><div id="rescueDetail"></div></div>
-      <div id="columnGeneral" class="col-md-6 fr-hidden"></div>
+      <div id="columnBoard" class="col-md-6">
+        <table id="rescueTable" class="table table-striped table-bordered">
+          <thead>
+            <th>#</th>
+            <th>CMDR<span class="float-right">Platform</span></th>
+            <th>System<span class="float-right">Lang</span></th>
+            <th>Rats</th><th width="45px">Info</th>
+          </thead>
+        </table>
+      </div>
+      <div id="columnDetail" class="col-md-6 fr-hidden">
+        <div id="rescueDetail"></div>
+      </div>
     </div>
   </div>
   <footer class="footer">
