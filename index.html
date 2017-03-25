@@ -15,35 +15,30 @@
   <link rel="stylesheet" type="text/css" href="css/app.min.css" />
 
   <!-- Libraries -->
-  <script type="text/javascript" src="js/jquery.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
 
   <!-- App JS -->
+  <script type="text/javascript" src="js/scripts.min.js"></script>
   <script type="text/javascript">
     // https://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
     // Query string parsing extension.
     $.extend({getUrlParams:function(){for(var r,n=[],t=window.location.href.slice(window.location.href.indexOf("?")+1).split("&"),e=0;e<t.length;e++)r=t[e].split("="),n.push(r[0]),n[r[0]]=r[1];return n},getUrlParam:function(r){return $.getUrlParams()[r]}});
   </script>
   <script type="text/javascript" src="config/fr.config.js"></script>
+  <script type="text/javascript" src="js/fr.user.min.js"></script>
   <script type="text/javascript" src="js/fr.websocket.min.js"></script>
   <script type="text/javascript" src="js/fr.client.min.js"></script>
 </head>
-<body>
+<body class="loading">
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#" style="padding: 5px;" data-toggle="tooltip" data-placement="right" title="Squeak!"><img src="images/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
+        <a class="navbar-brand" href="#" style="padding: 5px;"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
       </div>
-      <div id="navbar" class="collapse navbar-collapse navbar-right">
+      <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li><a href="https://confluence.fuelrats.com/display/FRKB" data-toggle="tooltip" data-placement="bottom" title="Fuel Rats Knowledgebase"><span>News & Updates</span></a></li>
-          <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;">clock</a></li>
+          <li><a href="https://confluence.fuelrats.com/display/FRKB"><span>News & Updates</span></a></li>
         </ul>
       </div>
     </div>
@@ -67,16 +62,24 @@
   </div>
   <footer class="footer">
     <div class="container-fluid">
-      <span><a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Report a Problem</a></span>
-      <span class="float-right version-info" data-toggle="tooltip" data-placement="left">version</span>
+      <span>
+        <a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Report a Problem</a>
+      </span>
+      <span class="float-right">
+        <span href="#" class="ed-clock"></span>
+      </span>
     </div>
   </footer>
+  <div class="fr-shutter fr-loading-circle">
+    <div id="ShutterLoginWelcome" class="fr-shuttertext login msgtext">Welcome to The Fuel Rats Rescue Web Board!<br>A drilled rat account is required to access this resource.</div>
+    <div id="ShutterLoginNeedPermission" class="fr-shuttertext permission msgtext">Sorry, You need a drilled rat account to access the web board.</div>
+    <div id="ShutterLoginSubtext" class="fr-shuttertext login subtext">Login to begin...</div>
+  </div>
+  <div class="user-menu">
+    <button class="fr-button login">Login</button>
+  </div>
   <script type="text/javascript">
-    fr.ws.initConnection();
-    fr.client.init();
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-    });
+      fr.user.init();
   </script>
 </body>
 </html>
