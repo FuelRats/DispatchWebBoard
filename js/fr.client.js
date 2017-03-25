@@ -20,7 +20,9 @@ fr.client = !fr.config || !fr.ws ? null : {
             fr.ws.send('rescues:read', { 'open': 'true' });
             fr.client.UpdateClock();
             $('#navbar-brand-title').text(fr.config.WebPageTitle);
-            $('.version-info').text(fr.config.VersionInfo).prop('title', fr.config.VersionInfoTooltip ? fr.config.VersionInfoTooltip : "" );
+            $('body').on('click', 'button.btn-fr-detail',function(e) {
+                fr.client.SetSelectedRescue($(this).data('rescue-id'));
+            });
             fr.client.initComp = true;
         } else {
             if (debug) console.log("fr.client.init - init completed already!");
@@ -34,6 +36,7 @@ fr.client = !fr.config || !fr.ws ? null : {
                 for (var i in tpa.data)
                     fr.client.AddRescue(tpa.data[i]);
                 fr.client.ParseQueryString();
+                $('body').removeClass("loading");
                 break;
             case 'rescue:created':
                 fr.client.AddRescue(tpa.data);
@@ -136,6 +139,7 @@ fr.client = !fr.config || !fr.ws ? null : {
      */
     GetRescueTableRow: function (rescue) {
         if (!rescue) return;
+        var shortid = rescue.id.split('-')[0];
 
         var rats = rescue.rats;
         var ratHtml = [];
@@ -153,7 +157,7 @@ fr.client = !fr.config || !fr.ws ? null : {
             '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + '<span class="float-right">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
             '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
-            '<td onClick="javascript:fr.client.SetSelectedRescue(\'' + rescue.id.split('-')[0] + '\',false)"><button id="detailBtn-'+rescue.id.split('-')[0]+'" type="button" class="btn btn-default btn-xs btn-fr-detail"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+            '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-default btn-xs btn-fr-detail" data-rescue-id="' + shortid + '"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>');
 
         if (rescue.epic) {
