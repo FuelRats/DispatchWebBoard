@@ -17,7 +17,7 @@ fr.client = !fr.config || !fr.ws ? null : {
             if (debug) console.log("fr.client.init - fr.Client loaded. DEBUG MODE ACTIVE.");
             window.onpopstate = fr.client.HandlePopState;
             fr.ws.HandleTPA = fr.client.HandleTPA;
-            fr.ws.send('rescues:read', { 'open': 'true' });
+            fr.ws.send('rescues:read', { 'open': 'true' },{});
             fr.client.UpdateClock();
             $('#navbar-brand-title').text(fr.config.WebPageTitle);
             $('body').on('click', 'button.btn-fr-detail',function(e) {
@@ -49,9 +49,11 @@ fr.client = !fr.config || !fr.ws ? null : {
                 break;
             case 'welcome':
             case 'stream:subscribe':
+            case 'authorization':
                 break;
             default:
-                console.log("Unhandled TPA: " + tpa);
+                console.log("Unhandled TPA");
+                console.log(tpa);
                 break;
         }
     },
@@ -80,9 +82,10 @@ fr.client = !fr.config || !fr.ws ? null : {
     },
     ParseQueryString: function () {
         var activeRescue = $.getUrlParam("a");
-        if(activeRescue && fr.client.CachedRescues[activeRescue]) {
+        if(activeRescue && fr.client.CachedRescues[activeRescue])
             fr.client.SetSelectedRescue(activeRescue, true);
-        }
+        else if(history.replaceState)
+                window.history.replaceState({"a":null},document.title, window.location.pathname);
     },
     HandlePopState: function (event) {
         fr.client.SetSelectedRescue(event.state.a, true);
@@ -116,6 +119,9 @@ fr.client = !fr.config || !fr.ws ? null : {
         if (!rescue.open) {
             setTimeout(function () { rescueRow.hide('slow').remove(); }, 5000);
             if(debug) console.log("fr.client.UpdateRescue - Rescue Removed: " + rescue.id + " : " + rescue.client);
+            if(rescue.id && fr.client.SelectedRescue && rescue.id === fr.client.SelectedRescue.id) {
+                fr.client.SetSelectedRescue(null);
+            }
             delete fr.client.CachedRescues[sid];
             return;
         }
@@ -154,8 +160,10 @@ fr.client = !fr.config || !fr.ws ? null : {
         
         var row = $('<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
             '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : 'X' : 'X') + '</td>' +
-            '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + '<span class="float-right">' + (rescue.platform ? rescue.platform.toUpperCase() : '') + '</span></td>' +
-            '<td>' + (rescue.system ? rescue.system : 'unknown') + '<span class="float-right">' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase() : '') + '</span></td>' +
+            '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '') + '</td>' +
+            '<td>' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase().replace("UNKNOWN", "N/A") : 'N/A') + '</td>' +
+            '<td>' + (rescue.platform ? rescue.platform.toUpperCase().replace("UNKNOWN", "N/A") : 'N/A') + '</td>' +
+            '<td>' + (rescue.system ? rescue.system : '') + '</td>' +
             '<td>' + ratHtml.join(', ') + '</td>' +
             '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-default btn-xs btn-fr-detail" data-rescue-id="' + shortid + '"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
         '</tr>');
@@ -218,10 +226,8 @@ fr.client = !fr.config || !fr.ws ? null : {
                 window.clearInterval(fr.client.RescueClockTimeoutID);
                 fr.client.RescueClockTimeoutID = null;
             }
-            if(history.pushState && !preventPush) {
-                var url = window.location.protocol+ '//' + window.location.host + window.location.pathname;
-                window.history.pushState({"a":null},'', url);
-            }
+            if(history.pushState && !preventPush)
+                window.history.pushState({"a":null},document.title, window.location.pathname);
             fr.client.UpdateRescueDetail();
             return;
         }
@@ -232,10 +238,8 @@ fr.client = !fr.config || !fr.ws ? null : {
         if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
         if(fr.client.RescueClockTimeoutID === null) fr.client.RescueClockTimeoutID = window.setInterval(fr.client.UpdateRescueClock, 500);
         fr.client.SelectedRescue = fr.client.CachedRescues[key];
-        if(history.pushState && !preventPush) {
-            var url = window.location.protocol+ '//' + window.location.host + window.location.pathname + '?a=' + encodeURIComponent(key);
-            window.history.pushState({"a":key},'', url);
-        }
+        if(history.pushState && !preventPush)
+            window.history.pushState({"a":key},document.title, window.location.pathname + '?a=' + encodeURIComponent(key));
         fr.client.UpdateRescueDetail();
     },
     UpdateRescueDetail: function () {
