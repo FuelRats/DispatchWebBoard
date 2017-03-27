@@ -24,6 +24,9 @@ fr.ws = !fr.config || !fr.user ? null : {
 	reconnected: false,
 	clientId: '',
   onOpen: function (dc) {
+    if (!fr.user.isAuthenticated() || !fr.user.hasPermission()) {
+      return;
+    }
 		fr.ws.subscribe('0xDEADBEEF');
 		if (fr.ws.reconnected) {
 			if (debug) console.log("fr.ws.onOpen - WS Connected!");
@@ -42,6 +45,7 @@ fr.ws = !fr.config || !fr.user ? null : {
 		var _data = eval('d = ' + data.data);
 		if(_data.meta.action === 'welcome') {
 			fr.ws.clientId = _data.meta.id;
+      fr.ws.authenticateWSS();
 		}
 		fr.ws.HandleTPA(_data);
 	},
@@ -64,8 +68,15 @@ fr.ws = !fr.config || !fr.user ? null : {
 			return;
 		}
 		if (debug) console.log("fr.ws.send - Sending TPA");
-		fr.ws.socket.send(JSON.stringify({ "action": action, "applicationId": fr.ws.clientId, "data": data, "meta": meta }));		
+		fr.ws.socket.send(JSON.stringify({ "action": action, "applicationId": fr.ws.clientId, "data": data, "meta": meta }));
 	},
+  authenticateWSS: function() {
+    if(!fr.user.isAuthenticated() || !fr.user.hasPermission()) {
+      if(debug) console.log("fr.ws.authenticateWSS - Subscribing failed, Not API Authenticated");
+      return;
+    }
+    fr.ws.socket.send(JSON.stringify({ "action": "authorization", "applicationId": fr.ws.clientId, "bearer": fr.user.AuthHeader , "data": {}, "meta": {} }));
+  },
 	subscribe: function(stream) {
     if(!fr.user.isAuthenticated() || !fr.user.hasPermission()) {
       if(debug) console.log("fr.ws.subscribe - Subscribing failed, Not Authenticated");
