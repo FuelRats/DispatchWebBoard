@@ -10,22 +10,20 @@ html,body {
     position: fixed;
     overflow: scroll;
 }
-
 html {
     font-size: 10px;
 }
-
 body {
     font-size: 14px;
 }
+
+.float-right { float: right; }
 
 nav.navbar {
   background-color: #1a1a1a;  
   border-bottom-color: #d65050;
   border-bottom-width: 0.4rem;
 }
-
-span.float-right { float: right; }
 
 #pageContent {
     padding: 60px 15px 60px 15px;
@@ -34,11 +32,9 @@ span.float-right { float: right; }
 .rescue-epic {
     background-image:url("https://media.giphy.com/media/kqcjXv1FFA5IQ/giphy.gif"); 
 }
-
 .rescue-codered {
     background-color: mistyrose !important;
 }
-
 .rescue-inactive {
     opacity: 0.4 !important;
     background-color: khaki !important;
@@ -54,7 +50,6 @@ span.float-right { float: right; }
     -o-user-select: none;
     user-select: none;
 }
-
 .ed-clock:hover {
     color: #9d9d9d !important;
 }
@@ -74,11 +69,9 @@ span.float-right { float: right; }
     position: relative;
     top: -3px;
 }
-
 .rdetail-body thead, .rdetail-body thead td{
     padding: 0 !important;
 }
-
 .rdetail-info-title {
     border: none !important;
     padding-left: 0 !important;
@@ -87,7 +80,6 @@ span.float-right { float: right; }
 .rdetail-info-title:after {
     content: ':';
 }
-
 .rdetail-info-empty {
     border: none !important;
 }
@@ -119,7 +111,6 @@ span.float-right { float: right; }
 .tbl-border-box {
     border:  1px solid #ddd;
 }
-
 .btn-fr-detail .glyphicon {
     top: 2px;
 }
