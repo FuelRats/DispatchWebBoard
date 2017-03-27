@@ -5,6 +5,10 @@ html,body {
     margin: 0;
     padding: 0;
     width: 100vw;
+    top: 0;
+    left: 0;
+    position: fixed;
+    overflow: scroll;
 }
 
 html {
@@ -24,7 +28,7 @@ nav.navbar {
 span.float-right { float: right; }
 
 #pageContent {
-    padding-top: 7rem;
+    padding: 60px 15px 60px 15px;
 }
 
 .rescue-epic {
