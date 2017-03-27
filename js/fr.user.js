@@ -35,16 +35,17 @@ fr.user = !fr.config ? null : {
       var token = !!tokenMatch && tokenMatch[1];
 
       if(token) {
-          var tokenTypeMatch = document.location.hash.match(/token_type=([\w-]+)/);
-          var tokenType = !!tokenTypeMatch && tokenTypeMatch[1];
-
-          fr.user.AuthHeader = tokenType + " " + token;
+          fr.user.AuthHeader = token;
           if(CanSetCookies()) {
             SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
           }
-          history.replaceState('', document.title, window.location.pathname + window.location.search);
+          if(history.replaceState)
+            history.replaceState({}, document.title, window.location.pathname + window.location.search);
       } else if (authHeader) {
-        fr.user.AuthHeader = authHeader;
+        fr.user.AuthHeader = authHeader.replace("Bearer ", "");
+        if(CanSetCookies()) {
+          SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+        }
       } else {
         fr.user.DisplayLogin();
         return;
@@ -103,7 +104,7 @@ fr.user = !fr.config ? null : {
     $.ajax({
       url: fr.config.ApiURI + "profile",
       beforeSend: function (xhr) {
-        xhr.setRequestHeader('Authorization', token);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.setRequestHeader('Accept',        "application/json");
       },
       success: function (response) {
