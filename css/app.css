@@ -19,6 +19,9 @@ body {
 
 .float-right { float: right; }
 
+.fr-hidden { display: none !important; }
+.fr-transparent { opacity: 0 !important; }
+
 nav.navbar {
   background-color: #1a1a1a;  
   border-bottom-color: #d65050;
@@ -28,6 +31,37 @@ nav.navbar {
 #pageContent {
     padding: 60px 15px 60px 15px;
 }
+
+#columnSpacer {
+    transition: min-width .2s ease;
+    float: left;
+    position: relative;
+    min-height: 1px;
+}
+#columnSpacer.fr-col-md-0 {
+    min-width: 0;
+    max-width: 16.66666667%;
+}
+#columnSpacer.fr-col-md-2 {
+    min-width: 16.66666667%;
+    max-width: 16.66666667%;
+    transition: min-width .2s ease .2s;
+}
+
+#columnBoard {
+    transition: width .2s ease;
+}
+#columnBoard.col-md-8 {
+    transition: width .2s ease .2s;
+}
+
+#columnDetail {
+    transition: opacity .2s ease .2s;
+}
+#columnDetail.fr-transparent {
+    transition: opacity .2s ease;
+}
+
 
 .rescue-epic {
     background-image:url("https://media.giphy.com/media/kqcjXv1FFA5IQ/giphy.gif"); 
@@ -82,10 +116,6 @@ nav.navbar {
 }
 .rdetail-info-empty {
     border: none !important;
-}
-
-.fr-hidden {
-    display: none !important;
 }
 
 #rescueDetail {
