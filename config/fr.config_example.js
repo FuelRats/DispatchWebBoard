@@ -14,3 +14,20 @@ fr.config = {
   // Any preferred prefix. this is to avoid confusion with other copies on the same domain.
   CookieBase: 'cookie_prefix_'
 };
+/* == Below are defined constants == */
+fr.const = {
+  platformHumanReadable: {
+    short: {
+      pc: 'PC',
+      xb: 'XB1',
+      ps: 'PS4',
+      unknown: '?'
+    },
+    long: {
+      pc: 'PC',
+      xb: 'Xbox One',
+      ps: 'Playstation 4',
+      unknown: '?'
+    }
+  }
+};
