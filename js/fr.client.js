@@ -1,4 +1,3 @@
-/* jshint esversion: 6 */
 var fr = fr !== undefined ? fr : {};
 var debug = debug !== undefined ? debug : false;
 
@@ -263,17 +262,17 @@ fr.client = !fr.config || !fr.ws ? null : {
     
     // Rats
     var ratHtml = [];
-    for (let rat in rescue.rats) {
+    for (var rat in rescue.rats) {
       var rInfo = fr.client.FetchRatInfo(rescue.rats[rat]);
       ratHtml.push('<span class="rat-' + rescue.rats[rat] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
     }
-    for (let rat in rescue.unidentifiedRats) {
-      ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[rat] + '</span> <span class="label label-warning">unidentified</span>');
+    for (var uRat in rescue.unidentifiedRats) {
+      ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span> <span class="label label-warning">unidentified</span>');
     }
     if(ratHtml.length > 0) {
       detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">' + ratHtml[0] + '</td></tr>';
       if(ratHtml.length > 1)
-        for(let i = 1 ; i < ratHtml.length ; i++)
+        for(var i = 1 ; i < ratHtml.length ; i++)
           detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + ratHtml[i] + '</td></tr>';
       detailContent += '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>'; // Separator
     }
@@ -282,7 +281,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     if(rescue.quotes.length > 0) {
       detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '<i>None</i>') + '</td></tr>';
       if(rescue.quotes.length > 1)
-        for(let i = 1 ; i < rescue.quotes.length ; i++)
+        for(var i = 1 ; i < rescue.quotes.length ; i++)
           detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + rescue.quotes[i] + '</td></tr>';
     }
 
