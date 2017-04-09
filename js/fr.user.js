@@ -73,6 +73,9 @@ fr.user = !fr.config ? null : {
       $("body").removeClass("loading").addClass("fr-shutter-force fr-user-nopermission");
       return;
     }
+    $('body').on('click', 'button.logout',function(e) {
+      fr.user.logoutUser();
+    });
     fr.ws.initConnection();
     fr.client.init();
   },
