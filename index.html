@@ -12,6 +12,7 @@
 
   <!-- stylesheets -->
   <link rel="stylesheet" type="text/css" href="css/app.min.css?5" />
+  <link rel="stylesheet" type="text/css" href="css/lib.min.css?1" />
 
   <!-- Libraries -->
   <script type="text/javascript" src="js/lib/jquery.min.js?1"></script>
@@ -29,26 +30,17 @@
   <script type="text/javascript" src="js/fr.client.min.js?2"></script>
 </head>
 <body class="loading">
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#" style="padding: 5px;" data-toggle="tooltip" data-placement="right" title="Squeak!"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
-      </div>
-      <div id="navbar" class="collapse navbar-collapse navbar-right">
-        <ul class="nav navbar-nav">
-          <li><a href="https://confluence.fuelrats.com/display/FRKB" data-toggle="tooltip" data-placement="bottom" title="Fuel Rats Knowledgebase"><span>News & Updates</span></a></li>
-          <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;">clock</a></li>
-        </ul>
-      </div>
+  <header class="navbar navbar-inverse navbar-fixed-top">
+    <a class="branding" href="#" style="padding: 5px;"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
+    <button type="button" class="btn-nav-toggle" data-target="#navbar"></button>
+    <div id="navbar" class="navbar navbar-right">
+      <ul class="navbar-nav-content">
+        <li><a href="https://confluence.fuelrats.com/display/FRKB" data-toggle="tooltip" data-placement="bottom" title="Fuel Rats Knowledgebase"><span>News & Updates</span></a></li>
+        <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;">clock</a></li>
+      </ul>
     </div>
-  </nav>
-  <div id="pageContent" class="container-fluid">
+  </header>
+  <div id="pageContent" class="container">
     <div class="row">
       <div id="columnSpacer" class="fr-col-md-2"></div>
       <div id="columnBoard" class="col-md-8">
@@ -64,28 +56,28 @@
           </thead>
         </table>
       </div>
-      <div id="columnDetail" class="col-md-6 fr-transparent">
+      <div id="columnDetail" class="col-md-6 ut-transparent">
         <div id="rescueDetail"></div>
       </div>
     </div>
   </div>
   <footer class="footer">
-    <div class="container-fluid">
+    <div id="footerContent" class="container">
       <span>
         <a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Report a Problem</a>
       </span>
       <span class="float-right">
-        <button href="#" class="fr-button logout">Logout</button>
+        <button href="#" id="mainLogoutButton" class="button logout">Logout</button>
       </span>
     </div>
   </footer>
-  <div class="fr-shutter fr-loading-circle">
-    <div id="ShutterLoginWelcome" class="fr-shuttertext login msgtext">Welcome to The Fuel Rats Rescue Web Board!<br>A drilled rat account is required to access this resource.</div>
-    <div id="ShutterLoginNeedPermission" class="fr-shuttertext permission msgtext">Sorry, You need a drilled rat account to access the web board.</div>
-    <div id="ShutterLoginSubtext" class="fr-shuttertext login subtext">Login to begin...</div>
+  <div class="shutter loading-circle">
+    <div id="ShutterLoginWelcome" class="shutter-text login msgtext">Welcome to The Fuel Rats Rescue Web Board!<br>A drilled rat account is required to access this resource.</div>
+    <div id="ShutterLoginNeedPermission" class="shutter-text permission msgtext">Sorry, You need a drilled rat account to access the web board.</div>
+    <div id="ShutterLoginSubtext" class="shutter-text login subtext">Login to begin...</div>
   </div>
   <div class="user-menu">
-    <button class="fr-button login">Login</button>
+    <button class="button login">Login</button>
   </div>
   <script type="text/javascript">
       fr.user.init();

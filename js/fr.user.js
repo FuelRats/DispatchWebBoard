@@ -70,7 +70,7 @@ fr.user = !fr.config ? null : {
    */
   handleLoginInit: function() {
     if(!fr.user.hasPermission()) {
-      $("body").removeClass("loading").addClass("fr-shutter-force fr-user-nopermission");
+      $("body").removeClass("loading").addClass("shutter-force user-nopermission");
       return;
     }
     $('body').on('click', 'button.logout',function(e) {
@@ -97,7 +97,7 @@ fr.user = !fr.config ? null : {
                               "&client_id="          + fr.config.ClientID +
                               "&redirect_uri="       + window.location;
     });
-    $('body').removeClass("loading").addClass("fr-shutter-force fr-user-unauthenticated");
+    $('body').removeClass("loading").addClass("shutter-force user-unauthenticated");
   },
   /**
    * Gets api user info to be used durring session.

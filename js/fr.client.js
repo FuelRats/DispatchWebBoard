@@ -239,7 +239,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     if (!fr.client.SelectedRescue) {
       $('#columnSpacer').addClass('fr-col-md-2').removeClass('fr-col-md-0');
       $('#columnBoard').addClass('col-md-8').removeClass('col-md-6');
-      $('#columnDetail').addClass('fr-transparent');
+      $('#columnDetail').addClass('ut-transparent');
       return;
     }
 
@@ -292,7 +292,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     if(debug) console.log(rescue);
     $('#columnSpacer').addClass('fr-col-md-0').removeClass('fr-col-md-2');
     $('#columnBoard').addClass('col-md-6').removeClass('col-md-8');
-    $('#columnDetail').removeClass('fr-transparent');
+    $('#columnDetail').removeClass('ut-transparent');
     $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
     $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
   }
