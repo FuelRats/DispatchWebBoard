@@ -237,9 +237,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     $('.btn-fr-detail.active').removeClass('active').removeClass('btn-info').addClass('btn-default');     // clear active buttons.
 
     if (!fr.client.SelectedRescue) {
-      $('#columnSpacer').addClass('fr-col-md-2').removeClass('fr-col-md-0');
-      $('#columnBoard').addClass('col-md-8').removeClass('col-md-6');
-      $('#columnDetail').addClass('ut-transparent');
+      $('body').removeClass('rdetail-active');
       return;
     }
 
@@ -290,10 +288,8 @@ fr.client = !fr.config || !fr.ws ? null : {
     //Update the detail section.
     if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
     if(debug) console.log(rescue);
-    $('#columnSpacer').addClass('fr-col-md-0').removeClass('fr-col-md-2');
-    $('#columnBoard').addClass('col-md-6').removeClass('col-md-8');
-    $('#columnDetail').removeClass('ut-transparent');
     $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
     $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
+    $('body').addClass('rdetail-active');
   }
 };
