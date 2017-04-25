@@ -20,8 +20,11 @@ fr.client = !fr.config || !fr.ws ? null : {
       fr.ws.send('rescues:read', { 'open': 'true' },{});
       fr.client.UpdateClocks();
       $('#navbar-brand-title').text(fr.config.WebPageTitle);
-      $('body').on('click', 'button.btn-fr-detail',function(e) {
+      $('body').on('click', 'button.btn.btn-detail',function(e) {
         fr.client.SetSelectedRescue($(this).data('rescue-id'));
+      }).on('click', 'button.btn.btn-nav-toggle',function(e) {
+        $($(this).data('target')).toggleClass('expand');
+        $(this).toggleClass('active');
       });
       fr.client.initComp = true;
     } else {
