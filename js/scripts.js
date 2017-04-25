@@ -27,4 +27,15 @@ function CanSetCookies() {
 }
 function DelCookie(name) {
   document.cookie = name + '=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+function getTimeSpanString (startTime, endTime) {
+  var secondsElapsed = Math.round(startTime / 1000) - Math.round(endTime / 1000);
+  var seconds = secondsElapsed % 60;
+  secondsElapsed -= seconds;
+  var minutes = Math.floor(secondsElapsed / 60) % 60;
+  secondsElapsed -= (minutes * 60);
+  var hours   = Math.floor(secondsElapsed / 3600);
+  return (hours   < 10 ? '0' : '') + hours + 
+   ':' + (minutes < 10 ? '0' : '') + minutes + 
+   ':' + (seconds < 10 ? '0' : '') + seconds;
 }

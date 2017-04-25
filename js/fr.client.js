@@ -18,7 +18,7 @@ fr.client = !fr.config || !fr.ws ? null : {
       window.onpopstate = fr.client.HandlePopState;
       fr.ws.HandleTPA = fr.client.HandleTPA;
       fr.ws.send('rescues:read', { 'open': 'true' },{});
-      fr.client.UpdateClock();
+      fr.client.UpdateClocks();
       $('#navbar-brand-title').text(fr.config.WebPageTitle);
       $('body').on('click', 'button.btn-fr-detail',function(e) {
         fr.client.SetSelectedRescue($(this).data('rescue-id'));
@@ -177,46 +177,26 @@ fr.client = !fr.config || !fr.ws ? null : {
     row.attr('title', notes);
     return row;
   },
-  UpdateClock: function () {
+  UpdateClocks: function () {
     var nowTime = new Date();
 
-    var edTime = (nowTime.getUTCFullYear() + 1286) +
+    $('.ed-clock').text((nowTime.getUTCFullYear() + 1286) +
       '-' + ((nowTime.getUTCMonth() + 1)    < 10 ? '0' : '') + (nowTime.getUTCMonth() + 1) +
       '-' + (nowTime.getUTCDate()     < 10 ? '0' : '') + nowTime.getUTCDate()    +
       ' ' + (nowTime.getUTCHours()    < 10 ? '0' : '') + nowTime.getUTCHours()   +
       ':' + (nowTime.getUTCMinutes()  < 10 ? '0' : '') + nowTime.getUTCMinutes() +
-      ':' + (nowTime.getUTCSeconds()  < 10 ? '0' : '') + nowTime.getUTCSeconds();
+      ':' + (nowTime.getUTCSeconds()  < 10 ? '0' : '') + nowTime.getUTCSeconds());
 
-    $('.ed-clock').text(edTime);
-    setTimeout(fr.client.UpdateClock, 500);
-  },
-  RescueClockTimeoutID: null,
-  UpdateRescueClock: function () {
     if(fr.client.SelectedRescue !== null) {
-      var secondsElapsed = getTimeSpan(Date.now(),Date.parse(fr.client.SelectedRescue.createdAt));
-
-      var seconds = secondsElapsed % 60;
-      secondsElapsed -= seconds;
-
-      var minutes = Math.floor(secondsElapsed / 60) % 60;
-      secondsElapsed -= (minutes * 60);
-
-      var hours   = Math.floor(secondsElapsed / 3600);
-
-      var tstr = (hours   < 10 ? '0' : '') + hours + 
-           ':' + (minutes < 10 ? '0' : '') + minutes + 
-           ':' + (seconds < 10 ? '0' : '') + seconds;
-
-      $('.rdetail-timer').text(tstr);
+      $('.rdetail-timer').text(getTimeSpanString(nowTime,Date.parse(fr.client.SelectedRescue.createdAt)));
+      $('.rdetail-timer').prop('title', 'Last Updated: ' + getTimeSpanString(nowTime,Date.parse(fr.client.SelectedRescue.updatedAt)));
     }
+
+    setTimeout(fr.client.UpdateClocks, 1000 - nowTime.getMilliseconds());
   },
   SetSelectedRescue: function (key, preventPush) {
     if(key === null || (fr.client.SelectedRescue && key == fr.client.SelectedRescue.id.split('-')[0])) {
       fr.client.SelectedRescue = null;
-      if(fr.client.RescueClockTimeoutID !== null) {
-        window.clearInterval(fr.client.RescueClockTimeoutID);
-        fr.client.RescueClockTimeoutID = null;
-      }
       if(history.pushState && !preventPush)
         window.history.pushState({"a":null},document.title, window.location.pathname);
       fr.client.UpdateRescueDetail();
@@ -227,7 +207,6 @@ fr.client = !fr.config || !fr.ws ? null : {
       return;
     }
     if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
-    if(fr.client.RescueClockTimeoutID === null) fr.client.RescueClockTimeoutID = window.setInterval(fr.client.UpdateRescueClock, 500);
     fr.client.SelectedRescue = fr.client.CachedRescues[key];
     if(history.pushState && !preventPush)
       window.history.pushState({"a":key},document.title, window.location.pathname + '?a=' + encodeURIComponent(key));
