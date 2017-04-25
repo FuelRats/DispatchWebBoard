@@ -156,7 +156,7 @@ fr.client = !fr.config || !fr.ws ? null : {
                   '<td>' + (rescue.platform ? fr.const ? fr.const.platformHumanReadable.short[rescue.platform] : rescue.platform : '?') + '</td>' +
                   '<td>' + (rescue.system ? rescue.system : '') + '</td>' +
                   '<td>' + ratHtml.join(', ') + '</td>' +
-                  '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-default btn-xs btn-fr-detail" data-rescue-id="' + shortid + '"><span class="glyphicon glyphicon-info-sign"></span></button></td>' +
+                  '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-detail" data-rescue-id="' + shortid + '"><span class="fa fa-info" aria-hidden="true"></span></button></td>' +
                 '</tr>');
     if (rescue.epic) {
       row.addClass('rescue-epic');
@@ -213,7 +213,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     fr.client.UpdateRescueDetail();
   },
   UpdateRescueDetail: function () {
-    $('.btn-fr-detail.active').removeClass('active').removeClass('btn-info').addClass('btn-default');     // clear active buttons.
+    $('button.btn-detail.active').removeClass('active');     // clear active buttons.
 
     if (!fr.client.SelectedRescue) {
       $('body').removeClass('rdetail-active');
@@ -224,7 +224,7 @@ fr.client = !fr.config || !fr.ws ? null : {
 
     //Construct detail html.
     var detailContent = '<div class="rdetail-header">' +
-                          '<div class="rdetail-title">' + (rescue.data ? rescue.data.boardIndex !== null || resuce.data.boardIndex !== null ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="label label-danger">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="label label-warning">Inactive</span>') + '</div>' +
+                          '<div class="rdetail-title">' + (rescue.data ? rescue.data.boardIndex !== null || resuce.data.boardIndex !== null ? '#' + rescue.data.boardIndex + ' - '  : '' : '') + (rescue.title ? rescue.title : rescue.client) + (rescue.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="badge badge-yellow">Inactive</span>') + '</div>' +
                           '<div class="rdetail-timer">00:00:00</div>' +
                         '</div>' +
                         '<table class="rdetail-body table table-rescue">' +
@@ -244,7 +244,7 @@ fr.client = !fr.config || !fr.ws ? null : {
       ratHtml.push('<span class="rat-' + rescue.rats[rat] + '">' + (rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>') + '</span>');
     }
     for (var uRat in rescue.unidentifiedRats) {
-      ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span> <span class="label label-warning">unidentified</span>');
+      ratHtml.push('<span class="rat-unidentified">' + rescue.unidentifiedRats[uRat] + '</span> <span class="badge badge-yellow">unidentified</span>');
     }
     if(ratHtml.length > 0) {
       detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">' + ratHtml[0] + '</td></tr>';
