@@ -155,8 +155,8 @@ fr.client = !fr.config || !fr.ws ? null : {
     var row = $('<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
                   '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : '?' : '?') + '</td>' +
                   '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '?') + '</td>' +
-                  '<td>' + (rescue.data && rescue.data.langID ? rescue.data.langID.toUpperCase().replace("UNKNOWN", "N/A") : '?') + '</td>' +
-                  '<td>' + (rescue.platform ? fr.const ? fr.const.platformHumanReadable.short[rescue.platform] : rescue.platform : '?') + '</td>' +
+                  '<td>' + (rescue.data && rescue.data.langID ? (fr.const ? fr.const.language[rescue.data.langID].short : rescue.data.langID) : '?') + '</td>' +
+                  '<td>' + (rescue.platform ? fr.const ? fr.const.platform[rescue.platform].short : rescue.platform : '?') + '</td>' +
                   '<td>' + (rescue.system ? rescue.system : '') + '</td>' +
                   '<td>' + ratHtml.join(', ') + '</td>' +
                   '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-detail" data-rescue-id="' + shortid + '"><span class="fa fa-info" aria-hidden="true"></span></button></td>' +
@@ -235,8 +235,8 @@ fr.client = !fr.config || !fr.ws ? null : {
                             '<tbody>' +
                               (rescue.data ? rescue.data.IRCNick ? '<tr class="rdetail-info"><td class="rdetail-info-title">IRC Nick</td><td class="rdetail-info-value">' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
                               (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '</td></tr>' : '') +
-                              (rescue.platform                   ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td><td class="rdetail-info-value">' + (fr.const ? fr.const.platformHumanReadable.long[rescue.platform] : rescue.platform) + '</td></tr>' : '') +
-                              (rescue.data ? rescue.data.langID  ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td><td class="rdetail-info-value">' + rescue.data.langID.toUpperCase() + '</td></tr>' : '' : '') +
+                              (rescue.platform                   ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td><td class="rdetail-info-value">' + (fr.const ? fr.const.platform[rescue.platform].long : rescue.platform) + '</td></tr>' : '') +
+                              (rescue.data ? rescue.data.langID  ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td><td class="rdetail-info-value">' + (fr.const ? fr.const.language[rescue.data.langID].long : rescue.data.langID) + '</td></tr>' : '' : '') +
                                                                    '<tr class="rdetail-info"><td class="rdetail-info-title">UUID</td><td class="rdetail-info-value">' + rescue.id + '</td></tr>' +
                                                                    '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>';
     

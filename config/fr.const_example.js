@@ -22,131 +22,131 @@ fr.const = {
   },
   language: {
     'bg': {
-      short: 'bg',
+      short: 'BG',
       long: 'Bulgarian'
     },
     'bs': {
-      short: 'bs',
+      short: 'BS',
       long: 'Bosnian'
     },
     'ca': {
-      short: 'ca',
+      short: 'CA',
       long: 'Catalan / Valencian'
     },
     'cs': {
-      short: 'cs',
+      short: 'CS',
       long: 'Czech'
     },
     'da': {
-      short: 'da',
+      short: 'DA',
       long: 'Danish'
     },
     'de': {
-      short: 'de',
+      short: 'DE',
       long: 'German'
     },
     'el': {
-      short: 'el',
+      short: 'EL',
       long: 'Modern Greek'
     },
     'en': {
-      short: 'en',
+      short: 'EN',
       long: 'English'
     },
     'es': {
-      short: 'es',
+      short: 'ES',
       long: 'Spanish / Castilian'
     },
     'et': {
-      short: 'et',
+      short: 'ET',
       long: 'Estonian'
     },
     'fi': {
-      short: 'fi',
+      short: 'FI',
       long: 'Finnish'
     },
     'fr': {
-      short: 'fr',
+      short: 'FR',
       long: 'French'
     },
     'he': {
-      short: 'he',
+      short: 'HE',
       long: 'Modern Hebrew'
     },
     'hr': {
-      short: 'hr',
+      short: 'HR',
       long: 'Croatian'
     },
     'hu': {
-      short: 'hu',
+      short: 'HU',
       long: 'Hungarian'
     },
     'it': {
-      short: 'it',
+      short: 'IT',
       long: 'Italian'
     },
     'ja': {
-      short: 'ja',
+      short: 'JA',
       long: 'Japanese'
     },
     'lt': {
-      short: 'lt',
+      short: 'LT',
       long: 'Lithuanian'
     },
     'lv': {
-      short: 'lv',
+      short: 'LV',
       long: 'Latvian'
     },
     'nb': {
-      short: 'nb',
+      short: 'NB',
       long: 'Navajo, Navaho'
     },
     'nl': {
-      short: 'nl',
+      short: 'NL',
       long: 'Dutch'
     },
     'pl': {
-      short: 'pl',
+      short: 'PL',
       long: 'Polish'
     },
     'pt': {
-      short: 'pt',
+      short: 'PT',
       long: 'Portuguese'
     },
     'ro': {
-      short: 'ro',
+      short: 'RO',
       long: 'Romanian, Moldavian, Moldovan'
     },
     'ru': {
-      short: 'ru',
+      short: 'RU',
       long: 'Russian'
     },
     'sk': {
-      short: 'sk',
+      short: 'SK',
       long: 'Slovak'
     },
     'sl': {
-      short: 'sl',
+      short: 'SL',
       long: 'Slovene'
     },
     'sr': {
-      short: 'sr',
+      short: 'SR',
       long: 'Serbian'
     },
     'sv': {
-      short: 'sv',
+      short: 'SV',
       long: 'Swedish'
     },
     'th': {
-      short: 'th',
+      short: 'TH',
       long: 'Thai'
     },
     'tr': {
-      short: 'tr',
+      short: 'TR',
       long: 'Turkish'
     },
     'uk': {
-      short: 'uk',
+      short: 'UK',
       long: 'Ukrainian'
     },
     'unknown': {
@@ -154,7 +154,7 @@ fr.const = {
       long: 'Unknown...'
     },
     'zh': {
-      short: 'zh',
+      short: 'ZH',
       long: 'Chinese'
     }
   }
