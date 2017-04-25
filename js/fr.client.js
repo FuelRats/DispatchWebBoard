@@ -8,6 +8,7 @@ function getTimeSpan(date1, date2) {
 // fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null. TODO: Add sysapi
 fr.client = !fr.config || !fr.ws ? null : {
 	currentToken: null,
+  clipboard: null,
   CachedRescues: {},
   CachedRats: {},
   SelectedRescue: null,
@@ -26,6 +27,10 @@ fr.client = !fr.config || !fr.ws ? null : {
         $($(this).data('target')).toggleClass('expand');
         $(this).toggleClass('active');
       });
+      if(Clipboard.isSupported()) {
+        fr.client.clipboard = new Clipboard('.btn-clipboard');
+        $('body').addClass("clipboard-enable");
+      }
       fr.client.initComp = true;
     } else {
       if (debug) console.log("fr.client.init - init completed already!");
@@ -152,14 +157,14 @@ fr.client = !fr.config || !fr.ws ? null : {
     for (var uRat in rescue.unidentifiedRats) {
       ratHtml.push('<span class="rat-unidentified"><i>' + rescue.unidentifiedRats[uRat] + '</i></span>');
     }
-    var row = $('<tr id="rescue-' + rescue.id.split('-')[0] + '">' +
-                  '<td>' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : '?' : '?') + '</td>' +
-                  '<td title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '?') + '</td>' +
-                  '<td>' + (rescue.data && rescue.data.langID ? (fr.const ? fr.const.language[rescue.data.langID].short : rescue.data.langID) : '?') + '</td>' +
-                  '<td>' + (rescue.platform ? fr.const ? fr.const.platform[rescue.platform].short : rescue.platform : '?') + '</td>' +
-                  '<td>' + (rescue.system ? rescue.system : '') + '</td>' +
-                  '<td>' + ratHtml.join(', ') + '</td>' +
-                  '<td><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-detail" data-rescue-id="' + shortid + '"><span class="fa fa-info" aria-hidden="true"></span></button></td>' +
+    var row = $('<tr id="rescue-' + shortid + '">' +
+                  '<td class="rescue-row-index">' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : '?' : '?') + '</td>' +
+                  '<td class="rescue-row-client" title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '?') + '</td>' +
+                  '<td class="rescue-row-language">' + (rescue.data && rescue.data.langID ? (fr.const ? fr.const.language[rescue.data.langID].short : rescue.data.langID) : '?') + '</td>' +
+                  '<td class="rescue-row-platform">' + (rescue.platform ? fr.const ? fr.const.platform[rescue.platform].short : rescue.platform : '?') + '</td>' +
+                  '<td class="rescue-row-system' + (rescue.system ? ' btn-clipboard" data-clipboard-text="' + rescue.system + '">' + rescue.system  + '<i class="fa fa-clipboard" title="Click to Copy!"></i>' : '">') + '</td>' +
+                  '<td class="rescue-row-rats">' + ratHtml.join(', ') + '</td>' +
+                  '<td class="rescue-row-detail"><button id="detailBtn-'+ shortid +'" type="button" class="btn btn-detail" data-rescue-id="' + shortid + '"><span class="fa fa-info" aria-hidden="true"></span></button></td>' +
                 '</tr>');
     if (rescue.epic) {
       row.addClass('rescue-epic');
@@ -271,7 +276,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
     if(debug) console.log(rescue);
     $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
-    $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active').addClass('btn-info').removeClass('btn-default'); // Set new active button.
+    $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active'); // Set new active button.
     $('body').addClass('rdetail-active');
   }
 };
