@@ -27,6 +27,32 @@ function CanSetCookies() {
 }
 function DelCookie(name) {
   document.cookie = name + '=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function selfCheck() {
+  var validInstall = true;
+  if (!fr.config) {
+    console.log("%cSLFCHK:CONFIG - ERROR",'color: red; font-weight: bold;');
+    validInstall = false;
+  } else
+    console.log("%cSLFCHK:CONFIG - OK",'color: lightgreen;');
+  if (!fr.user) {
+    console.log("%cSLFCHK:USER - ERROR",'color: red; font-weight: bold;');
+    validInstall = false;
+  } else
+    console.log("%cSLFCHK:USER - OK",'color: lightgreen;');
+  if (!fr.ws) {
+    console.log("%cSLFCHK:WEBSOCKET - ERROR",'color: red; font-weight: bold;');
+    validInstall = false;
+  } else
+    console.log("%cSLFCHK:WEBSOCKET - OK",'color: lightgreen;');
+  if (!fr.client) {
+    console.log("%cSLFCHK:CLIENT - ERROR",'color: red; font-weight: bold;');
+    validInstall = false;
+  } else
+    console.log("%cSLFCHK:CLIENT - OK",'color: lightgreen;');
+  return validInstall;
+}
 
 function getTimeSpanString (startTime, endTime) {
   var secondsElapsed = Math.round(startTime / 1000) - Math.round(endTime / 1000);
