@@ -14,6 +14,9 @@ body {
   font-size: 14px;
   font-family: "Open Sans", Arial, sans-serif;
   overflow: scroll;
+  background: url(../img/bg.jpg) no-repeat center fixed;
+  background-size: cover;
+}
 }
 
 header.navhead {
@@ -122,6 +125,7 @@ body.rdetail-active #columnDetail {
 table {
   border-spacing: 0;
   border-collapse: collapse;
+  background: #fff;
 }
 .table {
   width: 100%;
@@ -224,6 +228,7 @@ td.rescue-row-detail button.btn.btn-detail {
 }
 
 #rescueDetail {
+  background: #FFF;
   border: 1px solid #ddd;
   padding: 0 15px;
 }
