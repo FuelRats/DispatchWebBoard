@@ -1,21 +1,19 @@
-@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700|Raleway');
 
 html,body {
   height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  position: fixed;
-  overflow: scroll;
-  font-family: "Helvetica Neue", Helvetica, Arial,sans-serif;
+  overflow: hidden;
 }
 html {
   font-size: 10px;
 }
 body {
   font-size: 14px;
+  font-family: "Open Sans", Arial, sans-serif;
+  overflow: scroll;
 }
 
 header.navhead {
@@ -25,9 +23,14 @@ header.navhead {
   background-color: #1a1a1a;  
   border-bottom: 0.4rem solid #d65050;
   z-index: 1000;
+  height: 50px;
 }
 header.navhead a:hover {
   color: #fff;
+}
+
+.badge {
+  font-family: "Open Sans", Arial, sans-serif;
 }
 
 .branding {
@@ -37,15 +40,18 @@ header.navhead a:hover {
   float: left;
   color: #9d9d9d;
   text-decoration: none;
+  font-family: "Raleway", Arial, sans-serif;
 }
 .branding img {
   vertical-align: middle;
 }
 
-.navbar.navbar-right {
+#navToggleBtn {
   float: right;
-  margin-right: 15px;
+  height: 50px;
+  padding: 0 .75em;
 }
+
 .navbar-content {
   list-style: none;
   padding-left: 0;
@@ -68,7 +74,7 @@ ul.navbar-content li a {
 }
 
 #pageContent {
-  padding: 60px 15px;
+  padding: 65px 15px;
 }
 
 .container {
@@ -107,6 +113,7 @@ ul.navbar-content li a {
   padding: 0 15px;
   float: left;
   min-height: 1px;
+  margin-bottom: 55px;
 }
 body.rdetail-active #columnDetail {
   opacity: 1;
@@ -119,7 +126,7 @@ table {
 .table {
   width: 100%;
   max-width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 .table > thead > tr > th {
   text-align: left;
@@ -186,6 +193,9 @@ table {
   display: inline;
   vertical-align: middle;
 }
+.rdetail-header .rdetail-title, .rdetail-info-title {
+  font-family: "Raleway", Arial, sans-serif;
+}
 .rdetail-header .label {
   padding: .2em .6em;
   position: relative;
@@ -222,7 +232,7 @@ body.user-unauthenticated .shutter-text.login, body.user-nopermission .shutter-t
 }
 
 #mainLogoutButton {
-  margin-right: -13px;
+  margin-right: -12px;
 }
 body.loading .button.logout,
 body.user-unauthenticated .button.logout {
@@ -231,12 +241,15 @@ body.user-unauthenticated .button.logout {
 
 @media(min-width: 992px) {
 
-  .btn-nav-toggle {
+  .btn.btn-nav-toggle {
     display: none;
   }
-
-  .navbar.collapse {
+  .navbar.navbar-collapse {
     display: block;
+  }
+  .navbar.navbar-right {
+  float: right;
+  margin-right: 15px;
   }
 
   #columnSpacer {
@@ -252,6 +265,7 @@ body.user-unauthenticated .button.logout {
   #columnBoard {
     width: 66.66666667%;
     padding: 0;
+    margin-bottom: 50px;
     transition: width .2s ease .2s,
                 padding .2s ease .2s;
   }
@@ -270,5 +284,30 @@ body.user-unauthenticated .button.logout {
   body.rdetail-active #columnDetail {
     opacity: 1;
     transition: opacity .2s ease .2s;
+  }
+}
+
+@media(max-width: 992px) {
+  .navbar.navbar-collapse {
+  max-height: 0px;
+  transition: max-height .3s ease,
+              border-width 0s ease .25s;
+  background: #1a1a1a;
+  border-bottom: 0 solid #d65050;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  }
+  .navbar.navbar-collapse.expand {
+    max-height: 500px;
+    border-width: .3rem;
+    transition: max-height .3s ease,
+                border-width 0s ease;
+  }
+  ul.navbar-content {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
   }
 }
