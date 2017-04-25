@@ -25,6 +25,38 @@
   text-overflow: ellipsis;
 }
 
+button.btn {
+  background-color: #d65050;
+  border-color: #d65050;
+  border-style: solid;
+  border-width: 0.2rem;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  flex-shrink: 0;
+  font-family: Raleway, sans-serif;
+  margin: 0;
+  outline: none;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  text-overflow: ellipsis;
+}
+button.btn:hover {
+  background: transparent;
+  color: #d65050;
+}
+button.btn.active {
+  background: transparent;
+  color: #BF4848;
+  border-color: #BF4848;
+}
+button.btn:focus {
+  outline: 0;
+}
+
 .button {
   background-color: #d65050;
   border-color: #d65050;
@@ -57,6 +89,24 @@
   height: 50px;
   line-height: 50px;
   background-color: #f5f5f5;
+}
+
+.badge {
+  background: #AAA;
+  color: #fff;
+  padding: .10em .40em;
+  font-size: .78em;
+  font-weight: 700;
+  vertical-align: bottom;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+}
+.badge.badge-red {
+  background: #d65050;
+}
+.badge.badge-yellow {
+  background: #CCCC4F;
 }
 
 .shutter {
