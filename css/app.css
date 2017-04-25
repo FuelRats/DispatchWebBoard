@@ -23,7 +23,7 @@ header.navhead {
   background-color: #1a1a1a;  
   border-bottom: 0.4rem solid #d65050;
   z-index: 1000;
-  height: 50px;
+  height: calc(50px + 0.4rem);
 }
 header.navhead a:hover {
   color: #fff;
