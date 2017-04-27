@@ -275,7 +275,7 @@ fr.client = !fr.config || !fr.ws ? null : {
     //Update the detail section.
     if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
     if(debug) console.log(rescue);
-    $('#rescueDetail').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
+    $('#rescueDetailContent').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
     $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active'); // Set new active button.
     $('body').addClass('rdetail-active');
   }
