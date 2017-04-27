@@ -1,81 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700|Raleway');
-
-html,body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-html {
-  font-size: 10px;
-}
-body {
-  font-size: 14px;
-  font-family: "Open Sans", Arial, sans-serif;
-  overflow: scroll;
-  background: url(../img/bg.jpg) no-repeat center fixed;
-  background-size: cover;
-}
-}
-
-header.navhead {
-  position: fixed;
-  left: 0;
-  right: 0;
-  background-color: #1a1a1a;  
-  border-bottom: 0.4rem solid #d65050;
-  z-index: 1000;
-  height: calc(50px + 0.4rem);
-}
-header.navhead a:hover {
-  color: #fff;
-}
-
-.badge {
-  font-family: "Open Sans", Arial, sans-serif;
-}
-
-.branding {
-  line-height: 20px;
-  font-size: 18px;
-  height: 50px;
-  float: left;
-  color: #9d9d9d;
-  text-decoration: none;
-  font-family: "Raleway", Arial, sans-serif;
-}
-.branding img {
-  vertical-align: middle;
-}
-
-#navToggleBtn {
-  float: right;
-  height: 50px;
-  padding: 0 .75em;
-}
-
-.navbar-content {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  float: left;
-}
-ul.navbar-content li {
-  position: relative;
-  display: block;
-  float: left;
-}
-
-ul.navbar-content li a {
-  text-decoration: none;
-  position: relative;
-  display: block;
-  line-height: 20px;
-  padding: 15px;
-  color: #9d9d9d;
-}
-
 #pageContent {
   padding: 65px 15px;
 }
@@ -295,17 +217,6 @@ body.clipboard-enable .btn-clipboard:active i::after {
 
 @media(min-width: 992px) {
 
-  .btn.btn-nav-toggle {
-    display: none;
-  }
-  .navbar.navbar-collapse {
-    display: block;
-  }
-  .navbar.navbar-right {
-  float: right;
-  margin-right: 15px;
-  }
-
   #columnSpacer {
     min-width: 16.66666667%;
     min-height: 1px;
@@ -338,30 +249,5 @@ body.clipboard-enable .btn-clipboard:active i::after {
   body.rdetail-active #columnDetail {
     opacity: 1;
     transition: opacity .2s ease .2s;
-  }
-}
-
-@media(max-width: 992px) {
-  .navbar.navbar-collapse {
-  max-height: 0px;
-  transition: max-height .3s ease,
-              border-width 0s ease .25s;
-  background: #1a1a1a;
-  border-bottom: 0 solid #d65050;
-  display: inline-block;
-  width: 100%;
-  overflow: hidden;
-  }
-  .navbar.navbar-collapse.expand {
-    max-height: 500px;
-    border-width: .3rem;
-    transition: max-height .3s ease,
-                border-width 0s ease;
-  }
-  ul.navbar-content {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
   }
 }
