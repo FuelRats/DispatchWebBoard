@@ -25,4 +25,4 @@ Setting up the DWB for your own uses requires oauth client registration with the
 ## Contributing
 PRs are always welcome! If you wish to see open issues, visit the [FuelRats JIRA](https://jira.fuelrats.com/projects/DWB/issues) (Project key: DWB)
 
-See our [CONTRIBUTING.md](contributing.md) before developing for the Dispatch Web Board.
+See our [CONTRIBUTING.md](CONTRIBUTING.md) before developing for the Dispatch Web Board.
