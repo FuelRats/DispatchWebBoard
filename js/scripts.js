@@ -41,6 +41,11 @@ function selfCheck() {
     validInstall = false;
   } else
     console.log("%cSLFCHK:USER - OK",'color: lightgreen;');
+  if (!fr.sysapi) {
+    console.log("%cSLFCHK:SYSAPI - ERROR",'color: red; font-weight: bold;');
+    validInstall = false;
+  } else
+    console.log("%cSLFCHK:SYSAPI - OK",'color: lightgreen;');
   if (!fr.ws) {
     console.log("%cSLFCHK:WEBSOCKET - ERROR",'color: red; font-weight: bold;');
     validInstall = false;
