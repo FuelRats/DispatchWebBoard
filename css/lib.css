@@ -168,11 +168,11 @@ ul.navbar-content li a {
   padding: .10em .40em;
   font-size: .78em;
   font-weight: 700;
-  vertical-align: bottom;
   line-height: 1;
   white-space: nowrap;
   text-align: center;
   font-family: "Open Sans", Arial, sans-serif;
+  transition: all 0.2s;
 }
 .badge.badge-red {
   background: #d65050;
@@ -180,6 +180,23 @@ ul.navbar-content li a {
 .badge.badge-yellow {
   background: #CCCC4F;
 }
+.badge.badge-green {
+  background: #4FCC4F;
+}
+
+a .badge.badge-red:hover {
+  background: rgba(214,80,80,.2);
+  color: #d65050;
+}
+a .badge.badge-yellow:hover {
+  background: rgba(204,204,79,.2);
+  color: #CCCC4F;
+}
+a .badge.badge-green:hover {
+  background: rgba(79,204,79,.2);
+  color: #4FCC4F;
+}
+
 
 .shutter {
   position: fixed;
