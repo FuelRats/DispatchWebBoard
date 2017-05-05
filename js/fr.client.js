@@ -6,7 +6,7 @@ function getTimeSpan(date1, date2) {
 }
 
 // fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null. TODO: Add sysapi
-fr.client = !fr.config || !fr.ws ? null : {
+fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
 	currentToken: null,
   clipboard: null,
   CachedRescues: {},
@@ -239,7 +239,7 @@ fr.client = !fr.config || !fr.ws ? null : {
                             '<thead><td width="90px"></td><td></td></thead>' +
                             '<tbody>' +
                               (rescue.data ? rescue.data.IRCNick ? '<tr class="rdetail-info"><td class="rdetail-info-title">IRC Nick</td><td class="rdetail-info-value">' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
-                              (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '</td></tr>' : '') +
+                              (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '<span class="float-right system-apidata" data-system-name="' + rescue.system.toLowerCase() +'"></span>' + '</td></tr>' : '') +
                               (rescue.platform                   ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td><td class="rdetail-info-value">' + (fr.const && fr.const.platform[rescue.platform] ? fr.const.platform[rescue.platform].long : rescue.platform) + '</td></tr>' : '') +
                               (rescue.data ? rescue.data.langID  ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td><td class="rdetail-info-value">' + (fr.const && fr.const.language[rescue.data.langID] ? fr.const.language[rescue.data.langID].long + ' (' + fr.const.language[rescue.data.langID].short + ')' : rescue.data.langID) + '</td></tr>' : '' : '') +
                                                                    '<tr class="rdetail-info"><td class="rdetail-info-title">UUID</td><td class="rdetail-info-value">' + rescue.id + '</td></tr>' +
@@ -278,5 +278,32 @@ fr.client = !fr.config || !fr.ws ? null : {
     $('#rescueDetailContent').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
     $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active'); // Set new active button.
     $('body').addClass('rdetail-active');
+
+    if(!rescue.system) return;
+    if(debug) console.log("fr.client.UpdateRescueDetail - Checking sysapi for additional system info.");
+    fr.sysapi.GetSysInfo(rescue.system, function(data) {
+      if(debug) console.log("fr.client.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
+      var sysInfo = data;
+      var sysName = sysInfo.attributes.name.toLowerCase();
+      var html = '';
+      
+      if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
+        html += '<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span> ';
+      }
+
+      if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
+        html += ' <span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span> ';
+      }
+
+      if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
+        html += ' <span class="badge badge-yellow" title="This system has a scoopable star!">SCOOPABLE</span> ';
+      }
+
+      if(sysInfo.id) {
+        html += '<a target="_blank" href="https://www.eddb.io/system/' + sysInfo.id + '"><span class="badge badge-red" title="View on EDDB.io" >EDDB</span></a>';
+      }
+
+      $('span[data-system-name="' + sysName + '"]').animate({opacity: 0.2}, 100).html(html).animate({opacity: 1}, 500);
+    }); 
   }
 };
