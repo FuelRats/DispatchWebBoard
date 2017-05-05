@@ -37,8 +37,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     }
 	},
   HandleTPA: function (tpa) {
-    if(debug) console.log("fr.client.HandleTPA - New TPA");
-    if(debug) console.log(tpa);
+    if(debug) console.log("fr.client.HandleTPA - New TPA: ", tpa);
     switch (tpa.meta.action) {
     case 'rescues:read':
       for (var i in tpa.data)
@@ -60,15 +59,13 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     case 'authorization':
       break;
     default:
-      console.log("Unhandled TPA");
-      console.log(tpa);
+      console.log("fr.client.Handle.TPA - Unhandled TPA: ", tpa);
       break;
     }
   },
   FetchRatInfo: function (ratId) {
     if (fr.client.CachedRats[ratId]) {
-      if(debug) console.log("fr.client.FetchRatInfo - Cached Rat Requested: ");
-      if(debug) console.log(fr.client.CachedRats[ratId]);
+      if(debug) console.log("fr.client.FetchRatInfo - Cached Rat Requested: ", fr.client.CachedRats[ratId]);
       return fr.client.CachedRats[ratId];
     } else {
       if(debug) console.log("fr.client.FetchRatInfo - Gathering RatInfo: " + ratId);
@@ -80,7 +77,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     var rat = $('.rat-' + tpa.meta.searchId);
     if (tpa.data.length > 0) {
       if(!fr.client.CachedRats[tpa.data[0].id]) {
-        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo:  " + tpa.data[0].id + " : " + tpa.data[0].CMDRname);
+        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo: " + tpa.data[0]);
         fr.client.CachedRats[tpa.data[0].id] = tpa.data[0];
       }
       rat.text(tpa.data[0].CMDRname);
@@ -117,8 +114,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     var sid = rescue.id.split('-')[0];
     var rescueRow = $('#rescue-' + sid);
     if(!rescueRow) {
-      if(debug) console.log("fr.client.UpdateRescue: Attempted to update a non-existant rescue.");
-      if(debug) console.log(rescue);
+      if(debug) console.log("fr.client.UpdateRescue: Attempted to update a non-existant rescue: ", rescue);
       return;
     }
     if (!rescue.open) {
@@ -274,7 +270,6 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
 
     //Update the detail section.
     if(debug) console.log("fr.client.UpdateRescueDetail - Rescue DetailView Updated: " + rescue.id + " : " + rescue.client);
-    if(debug) console.log(rescue);
     $('#rescueDetailContent').animate({opacity: 0.2}, 100).html(detailContent).animate({opacity: 1}, 500);
     $('#detailBtn-'+rescue.id.split('-')[0]).addClass('active'); // Set new active button.
     $('body').addClass('rdetail-active');
