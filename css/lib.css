@@ -96,7 +96,7 @@ ul.navbar-content li a {
   text-overflow: ellipsis;
 }
 
-button.btn {
+.btn {
   background-color: #d65050;
   border-color: #d65050;
   border-style: solid;
@@ -115,16 +115,16 @@ button.btn {
   -webkit-font-smoothing: antialiased;
   text-overflow: ellipsis;
 }
-button.btn:hover {
+.btn:hover {
   background: transparent;
   color: #d65050;
 }
-button.btn.active {
+.btn.active {
   background: transparent;
   color: #BF4848;
   border-color: #BF4848;
 }
-button.btn:focus {
+.btn:focus {
   outline: 0;
 }
 
