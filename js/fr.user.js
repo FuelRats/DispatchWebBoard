@@ -76,6 +76,7 @@ fr.user = !fr.config ? null : {
     $('body').on('click', 'button.logout',function(e) {
       fr.user.logoutUser();
     });
+    console.log("%cWelcome CMDR " + fr.user.ApiData.rats[0].CMDRname.toUpperCase() + ". All is well here. Fly safe!", 'color: lightgreen; font-weight: bold; font-size: 1.25em;');
     fr.ws.initConnection();
     fr.client.init();
   },
@@ -113,7 +114,7 @@ fr.user = !fr.config ? null : {
       success: function (response) {
         var container = $('span.user');
         if (response && response.data) {
-          if(debug) console.log(response);
+          if(debug) console.log("fr.user.getApiData - Retrieved authenticated user information: ", response);
           successCallback(response.data);
         }
       },
