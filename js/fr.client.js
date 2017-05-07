@@ -293,10 +293,10 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
       }
 
       if (sysInfo.bodies && sysInfo.bodies.length > 0) {
-        console.log('1');
         var mainStar = sysInfo.bodies.find(function (body) {
           return body.attributes.is_main_star;
-        });        if(mainStar && fr.const.scoopables.includes(mainStar.attributes.spectral_class)){
+        });
+        if(mainStar && fr.const.scoopables.includes(mainStar.attributes.spectral_class)){
           sysInfoHtml += ' <span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span> ';
         } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter(function(body){return fr.const.scoopables.includes(body.attributes.spectral_class);}).length > 0) {
           sysInfoHtml += ' <span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span> ';
