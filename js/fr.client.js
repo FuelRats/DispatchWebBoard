@@ -5,12 +5,11 @@ function getTimeSpan(date1, date2) {
     return Math.round(date1 / 1000) - Math.round(date2 / 1000);
 }
 
-// fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null. TODO: Add sysapi
+// fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null.
 fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
 	currentToken: null,
   clipboard: null,
   CachedRescues: {},
-  CachedRats: {},
   SelectedRescue: null,
   initComp: false,
 	init: function() {
@@ -64,9 +63,10 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     }
   },
   FetchRatInfo: function (ratId) {
-    if (fr.client.CachedRats[ratId]) {
-      if(debug) console.log("fr.client.FetchRatInfo - Cached Rat Requested: ", fr.client.CachedRats[ratId]);
-      return fr.client.CachedRats[ratId];
+    if (sessionStorage.getItem("rat." + ratId)) {
+      var ratData = JSON.parse(sessionStorage.getItem("rat." + ratId));
+      if(debug) console.log("fr.client.FetchRatInfo - Cached Rat Requested: ", ratData);
+      return ratData;
     } else {
       if(debug) console.log("fr.client.FetchRatInfo - Gathering RatInfo: " + ratId);
       fr.ws.send('rats:read', { 'id': ratId }, { 'searchId': ratId });
@@ -76,11 +76,12 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
   UpdateRats: function (tpa) {
     var rat = $('.rat[data-rat-name="' + tpa.meta.searchId + '"]');
     if (tpa.data.length > 0) {
-      if(!fr.client.CachedRats[tpa.data[0].id]) {
-        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo: ", tpa.data[0]);
-        fr.client.CachedRats[tpa.data[0].id] = tpa.data[0];
+      var ratData = tpa.data[0];
+      if(!sessionStorage.getItem("rat." + ratData.id)) {
+        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo: ", ratData);
+        sessionStorage.setItem("rat." + ratData.id, JSON.stringify(ratData));
       }
-      rat.text(tpa.data[0].CMDRname);
+      rat.text(ratData.CMDRname);
     } else {
       rat.html('<i>Not found</i>');
     }
@@ -254,8 +255,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     if(ratHtml.length > 0) {
       detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">' + ratHtml[0] + '</td></tr>';
       if(ratHtml.length > 1)
-        for(var i = 1 ; i < ratHtml.length ; i++)
-          detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + ratHtml[i] + '</td></tr>';
+        for(var rh = 1 ; rh < ratHtml.length ; rh++)
+          detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + ratHtml[rh] + '</td></tr>';
       detailContent += '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>'; // Separator
     }
 
@@ -263,8 +264,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     if(rescue.quotes.length > 0) {
       detailContent += '<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">' + (rescue.quotes.length > 0 ? rescue.quotes[0] : '<i>None</i>') + '</td></tr>';
       if(rescue.quotes.length > 1)
-        for(var i = 1 ; i < rescue.quotes.length ; i++)
-          detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + rescue.quotes[i] + '</td></tr>';
+        for(var q = 1 ; q < rescue.quotes.length ; q++)
+          detailContent +='<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">' + rescue.quotes[q] + '</td></tr>';
     }
 
     detailContent +='</tbody></table>';

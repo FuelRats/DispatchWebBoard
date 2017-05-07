@@ -30,33 +30,38 @@ fr.user = !fr.config ? null : {
    * Initialization entry point. Tun on page load.
    */
   init: function() {
-      var authHeader = GetCookie(fr.config.CookieBase + "token");
-      var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
-      var token = !!tokenMatch && tokenMatch[1];
-
-      if(token) {
-          fr.user.AuthHeader = token;
-          if(CanSetCookies()) {
-            SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-          }
-          if(history.replaceState)
-            history.replaceState({}, document.title, window.location.pathname + window.location.search);
-      } else if (authHeader) {
-        fr.user.AuthHeader = authHeader.replace("Bearer ", "");
+    var authHeader = GetCookie(fr.config.CookieBase + "token");
+    var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
+    var token = !!tokenMatch && tokenMatch[1];
+    if(token) {
+        fr.user.AuthHeader = token;
         if(CanSetCookies()) {
           SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
         }
-      } else {
-        fr.user.DisplayLogin();
-        return;
+        if(history.replaceState)
+          history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    } else if (authHeader) {
+      fr.user.AuthHeader = authHeader.replace("Bearer ", "");
+      if(CanSetCookies()) {
+        SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
-
+    } else {
+      fr.user.DisplayLogin();
+      return;
+    }
+    //for staying "authenticated" cross reloads.
+    if (sessionStorage.getItem("user.ApiData")) {
+      fr.user.ApiData = JSON.parse(sessionStorage.getItem("user.ApiData"));
+      fr.user.handleLoginInit();
+    } else {
       fr.user.getApiData(fr.user.AuthHeader, function(data) {
+        sessionStorage.setItem("user.ApiData", JSON.stringify(data));
         fr.user.ApiData = data;
         fr.user.handleLoginInit();
       }, function() {
         fr.user.handleApiDataFailure();
       });
+    }
   },
   /**
    * Removes the user's authentication token and reloads the webpage.
