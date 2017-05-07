@@ -77,7 +77,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     var rat = $('.rat-' + tpa.meta.searchId);
     if (tpa.data.length > 0) {
       if(!fr.client.CachedRats[tpa.data[0].id]) {
-        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo: " + tpa.data[0]);
+        if(debug) console.log("fr.client.UpdateRats - Caching RatInfo: ", tpa.data[0]);
         fr.client.CachedRats[tpa.data[0].id] = tpa.data[0];
       }
       rat.text(tpa.data[0].CMDRname);
@@ -207,10 +207,10 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
       return;
     }
     if(!fr.client.CachedRescues[key]) {
-      console.log("SetSelectedRescue - invalid key: " + key);
+      console.log("fr.client.SetSelectedRescue - invalid key: " + key);
       return;
     }
-    if(debug) console.log("SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
+    if(debug) console.log("fr.client.SetSelectedRescue - New SelectedRescue: " + fr.client.CachedRescues[key].id);
     fr.client.SelectedRescue = fr.client.CachedRescues[key];
     if(history.pushState && !preventPush)
       window.history.pushState({"a":key},document.title, window.location.pathname + '?a=' + encodeURIComponent(key));
