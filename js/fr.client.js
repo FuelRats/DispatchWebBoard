@@ -185,8 +185,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     var nowTime = new Date();
 
     $('.ed-clock').text((nowTime.getUTCFullYear() + 1286) +
-      '-' + (nowTime.getUTCMonth()+1  < 10 ? '0' : '') + nowTime.getUTCMonth()+1 +
-      '-' + (nowTime.getUTCDate()     < 10 ? '0' : '') + nowTime.getUTCDate()    +
+      ' ' + ( fr.const.monthString[nowTime.getUTCMonth()] ) +
+      ' ' + (nowTime.getUTCDate()     < 10 ? '0' : '') + nowTime.getUTCDate()    +
       ' ' + (nowTime.getUTCHours()    < 10 ? '0' : '') + nowTime.getUTCHours()   +
       ':' + (nowTime.getUTCMinutes()  < 10 ? '0' : '') + nowTime.getUTCMinutes() +
       ':' + (nowTime.getUTCSeconds()  < 10 ? '0' : '') + nowTime.getUTCSeconds());
@@ -235,7 +235,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
                             '<thead><td width="90px"></td><td></td></thead>' +
                             '<tbody>' +
                               (rescue.data ? rescue.data.IRCNick ? '<tr class="rdetail-info"><td class="rdetail-info-title">IRC Nick</td><td class="rdetail-info-value">' + rescue.data.IRCNick + '</td></tr>' : '' : '') +
-                              (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '<span class="float-right system-apidata" data-system-name="' + rescue.system.toLowerCase() +'"></span>' + '</td></tr>' : '') +
+                              (rescue.system                     ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td><td class="rdetail-info-value">' + rescue.system + '<span class="float-right system-apidata" data-system-name="' + rescue.system.toUpperCase() +'"><i>Retrieving info...</i</span></td></tr>' : '') +
                               (rescue.platform                   ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td><td class="rdetail-info-value">' + (fr.const && fr.const.platform[rescue.platform] ? fr.const.platform[rescue.platform].long : rescue.platform) + '</td></tr>' : '') +
                               (rescue.data ? rescue.data.langID  ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td><td class="rdetail-info-value">' + (fr.const && fr.const.language[rescue.data.langID] ? fr.const.language[rescue.data.langID].long + ' (' + fr.const.language[rescue.data.langID].short + ')' : rescue.data.langID) + '</td></tr>' : '' : '') +
                                                                    '<tr class="rdetail-info"><td class="rdetail-info-title">UUID</td><td class="rdetail-info-value">' + rescue.id + '</td></tr>' +
@@ -279,26 +279,34 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi  ? null : {
     fr.sysapi.GetSysInfo(rescue.system, function(data) {
       if(debug) console.log("fr.client.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
       var sysInfo = data;
-      var sysName = sysInfo.attributes.name.toLowerCase();
-      var html = '';
+      var sysName = sysInfo.attributes.name.toUpperCase();
+      var sysInfoHtml = '';
       
       if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
-        html += '<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span> ';
+        sysInfoHtml += '<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span> ';
       }
 
       if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
-        html += ' <span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span> ';
+        sysInfoHtml += ' <span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span> ';
       }
 
-      if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
-        html += ' <span class="badge badge-yellow" title="This system has a scoopable star!">SCOOPABLE</span> ';
+      if (checkNested(sysInfo,'relationships','bodies')) {
+        var mainStar = sysInfo.relationships.bodies.find(function (body) {
+          return body.attributes.is_main_star;
+        });
+        if(mainStar && fr.const.scoopables.includes(mainStar.attributes.spectral_class)){
+          sysInfoHtml += ' <span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span> ';
+        } else if (sysInfo.relationships.bodies.length > 1 && sysInfo.relationships.bodies.filter(function(body){return fr.const.scoopables.includes(body.attributes.spectral_class);}).length > 0) {
+          sysInfoHtml += ' <span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span> ';
+        }
       }
 
       if(sysInfo.id) {
-        html += '<a target="_blank" href="https://www.eddb.io/system/' + sysInfo.id + '"><span class="badge badge-red" title="View on EDDB.io" >EDDB</span></a>';
+        sysInfoHtml += '<a target="_blank" href="https://www.eddb.io/system/' + sysInfo.id + '"><span class="badge badge-green" title="View on EDDB.io" >EDDB</span></a>';
       }
-
-      $('span[data-system-name="' + sysName + '"]').animate({opacity: 0.2}, 100).html(html).animate({opacity: 1}, 500);
+      $('span[data-system-name="' + sysName + '"]').animate({opacity: 0.2}, 100).html(sysInfoHtml).animate({opacity: 1}, 500);
+    }, function() {
+      $('span[data-system-name="' + rescue.system.toUpperCase() + '"]').animate({opacity: 0.2}, 100).html('<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>').animate({opacity: 1}, 500);
     }); 
   }
 };
