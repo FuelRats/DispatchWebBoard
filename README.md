@@ -18,8 +18,7 @@ Setting up the DWB for your own uses requires oauth client registration with the
     * Ensure WssURI and ApiURI are pointed to the correct api address. ClientID should be the UUID given to you upon oauth client creation.
     * WebPageTitle and CookieBase can be set to any value of your choosing.
   * Configure fr.const.js
-    * Duplicate and rename fr.const_example.js to fr.const.js
-    * **NOTE:** Normally, this is all you need to do. If you wish to customize the text values to better suit your needs, feel free.
+    * Nothing needs to be done here, however you can change strings to how you see fit. const will soon contain all major strings to easily support translations in the future.
 * Load the page from your browser for the first time, and attempt to login. If all is done right, you should now have a working dispatch board. ready for development testing
 
 ## Contributing
