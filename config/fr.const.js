@@ -157,5 +157,7 @@ fr.const = {
       short: 'ZH',
       long: 'Chinese'
     }
-  }
+  },
+  scoopables: ['O','B','A','F','G','K','M'],
+  monthString: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 };
