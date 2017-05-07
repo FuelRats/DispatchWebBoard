@@ -3,72 +3,66 @@ var debug = debug !== undefined ? debug : false;
 fr.sysapi = {
   CachedSysInfo: {},
   /**
-   * Retrives related system information
-   * @param {String} SystemName      Name of the system to retrive info for
+   * Retrieves starsystem information.
+   * @param {[type]} SystemName      [description]
    * @param {[type]} successCallback [description]
    * @param {[type]} failCallback    [description]
    */
   GetSysInfo: function(SystemName, successCallback, failCallback) {
-    var sysName = SystemName.toLowerCase();
+    var sysName = SystemName.toUpperCase();
     if(fr.sysapi.CachedSysInfo.hasOwnProperty(sysName)) {
       if(debug) console.log("fr.sysapi.GetSysInfo - Cached System Info Requested: ", fr.sysapi.CachedSysInfo[sysName]);
       if(fr.sysapi.CachedSysInfo[sysName] === null) {
         failCallback("error", "Not Found", null);
+        return;
       }
       successCallback(fr.sysapi.CachedSysInfo[sysName]);
     } else {
       if(debug) console.log("fr.sysapi.GetSysInfo - Retrieving System Info: " + SystemName);
-      fr.sysapi.ApiEqCall(SystemName, successCallback, failCallback);
+      fr.sysapi.ApiLookupCall(sysName, successCallback, failCallback);
     }
   },
-  ApiEqCall: function(SystemName, successCallback, failCallback) {
+  ApiLookupCall: function(SystemName, successCallback, failCallback) {
     $.ajax({
-        dataType: 'json',
-        url: 'https://system.api.fuelrats.com/systems?filter[name:eq]=' + encodeURIComponent(SystemName),
-        success: function (response) {
-          // None found with exact naming, check through ilike.
-          if(response.meta.results.returned < 1) {
-            if(debug) console.log("fr.sysapi.ApiEqCall - No system info found for: \"" + SystemName + "\". Falling back to ILIKE lookup.");
-            fr.sysapi.ApiIlikeCall(SystemName, successCallback, failCallback);
-            return;
-          }
+      dataType: 'json',
+      url: 'https://system.api.fuelrats.com/systems?' + 'filter[name:eq]=' + encodeURIComponent(SystemName) + '&include=bodies',
+      success: function (response) {
+        if(response.meta.results.returned < 1) {
+          if(debug) console.log("fr.sysapi.ApiEqCall - No system info found for: \"" + SystemName + "\". Sysinfo search failed. Calling failCallback.");
+          fr.sysapi.CachedSysInfo[SystemName.toUpperCase()] = null; // This essentially marks it as missing, and we should not look for it again.                         
+          failCallback();
+          return;
+        }
+        var sysData = response.data[0];
+        var sysName = sysData.attributes.name;
 
-          var sysName = response.data[0].attributes.name.toLowerCase();
-          if(!fr.sysapi.CachedSysInfo.hasOwnProperty(sysName)){ //we're gonna check this to be safe.
-            fr.sysapi.CachedSysInfo[sysName] = response.data[0];
+        //jsonAPI does not yet support included data filtering, so this cannot be offloaded to the server.
+        if(response.included && response.included[0]) {
+          sysData.bodies = response.included.filter(function(body) {
+            return body.attributes.group_name === "Star";
+          });
+          //cleanup woo
+          for (var body in sysData.bodies) {
+            delete sysData.bodies[body].relationships;
+            delete sysData.bodies[body].type;
+            delete sysData.bodies[body].links;
           }
-          if(debug) console.log("fr.sysapi.ApiEqCall - System information found:", response.data[0]);
-          successCallback(response.data[0]);
-        },
-      });
-  },
-  ApiIlikeCall: function(SystemName, successCallback, failCallback) {
-    $.ajax({
-        dataType: 'json',
-        url: 'https://system.api.fuelrats.com/systems?filter[name:ilike]=' + encodeURIComponent(SystemName),
-        success: function (response,status,jqxhr) {
-          // None found with exact naming, check through ilike.
-          if(response.meta.results.returned < 1) {
-            if(debug) console.log("fr.sysapi.ApiIlikeCall - No system info found for: \"" + SystemName + "\". Sysinfo search failed. Calling failCallback.");
-            fr.sysapi.CachedSysInfo[SystemName.toLowerCase()] = null; // This essentially marks it as missing, and we should not look for it again.                         
-            failCallback();
-            return;
-          }
+        }
+        delete sysData.relationships;
+        delete sysData.type;
+        delete sysData.links;
 
-          var sysName = response.data[0].attributes.name.toLowerCase();
-          if(!fr.sysapi.CachedSysInfo.hasOwnProperty(sysName)){ //we're gonna check this to be safe.
-            fr.sysapi.CachedSysInfo[sysName] = response.data[0];
-          }
-          if(debug) console.log("fr.sysapi.ApiIlikeCall - System information found:", response.data[0]);
-          successCallback(response.data[0]);
-        },
-      });
-  },
-  GetBodyInfo: function(eddbID) {
-    return;
+        if(!fr.sysapi.CachedSysInfo.hasOwnProperty(sysName)){ //we're gonna check this to be safe.
+          fr.sysapi.CachedSysInfo[sysName] = sysData;
+        }
+
+        if(debug) console.log("fr.sysapi.ApiEqCall - System information found: ", sysData);
+        successCallback(sysData);
+      },
+    });
   },
   DeleteCacheInfo: function(SystemName) {
-    var sysName = SystemName.toLowerCase();
+    var sysName = SystemName.toUpperCase();
     if(fr.sysapi.CachedSysInfo.hasOwnProperty(sysName)){
       delete fr.sysapi.CachedSysInfo[sysName];
     }
