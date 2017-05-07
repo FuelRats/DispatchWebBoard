@@ -29,6 +29,10 @@ body {
   background-size: cover;
 }
 
+a, a:hover, a:active, a:focus {
+  outline: 0;
+}
+
 header.navhead {
   position: fixed;
   left: 0;
