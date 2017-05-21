@@ -37,6 +37,7 @@ fr.ws = !fr.config || !fr.user ? null : {
 	onClose: function (dc) {
 		if(dc.wasClean === false) {
 			if (debug) console.log("fr.ws.onClose - Disconnected from WSocket. Reconnecting...");
+      fr.ws.initComp=false;
 			setTimeout(fr.ws.initConnection, 60000);
 			fr.ws.reconnected = true;
 		}
@@ -62,6 +63,7 @@ fr.ws = !fr.config || !fr.user ? null : {
 		if(fr.ws.socket.readyState !== 1) {
 			if(fr.ws.socket.readyState === 0) {
 			} else if (fr.ws.socket.readyState == 2 || fr.ws.socket.readyState == 3) {
+        fr.ws.initComp=false;
 				fr.ws.initConnection();
 			}
 			setTimeout(function() {fr.ws.send(action, data, meta); }, 1000);
@@ -93,6 +95,7 @@ fr.ws = !fr.config || !fr.user ? null : {
 		if(fr.ws.socket.readyState != 1) {
 			if(fr.ws.socket.readyState === 0) {
 			} else if (fr.ws.socket.readyState == 2 || fr.ws.socket.readyState == 3) {
+        fr.ws.initComp=false;
 				fr.ws.initConnection();
 			}
 			setTimeout(function() {fr.ws.searchNickName(nickname, meta); }, 1000);

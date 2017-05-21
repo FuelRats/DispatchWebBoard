@@ -30,33 +30,38 @@ fr.user = !fr.config ? null : {
    * Initialization entry point. Tun on page load.
    */
   init: function() {
-      var authHeader = GetCookie(fr.config.CookieBase + "token");
-      var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
-      var token = !!tokenMatch && tokenMatch[1];
-
-      if(token) {
-          fr.user.AuthHeader = token;
-          if(CanSetCookies()) {
-            SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-          }
-          if(history.replaceState)
-            history.replaceState({}, document.title, window.location.pathname + window.location.search);
-      } else if (authHeader) {
-        fr.user.AuthHeader = authHeader.replace("Bearer ", "");
+    var authHeader = GetCookie(fr.config.CookieBase + "token");
+    var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
+    var token = !!tokenMatch && tokenMatch[1];
+    if(token) {
+        fr.user.AuthHeader = token;
         if(CanSetCookies()) {
           SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
         }
-      } else {
-        fr.user.DisplayLogin();
-        return;
+        if(history.replaceState)
+          history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    } else if (authHeader) {
+      fr.user.AuthHeader = authHeader.replace("Bearer ", "");
+      if(CanSetCookies()) {
+        SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
-
+    } else {
+      fr.user.DisplayLogin();
+      return;
+    }
+    //for staying "authenticated" cross reloads.
+    if (sessionStorage.getItem("user.ApiData")) {
+      fr.user.ApiData = JSON.parse(sessionStorage.getItem("user.ApiData"));
+      fr.user.handleLoginInit();
+    } else {
       fr.user.getApiData(fr.user.AuthHeader, function(data) {
+        sessionStorage.setItem("user.ApiData", JSON.stringify(data));
         fr.user.ApiData = data;
         fr.user.handleLoginInit();
       }, function() {
         fr.user.handleApiDataFailure();
       });
+    }
   },
   /**
    * Removes the user's authentication token and reloads the webpage.
@@ -70,12 +75,13 @@ fr.user = !fr.config ? null : {
    */
   handleLoginInit: function() {
     if(!fr.user.hasPermission()) {
-      $("body").removeClass("loading").addClass("fr-shutter-force fr-user-nopermission");
+      $("body").removeClass("loading").addClass("shutter-force user-nopermission");
       return;
     }
     $('body').on('click', 'button.logout',function(e) {
       fr.user.logoutUser();
     });
+    console.log("%cWelcome CMDR " + fr.user.ApiData.rats[0].CMDRname.toUpperCase() + ". All is well here. Fly safe!", 'color: lightgreen; font-weight: bold; font-size: 1.25em;');
     fr.ws.initConnection();
     fr.client.init();
   },
@@ -97,7 +103,7 @@ fr.user = !fr.config ? null : {
                               "&client_id="          + fr.config.ClientID +
                               "&redirect_uri="       + window.location;
     });
-    $('body').removeClass("loading").addClass("fr-shutter-force fr-user-unauthenticated");
+    $('body').removeClass("loading").addClass("shutter-force user-unauthenticated");
   },
   /**
    * Gets api user info to be used durring session.
@@ -113,7 +119,7 @@ fr.user = !fr.config ? null : {
       success: function (response) {
         var container = $('span.user');
         if (response && response.data) {
-          if(debug) console.log(response);
+          if(debug) console.log("fr.user.getApiData - Retrieved authenticated user information: ", response);
           successCallback(response.data);
         }
       },
