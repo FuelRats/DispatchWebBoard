@@ -1,6 +1,7 @@
-var fr = fr !== undefined ? fr : {};
+/* jshint esversion: 6, browser: true, jquery: true */
+/* globals fr*/
 
-/* == Below are defined string constants == */
+/* == Below are defined string variables == */
 fr.const = {
   platform: {
     'pc': {

@@ -1,5 +1,5 @@
-var fr = fr !== undefined ? fr : {};
-var debug = debug !== undefined ? debug : false;
+/* jshint esversion: 6, browser: true, jquery: true */
+/* globals fr, debug, GetCookie, CanSetCookies, SetCookie, DelCookie */
 
 /**
  * Handles stores user data and authentication information.
@@ -19,10 +19,11 @@ fr.user = !fr.config ? null : {
    */
   hasPermission: function() {
     if (fr.user.isAuthenticated) {
-      if (fr.user.ApiData.group === "admin")
+      if (fr.user.ApiData.group === "admin") {
         return true;
-      else
+      } else {
         return fr.user.ApiData.drilled;
+      }
     }
     return false;
   },
@@ -30,19 +31,20 @@ fr.user = !fr.config ? null : {
    * Initialization entry point. Tun on page load.
    */
   init: function() {
-    var authHeader = GetCookie(fr.config.CookieBase + "token");
-    var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
-    var token = !!tokenMatch && tokenMatch[1];
-    if(token) {
-        fr.user.AuthHeader = token;
-        if(CanSetCookies()) {
-          SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-        }
-        if(history.replaceState)
-          history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    let authHeader = GetCookie(fr.config.CookieBase + "token");
+    let tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
+    let token = !!tokenMatch && tokenMatch[1];
+    if (token) {
+      fr.user.AuthHeader = token;
+      if (CanSetCookies()) {
+        SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+      }
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      }
     } else if (authHeader) {
       fr.user.AuthHeader = authHeader.replace("Bearer ", "");
-      if(CanSetCookies()) {
+      if (CanSetCookies()) {
         SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
     } else {
@@ -74,14 +76,14 @@ fr.user = !fr.config ? null : {
    * Activates the web board if the user has permission
    */
   handleLoginInit: function() {
-    if(!fr.user.hasPermission()) {
+    if (!fr.user.hasPermission()) {
       $("body").removeClass("loading").addClass("shutter-force user-nopermission");
       return;
     }
-    $('body').on('click', 'button.logout',function(e) {
+    $('body').on('click', 'button.logout', function() {
       fr.user.logoutUser();
     });
-    console.log("%cWelcome CMDR " + fr.user.ApiData.rats[0].CMDRname.toUpperCase() + ". All is well here. Fly safe!", 'color: lightgreen; font-weight: bold; font-size: 1.25em;');
+    window.console.log("%cWelcome CMDR " + fr.user.ApiData.rats[0].CMDRname.toUpperCase() + ". All is well here. Fly safe!", 'color: lightgreen; font-weight: bold; font-size: 1.25em;');
     fr.ws.initConnection();
     fr.client.init();
   },
@@ -89,37 +91,36 @@ fr.user = !fr.config ? null : {
    * Handles API information retrieval errors. TODO: add better user notification that retrieval went wrong.
    */
   handleApiDataFailure: function() {
-    if(debug) console.log("Api retrieval failure - Displaying login");
+    if (debug) {
+      window.console.log("Api retrieval failure - Displaying login");
+    }
     fr.user.DisplayLogin();
   },
   /**
    * Forces the page shutter, activates and displays the login button.
    */
   DisplayLogin: function() {
-    history.replaceState('', document.title, window.location.pathname);
-    $("button.login").on('click', function(e) {
-      window.location.href = fr.config.ApiURI + "oauth2/authorize" + 
-                              "?response_type=token" +
-                              "&client_id="          + fr.config.ClientID +
-                              "&redirect_uri="       + window.location;
+    window.history.replaceState('', document.title, window.location.pathname);
+    $("button.login").on('click', function() {
+      window.location.href = fr.config.ApiURI + "oauth2/authorize" +
+        "?response_type=token" +
+        "&client_id=" + fr.config.ClientID +
+        "&redirect_uri=" + window.location;
     });
     $('body').removeClass("loading").addClass("shutter-force user-unauthenticated");
   },
-  /**
-   * Gets api user info to be used durring session.
-   * @param  {Function} callback  Callback on successful user profile retrieval
-   */
   getApiData: function(token, successCallback, errorCallback) {
     $.ajax({
       url: fr.config.ApiURI + "profile",
-      beforeSend: function (xhr) {
+      beforeSend: function(xhr) {
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr.setRequestHeader('Accept',        "application/json");
+        xhr.setRequestHeader('Accept', "application/json");
       },
-      success: function (response) {
-        var container = $('span.user');
+      success: function(response) {
         if (response && response.data) {
-          if(debug) console.log("fr.user.getApiData - Retrieved authenticated user information: ", response);
+          if (debug) {
+            window.console.log("fr.user.getApiData - Retrieved authenticated user information: ", response);
+          }
           successCallback(response.data);
         }
       },
