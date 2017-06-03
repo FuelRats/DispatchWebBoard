@@ -1,0 +1,42 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+  "SublimeLinter":
+  {
+    "linters":
+    {
+      "annotations": {
+        "@disable": false,
+        "args": [],
+        "errors": [
+          "FIXME"
+        ],
+        "excludes": [],
+        "warnings": [
+          "NOTE",
+          "README",
+          "TODO",
+          "XXX",
+          "@todo"
+        ]
+      },
+      "csstree": {
+        "@disable": false,
+        "args": [],
+        "excludes": []
+      },
+      "jshint": {
+        "@disable": false,
+        "args": [
+            "--config",
+            "../.jshintrc"
+        ],
+        "excludes": []
+      }
+    }
+  }
+}
