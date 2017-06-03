@@ -1,6 +1,3 @@
-/* jshint esversion: 6, browser: true, jquery: true */
-/* globals fr, debug */
-
 fr.sysapi = {
   GetSysInfo: function(SystemName, successCallback, failCallback) {
     let sysName = SystemName.toUpperCase();

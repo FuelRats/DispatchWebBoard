@@ -1,6 +1,4 @@
-/* jshint esversion: 6, browser: true, jquery: true */
-/* globals fr, debug, Clipboard, getTimeSpanString */
-
+/* globals Clipboard, getTimeSpanString */
 // fr.config, fr.ws, and fr.sysapi are required. if they're not found, set to null.
 fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
   currentToken: null,
@@ -206,8 +204,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     let row = $('<tr class="rescue" data-rescue-sid="' + shortid + '">' +
       '<td class="rescue-row-index">' + (rescue.data ? rescue.data.boardIndex !== undefined || rescue.data.boardIndex !== null ? rescue.data.boardIndex : '?' : '?') + '</td>' +
       '<td class="rescue-row-client" title="' + (rescue.data ? rescue.data.IRCNick ? 'Nick: ' + rescue.data.IRCNick : '' : '') + '">' + (rescue.client ? rescue.client : '?') + '</td>' +
-      '<td class="rescue-row-language"' + (rescue.data && rescue.data.langID ? (fr.const && fr.const.language[rescue.data.langID] ? 'title="' + fr.const.language[rescue.data.langID].long + '">' + fr.const.language[rescue.data.langID].short : '>' + rescue.data.langID) : '>?') + '</td>' +
-      '<td class="rescue-row-platform"' + (rescue.platform ? (fr.const && fr.const.platform[rescue.platform] ? 'title="' + fr.const.platform[rescue.platform].long + '">' + fr.const.platform[rescue.platform].short : '>' + rescue.platform) : '>?') + '</td>' +
+      '<td class="rescue-row-language"' + (rescue.data && rescue.data.langID ? fr.const && fr.const.language[rescue.data.langID] ? 'title="' + fr.const.language[rescue.data.langID].long + '">' + fr.const.language[rescue.data.langID].short : '>' + rescue.data.langID : '>?') + '</td>' +
+      '<td class="rescue-row-platform"' + (rescue.platform ? fr.const && fr.const.platform[rescue.platform] ? 'title="' + fr.const.platform[rescue.platform].long + '">' + fr.const.platform[rescue.platform].short : '>' + rescue.platform : '>?') + '</td>' +
       '<td class="rescue-row-system' + (rescue.system ? ' btn-clipboard" data-clipboard-text="' + rescue.system + '">' + rescue.system + '<i class="fa fa-clipboard" title="Click to Copy!"></i>' : '">') + '</td>' +
       '<td class="rescue-row-rats">' + ratHtml.join(', ') + '</td>' +
       '<td class="rescue-row-detail"><button type="button" class="btn btn-detail" data-rescue-sid="' + shortid + '"><span class="fa fa-info" aria-hidden="true"></span></button></td>' +

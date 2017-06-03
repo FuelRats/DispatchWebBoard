@@ -1,6 +1,4 @@
-/* jshint esversion: 6, browser: true, jquery: true */
-/* globals fr */
-/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested */
+/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested, logging */
 
 function GetCookie(name) {
   try {
@@ -67,6 +65,7 @@ function selfCheck() {
   } else {
     window.console.log("%cSLFCHK:CLIENT - OK", 'color: lightgreen;');
   }
+  window.console.log("%cSLFCHK:DEBUG - " + debug.toString().toUpperCase(), 'color: lightgreen;');
   return validInstall;
 }
 
@@ -95,3 +94,9 @@ function checkNested(obj /*, level1, level2, ... levelN*/ ) {
   }
   return true;
 }
+
+window.console.debug = function() {
+  if (debug) {
+    window.console.log.apply(this, arguments);
+  }
+};
