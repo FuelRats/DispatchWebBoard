@@ -43,7 +43,7 @@ fr.ws = !fr.config || !fr.user ? null : {
 		}
 	},
 	onMessage: function(data) {
-		var _data = eval('d = ' + data.data);
+		var _data = JSON.parse(data.data);
 		if(_data.meta.action === 'welcome') {
 			fr.ws.clientId = _data.meta.id;
       fr.ws.authenticateWSS();
