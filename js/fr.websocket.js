@@ -54,7 +54,7 @@ fr.ws = !fr.config || !fr.user ? null : {
     }
   },
   onMessage: function(data) {
-    let _data = eval('d = ' + data.data);
+    var _data = JSON.parse(data.data);
     if (_data.meta.action === 'welcome') {
       this.clientId = _data.meta.id;
       this.authenticateWSS();
