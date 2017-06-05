@@ -1,7 +1,6 @@
 {
   "globals": {
-    "fr": false, 
-    "debug": false
+    "fr": false
   },
 
   /*Enforcing Options*/
