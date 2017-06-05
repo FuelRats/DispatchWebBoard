@@ -1,4 +1,4 @@
-/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested, logging */
+/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested, makeID */
 
 function GetCookie(name) {
   try {
@@ -18,7 +18,9 @@ function GetCookie(name) {
 }
 
 function SetCookie(name, value, expire) {
-  let temp = name + "=" + escape(value) + (expire !== 0 ? "; path=/; expires=" + ((new Date((new Date()).getTime() + expire)).toUTCString()) + ";" : "; path=/;");
+  let temp = name + "=" + encodeURIComponent(value) + (expire !== 0 ? "; path=/; expires=" + (new Date((new Date())
+      .getTime() + expire))
+    .toUTCString() + ";" : "; path=/;");
   document.cookie = temp;
 }
 
@@ -65,7 +67,8 @@ function selfCheck() {
   } else {
     window.console.log("%cSLFCHK:CLIENT - OK", 'color: lightgreen;');
   }
-  window.console.log("%cSLFCHK:DEBUG - " + debug.toString().toUpperCase(), 'color: lightgreen;');
+  window.console.log("%cSLFCHK:DEBUG - " + debug.toString()
+    .toUpperCase(), 'color: lightgreen;');
   return validInstall;
 }
 
@@ -93,6 +96,16 @@ function checkNested(obj /*, level1, level2, ... levelN*/ ) {
     obj = obj[args[i]];
   }
   return true;
+}
+
+function makeID(length) {
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = [];
+  let i = 0;
+  for (i=0; i < length; i+=1) {
+    text.push(chars.charAt(Math.floor(Math.random() * chars.length)));
+  }
+  return text.join('');
 }
 
 window.console.debug = function() {
