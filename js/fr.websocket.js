@@ -2,70 +2,109 @@
  * Handles websocket connection and communication
  */
 fr.ws = !fr.config || !fr.user ? null : {
+
   socket: null,
+  clientId: '',
+  reconnected: false,
   initComp: false,
+
+  /**
+   * Initiates websocket connection.
+   */
   initConnection: function() {
     if (this.initComp) {
-      if (debug) {
-        window.console.log("fr.ws.initConnection - init completed already!");
-      }
-      return Promise.reject("Init is already completed.");
+      window.console.debug("fr.ws.initConnection - init completed already!");
+      return;
     }
 
     this.socket = new WebSocket(fr.config.WssURI);
+
     if (!fr.user.hasPermission()) {
       return;
     }
-    
-    if (debug) {
-      window.console.log("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
-    }
-    this.socket.onmessage = (data) => { fr.ws.onMessage(data); };
-    this.socket.onerror = (error) => { fr.ws.onError(error); };
-    this.socket.onclose = (dc) => { fr.ws.onClose(dc); };
-    this.socket.onopen = () => { fr.ws.onOpen(); };
+
+    window.console.debug("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
+
+    this.socket.onmessage = (data) => {
+      fr.ws.onMessage(data);
+    };
+    this.socket.onerror = (error) => {
+      fr.ws.onError(error);
+    };
+    this.socket.onclose = (dc) => {
+      fr.ws.onClose(dc);
+    };
+    this.socket.onopen = () => {
+      fr.ws.onOpen();
+    };
+
     this.initComp = true;
   },
-  reconnected: false,
-  clientId: '',
+
+  /**
+   * handles incoming websocket message events
+   * @param  {Object} data websocket message data
+   */
+  onMessage: function(data) {
+    let _data = JSON.parse(data.data);
+    if (_data.meta.action === 'welcome') {
+      this.clientId = _data.meta.id;
+      this.authenticateWSS();
+    }
+    this.onTPA(_data);
+  },
+  
+  /**
+   * Handles websocket error events
+   * @param  {Object} error Websocket error metadata
+   */
+  onError: function(error) {
+    window.console.log("=Websocket Module Error=");
+    window.console.log(error);
+  },
+
+  /**
+   * Handles websocket (re)connection events
+   */
   onOpen: function() {
     if (!fr.user.hasPermission()) {
       return;
     }
     this.subscribe('0xDEADBEEF');
+
     if (this.reconnected) {
-      if (debug) {
-        window.console.log("fr.ws.onOpen - WS Connected!");
-      }
-      this.send('rescues:read', {
-        'open': 'true'
-      }, {
-        'updateList': 'true'
-      });
+      window.console.debug("fr.ws.onOpen - WS Reconnected!");
+      this.onReconnect();
       this.reconnected = false;
     }
   },
+
+  /**
+   * Handles websocket disconnection events
+   * @param  {Object} dc Websocket disconnection metadata
+   */
   onClose: function(dc) {
     if (dc.wasClean === false) {
       window.console.debug("fr.ws.onClose - Disconnected from WSocket. Reconnecting...");
       this.initComp = false;
-      setTimeout(this.initConnection, 60000);
+      setTimeout(this.initConnection, 30000);
       this.reconnected = true;
     }
   },
-  onMessage: function(data) {
-    var _data = JSON.parse(data.data);
-    if (_data.meta.action === 'welcome') {
-      this.clientId = _data.meta.id;
-      this.authenticateWSS();
-    }
-    this.HandleTPA(_data);
-  },
-  HandleTPA: function() {},
-  onError: function(error) {
-      window.console.log("=Websocket Module Error=");
-      window.console.log(error);
-  },
+
+  /**
+   * Open assignable function to be called when a TPA is recieved over websocket.
+   */
+  onTPA: function() {},
+  /**
+   * Open assignable function to be called when the wss reconnects.
+   */
+  onReconnect: function() {},
+
+  /**
+   * Sends a given JSON Object to the API.
+   * @param  {Object} data JSON data to be sent over the socket.
+   */
   sendJson: function(data) {
     if (!fr.user.isAuthenticated()) {
       window.console.debug("fr.ws.send - Sending failed, Not Authenticated");
@@ -83,6 +122,13 @@ fr.ws = !fr.config || !fr.user ? null : {
     }
     this.socket.send(JSON.stringify(data));
   },
+
+  /**
+   * Sends a preformatted TPA message to the API.
+   * @param  {String} action Action (namespace:method) to invoke with the given data and meta.
+   * @param  {Object} data   Data object to send with the message.
+   * @param  {Object} meta   Metadata to send with the message.
+   */
   send: function(action, data, meta) {
     this.sendJson({
       "action": action,
@@ -92,56 +138,58 @@ fr.ws = !fr.config || !fr.user ? null : {
     });
   },
 
+  /**
+   * Sends bearer token to the server to authenticate the client.
+   */
   authenticateWSS: function() {
     if (!fr.user.hasPermission()) {
-      if (debug) {
-        window.console.log("fr.ws.authenticateWSS - Subscribing failed, Not API Authenticated");
-      }
+      window.console.debug("fr.ws.authenticateWSS - Subscribing failed, Not API Authenticated");
       return;
     }
-
-    this.socket.send(JSON.stringify({
+    this.sendJson({
       "action": "authorization",
       "applicationId": this.clientId,
       "bearer": fr.user.AuthHeader,
       "data": {},
       "meta": {}
-    }));
+    });
   },
 
+  /**
+   * Subscribes to a given TPA stream applicationID
+   * @param  {string} stream Stream name (IE: 0xDEADBEEF)
+   */
   subscribe: function(stream) {
     if (!fr.user.hasPermission()) {
-      if (debug) {
-        window.console.log("fr.ws.subscribe - Subscribing failed, Not Authenticated");
-      }
+      window.console.debug("fr.ws.subscribe - Subscribing failed, Not Authenticated");
       return;
     }
-    if (debug) {
-      window.console.log("fr.ws.subscribe - Subscirbing to stream!");
-    }
-    this.socket.send(JSON.stringify({
+    window.console.debug("fr.ws.subscribe - Subscirbing to stream!");
+    this.sendJson({
       'action': 'stream:subscribe',
-      'applicationId': stream
-    }));
+      'applicationId': stream,
+      "data": {},
+      "meta": {}
+    });
   },
 
+  /**
+   * requests information about a given nickname
+   * @param  {String} nickname nickname of the user to find
+   * @param  {Object} meta     Optional meta data to send
+   */
   searchNickName: function(nickname, meta) {
     if (!fr.user.hasPermission()) {
-      if (debug) {
-        window.console.log("fr.ws.searchNickName - Search failed, Not Authenticated");
-      }
+      window.console.debug("fr.ws.searchNickName - Search failed, Not Authenticated");
       return;
     }
-
-    if (debug) {
-      window.console.log("fr.ws.searchNickName - Searching for nick: " + nickname);
-    }
-
-    this.socket.send(JSON.stringify({
+    window.console.debug("fr.ws.searchNickName - Searching for nick: " + nickname);
+    this.sendJson({
       "action": 'nicknames:search',
       "applicationId": this.clientId,
       "nickname": nickname,
-      "meta": meta
-    }));
-  },
+      "data": {},
+      "meta": meta || {}
+    });
+  }
 };
