@@ -1,6 +1,3 @@
-/* jshint esversion: 6, browser: true, jquery: true */
-/* globals fr*/
-
 /* == Below are defined string variables == */
 fr.const = {
   platform: {
