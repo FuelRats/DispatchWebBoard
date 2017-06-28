@@ -1,3 +1,4 @@
+/* globals makeID */
 /**
  * Handles websocket connection and communication
  */
@@ -7,6 +8,7 @@ fr.ws = !fr.config || !fr.user ? null : {
   clientId: '',
   reconnected: false,
   initComp: false,
+  openRequests: {},
 
   /**
    * Initiates websocket connection.
@@ -51,6 +53,14 @@ fr.ws = !fr.config || !fr.user ? null : {
       this.clientId = _data.meta.id;
       this.authenticateWSS();
     }
+
+    // Handle request responses
+    if(typeof _data.meta.dwbRequestUID === "string" && this.openRequests.hasOwnProperty(_data.meta.dwbRequestUID)) {
+      this.openRequests[_data.meta.dwbRequestUID](_data);
+      delete this.openRequests[_data.meta.dwbRequestUID];
+      return;
+    }
+    // If the message wasn't a response, send it to the normal TPA handler.
     this.onTPA(_data);
   },
   
@@ -87,7 +97,7 @@ fr.ws = !fr.config || !fr.user ? null : {
     if (dc.wasClean === false) {
       window.console.debug("fr.ws.onClose - Disconnected from WSocket. Reconnecting...");
       this.initComp = false;
-      setTimeout(this.initConnection, 30000);
+      setTimeout(this.initConnection, 10000);
       this.reconnected = true;
     }
   },
@@ -123,6 +133,33 @@ fr.ws = !fr.config || !fr.user ? null : {
     this.socket.send(JSON.stringify(data));
   },
 
+  sendJsonRequest: function(data) {
+    if(!data.hasOwnProperty('meta') && typeof data.meta !== 'object') {
+      data.meta = {};
+    }
+    let requestID = makeID(48); 
+    data.meta.dwbRequestUID = requestID;
+
+    return new Promise((resolve, reject) => {
+      this.sendJson(data);
+      this.openRequests[requestID] = (data) => { 
+        resolve(data); 
+      };
+      setTimeout(() => {
+        reject({
+          'errors': [
+            {
+              'code':408, 
+              'detail':'Server produced no response.', 
+              'status':'Request Timeout', 
+              'title':'Request Timeout'
+            }
+          ],
+          'meta': data.meta});
+      }, 60000);
+    });
+  },
+
   /**
    * Sends a preformatted TPA message to the API.
    * @param  {String} action Action (namespace:method) to invoke with the given data and meta.
@@ -133,8 +170,16 @@ fr.ws = !fr.config || !fr.user ? null : {
     this.sendJson({
       "action": action,
       "applicationId": this.clientId,
-      "data": data,
-      "meta": meta
+      "data": data || {},
+      "meta": meta || {}
+    });
+  },
+  sendRequest: function(action,data,meta) {
+    return this.sendJsonRequest({
+      "action": action,
+      "applicationId": this.clientId,
+      "data": data || {},
+      "meta": meta || {}
     });
   },
 

@@ -1,3 +1,4 @@
+/* globals debug:false */
 /* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested, makeID */
 
 function GetCookie(name) {
@@ -67,8 +68,7 @@ function selfCheck() {
   } else {
     window.console.log("%cSLFCHK:CLIENT - OK", 'color: lightgreen;');
   }
-  window.console.log("%cSLFCHK:DEBUG - " + debug.toString()
-    .toUpperCase(), 'color: lightgreen;');
+  window.console.log(`%cSLFCHK:DEBUG - ${debug.toString().toUpperCase()}`, 'color: lightgreen;');
   return validInstall;
 }
 
@@ -85,6 +85,7 @@ function getTimeSpanString(startTime, endTime) {
 }
 
 // God I hate nested JSON sometimes
+// Good thing this is now being phased out for better handling of errors.
 // https://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key
 function checkNested(obj /*, level1, level2, ... levelN*/ ) {
   let args = Array.prototype.slice.call(arguments, 1);

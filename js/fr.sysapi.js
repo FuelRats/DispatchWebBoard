@@ -2,9 +2,9 @@ fr.sysapi = {
   
   GetSysInfo: function (SystemName) {
     let sysName = SystemName.toUpperCase();
-    if (sessionStorage.getItem('system.' + sysName)) {
+    if (sessionStorage.getItem(`system.${sysName}`)) {
 
-      let sysData = JSON.parse(sessionStorage.getItem('system.' + sysName));
+      let sysData = JSON.parse(sessionStorage.getItem(`system.${sysName}`));
       window.console.debug("fr.sysapi.GetSysInfo - Cached System Info Requested: ", sysData);
 
       if (sysData === null) {
@@ -13,7 +13,7 @@ fr.sysapi = {
       return Promise.resolve(sysData);
 
     } else {
-      window.console.debug("fr.sysapi.GetSysInfo - Retrieving System Info: " + SystemName);
+      window.console.debug(`fr.sysapi.GetSysInfo - Retrieving System Info: ${SystemName}`);
       return fr.sysapi.ApiLookupCall(sysName);
     }
   },
@@ -22,15 +22,13 @@ fr.sysapi = {
     return new Promise((resolve, reject) => {
       $.ajax({
         dataType: 'json',
-        url: 'https://system.api.fuelrats.com/systems?' + 'filter[name:eq]=' + encodeURIComponent(SystemName) +
-          '&include=bodies',
+        url: `https://system.api.fuelrats.com/systems?filter[name:eq]=${encodeURIComponent(SystemName)}&include=bodies`,
         success: function(response) {
           if (response.meta.results.returned < 1) {
 
-            window.console.debug("fr.sysapi.ApiEqCall - No system info found for: \"" + SystemName +
-              "\". Sysinfo search failed. Calling failCallback.");
+            window.console.debug(`fr.sysapi.ApiEqCall - No system info found for: ${SystemName}. Sysinfo search failed. Calling failCallback.`);
 
-            sessionStorage.setItem('system.' + SystemName.toUpperCase(), null); // This essentially marks it as missing, and we should not look for it again.
+            sessionStorage.setItem(`system.${SystemName.toUpperCase()}`, null); // This essentially marks it as missing, and we should not look for it again.
             reject("System not found.");
             return;
           }
@@ -60,7 +58,7 @@ fr.sysapi = {
             sessionStorage.setItem('system.' + sysName, JSON.stringify(sysData));
           }
 
-          window.console.debug("fr.sysapi.ApiEqCall - System information found: ", sysData);
+          window.console.debug("fr.sysapi.ApiLookupCall - System information found: ", sysData);
 
           resolve(sysData);
         },

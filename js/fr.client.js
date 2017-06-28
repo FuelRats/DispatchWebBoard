@@ -41,7 +41,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     this.initComp = true;
   },
   handleTPA: function(tpa) {
-    window.console.debug("fr.client.HandleTPA - New TPA: ", tpa);
+    window.console.debug("fr.client.handleTPA - New TPA: ", tpa);
 
     switch (tpa.meta.action) {
       case 'rescues:read':
@@ -54,14 +54,14 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
         this.UpdateRescue(tpa.data);
         break;
       case 'rats:read':
-        this.UpdateRats(tpa);
+        window.console.error("fr.client.handleTPA - Uncaught rats:read passed to TPA handler: ", tpa);
         break;
       case 'welcome':
       case 'stream:subscribe':
       case 'authorization':
         break;
       default:
-        window.console.log("fr.client.Handle.TPA - Unhandled TPA: ", tpa);
+        window.console.error("fr.client.handleTPA - Unhandled TPA: ", tpa);
         break;
     }
   },
@@ -84,32 +84,15 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
   },
   FetchRatInfo: function(ratId) {
     if (sessionStorage.getItem("rat." + ratId)) {
-      let ratData = JSON.parse(sessionStorage.getItem("rat." + ratId));
+      let ratData = JSON.parse(sessionStorage.getItem(`rat.${ratId}`));
       window.console.debug("fr.client.FetchRatInfo - Cached Rat Requested: ", ratData);
-      return ratData;
+      return Promise.resolve(ratData);
     } else {
-      window.console.debug("fr.client.FetchRatInfo - Gathering RatInfo: " + ratId);
-      fr.ws.send('rats:read', {
-        'id': ratId
-      }, {
-        'searchId': ratId
+      window.console.debug(`fr.client.FetchRatInfo - Gathering RatInfo: ${ratId}`);
+      return fr.ws.sendRequest('rats:read', {'id': ratId}, {'searchId': ratId}).then((tpa) => {
+        sessionStorage.setItem("rat." + ratId, JSON.stringify(tpa));
+        return Promise.resolve(tpa);
       });
-      return null;
-    }
-  },
-  UpdateRats: function(tpa) {
-    let rat = $('.rat[data-rat-name="' + tpa.meta.searchId + '"]');
-    if (tpa.data.length > 0) {
-      let ratData = tpa.data[0];
-      if (!sessionStorage.getItem("rat." + ratData.id)) {
-
-        window.console.debug("fr.client.UpdateRats - Caching RatInfo: ", ratData);
-
-        sessionStorage.setItem("rat." + ratData.id, JSON.stringify(ratData));
-      }
-      rat.text(ratData.CMDRname);
-    } else {
-      rat.html('<i>Not found</i>');
     }
   },
   ParseQueryString: function() {
@@ -202,14 +185,34 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     if (!rescue) {
       return;
     }
+    let updateRatInfo = (tpa) => {
+      let rat = $('.rescue-row-rats > .rat[data-rat-uuid="' + tpa.meta.searchId + '"]');
+      if (tpa.data.length > 0) {
+        let ratData = tpa.data[0];
+        rat.text(ratData.CMDRname);
+      } else {
+        rat.html('<i>Rat not found!</i>').attr('title', tpa.meta.searchId);
+      }
+    };
+    let catchRatError = (error) => {
+      window.console.log('fr.client.UpdateRescueDetail - Rat info error: ', error);
+
+      if(typeof error === "object" && 
+            typeof error.meta === "object" && 
+            typeof error.meta.searchId === "string") {
+        $('.rescue-row-rats > .rat[data-rat-uuid="' + error.meta.searchId + '"]').html('<i>Connection Error</i>').attr('title', error.meta.searchId);
+      }
+    };
 
     let shortid = rescue.id.split('-')[0];
     let rats = rescue.rats;
     let ratHtml = [];
     for (let rat in rats) {
       if (rats.hasOwnProperty(rat)) {
-        let rInfo = this.FetchRatInfo(rats[rat]);
-        ratHtml.push(`<span class="rat rat-name" data-rat-name="${rescue.rats[rat]}">${rInfo ? rInfo.CMDRname : '<i>Loading</i>'}</span>`);
+        this.FetchRatInfo(rats[rat])
+          .then(updateRatInfo)
+          .catch(catchRatError);
+        ratHtml.push(`<span class="rat" data-rat-uuid="${rescue.rats[rat]}"><i>Loading</i></span>`);
       }
     }
 
@@ -271,7 +274,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
       $('.rdetail-timer').prop('title', 'Last Updated: ' + getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
     }
 
-    setTimeout(() => this.UpdateClocks, 1000 - nowTime.getMilliseconds());
+    setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
   },
   SetSelectedRescue: function(key, preventPush) {
     if (key === null || this.SelectedRescue && key.toString() === this.SelectedRescue.id.split('-')[0]) {
@@ -305,10 +308,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     let title = rescue.title ? rescue.title : rescue.client;
     let tags = (rescue.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.active ? '' : ' <span class="badge badge-yellow">Inactive</span>');
 
-    let language = rescue.data.langID ? fr.const.language[rescue.data.langID] ? fr.const.language[rescue.data.langID] : {
-        "short": rescue.data.langID,
-        "long": rescue.data.langID
-        } : fr.const.language.unknown;
+    let language = rescue.data.langID ? fr.const.language[rescue.data.langID] ? fr.const.language[rescue.data.langID] : 
+                   { "short": rescue.data.langID, "long": rescue.data.langID } : fr.const.language.unknown;
 
     let platform = rescue.platform ? fr.const.platform[rescue.platform] : fr.const.platform.unknown;
 
@@ -329,13 +330,35 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
       '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>';
 
     // Rats
+    // 
+    let updateRatInfo = (tpa) => {
+      let rat = $('.rdetail-info > .rdetail-info-value > .rat[data-rat-uuid="' + tpa.meta.searchId + '"]');
+      if (tpa.data.length > 0) {
+        let ratData = tpa.data[0];
+        rat.html(ratData.CMDRname + (rescue.platform === ratData.platform ? '' : ` <span class="badge badge-yellow">BAD PLATFORM: RAT IS ${ratData.platform.toUpperCase()}</span>`));
+      } else {
+        rat.html('<i>Rat not found!</i>');
+      }
+    };
+    let catchRatError = (error) => {
+      window.console.log('fr.client.UpdateRescueDetail - Rat info error: ', error);
+
+      if(typeof error === "object" && 
+            typeof error.meta === "object" && 
+            typeof error.meta.searchId === "string") {
+        $('.rdetail-info > .rdetail-info-value > .rat[data-rat-uuid="' + error.meta.searchId + '"]').html('<i>Connection Error</i>');
+      }
+    };
     let ratHtml = [];
     for (let rat in rescue.rats) {
       if (rescue.rats.hasOwnProperty(rat)) {
-        let rInfo = this.FetchRatInfo(rescue.rats[rat]);
-        ratHtml.push(`<span class="rat rat-name" data-rat-name="${rescue.rats[rat]}">${rInfo !== null ? rInfo.CMDRname : '<i>Loading</i>'}</span>`);
+        this.FetchRatInfo(rescue.rats[rat])
+              .then(updateRatInfo)
+              .catch(catchRatError);
+        ratHtml.push(`<span class="rat" data-rat-uuid="${rescue.rats[rat]}"><i>Loading</i></span>`);
       }
     }
+
 
     for (let rat in rescue.unidentifiedRats) {
       if (rescue.unidentifiedRats.hasOwnProperty(rat)) {
@@ -423,7 +446,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
         .animate({ opacity: 0.2 }, 100)
         .html(sysInfoHtml)
         .animate({ opacity: 1 }, 500);
-    }).catch((e) => {
+    }).catch(() => {
       $(`span[data-system-name="${rescue.system.toUpperCase()}"]`)
         .animate({ opacity: 0.2 }, 100)
         .html('<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>')
