@@ -97,6 +97,10 @@ fr.const = {
     },
     'nb': {
       short: 'NB',
+      long: 'Norwegian Bokmål'
+    },
+    'nv': {
+      short: 'NV',
       long: 'Navajo, Navaho'
     },
     'nl': {
