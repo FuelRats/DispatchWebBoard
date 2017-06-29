@@ -22,9 +22,9 @@ fr.ws = !fr.config || !fr.user ? null : {
     this.socket = new WebSocket(fr.config.WssURI);
 
     if (!fr.user.hasPermission()) {
+      window.console.debug("fr.ws.initConnection - User lacks permission to run the board. Ditching setup.");
       return;
     }
-
     window.console.debug("fr.ws.initConnection - WS Connection Starting. DEBUG MODE ACTIVE.");
 
     this.socket.onmessage = (data) => {
@@ -52,6 +52,7 @@ fr.ws = !fr.config || !fr.user ? null : {
     if (_data.meta.action === 'welcome') {
       this.clientId = _data.meta.id;
       this.authenticateWSS();
+      this.subscribe('0xDEADBEEF');
     }
 
     // Handle request responses
@@ -80,8 +81,6 @@ fr.ws = !fr.config || !fr.user ? null : {
     if (!fr.user.hasPermission()) {
       return;
     }
-    this.subscribe('0xDEADBEEF');
-
     if (this.reconnected) {
       window.console.debug("fr.ws.onOpen - WS Reconnected!");
       this.onReconnect();
@@ -134,7 +133,7 @@ fr.ws = !fr.config || !fr.user ? null : {
   },
 
   sendJsonRequest: function(data) {
-    if(!data.hasOwnProperty('meta') && typeof data.meta !== 'object') {
+    if(!data.hasOwnProperty('meta') || typeof data.meta !== 'object') {
       data.meta = {};
     }
     let requestID = makeID(48); 
@@ -188,7 +187,7 @@ fr.ws = !fr.config || !fr.user ? null : {
    */
   authenticateWSS: function() {
     if (!fr.user.hasPermission()) {
-      window.console.debug("fr.ws.authenticateWSS - Subscribing failed, Not API Authenticated");
+      window.console.debug("fr.ws.authenticateWSS - Authentication failed, Not API Authenticated");
       return;
     }
     this.sendJson({
