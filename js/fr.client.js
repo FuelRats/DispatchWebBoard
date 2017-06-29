@@ -132,7 +132,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     window.console.debug("fr.client.AddRescue: Rescue Added to board.");
 
     this.CachedRescues[sid] = rescue;
-    $('#rescueTable').append(this.GetRescueTableRow(rescue));
+    this.appendHtml('#rescueTable', this.GetRescueTableRow(rescue));
   },
   UpdateRescue: function(tpa) {
     if (!tpa) {
@@ -162,14 +162,8 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
 
     window.console.debug("fr.client.UpdateRescue - Rescue Updated: " + rescue.id + " : " + rescue.client);
 
-    rescueRow.replaceWith(this.GetRescueTableRow(tpa));
-    $('tr.rescue[data-rescue-sid="' + sid + '"]')
-      .animate({
-        opacity: 0.2
-      }, 100)
-      .animate({
-        opacity: 1
-      }, 500);
+    this.replaceHtml('tr.rescue[data-rescue-sid="' + sid + '"]', this.GetRescueTableRow(tpa));
+
     this.CachedRescues[sid] = rescue;
     if (rescue.id && this.SelectedRescue && rescue.id === this.SelectedRescue.id) {
       window.console.debug("fr.client.UpdateRescue - Rescue DetailView Updating: " + rescue.id + " : " + rescue.client);
@@ -396,10 +390,7 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
 
     window.console.debug(`fr.client.UpdateRescueDetail - Rescue DetailView Updated: ${rescue.id} : ${rescue.client}`);
 
-    $('#rescueDetailContent')
-      .animate({ opacity: 0.2 }, 100)
-      .html(detailContent)
-      .animate({ opacity: 1 }, 500);
+    this.setHtml('#rescueDetailContent', detailContent);
 
     $(`button.btn.btn-detail[data-rescue-sid="${rescue.id.split('-')[0]}"]`).addClass('active'); // Set new active button.
     $('body').addClass('rdetail-active');
@@ -409,8 +400,18 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
     }
 
     window.console.debug("fr.client.UpdateRescueDetail - Checking sysapi for additional system info.");
-
-    fr.sysapi.GetSysInfo(rescue.system).then((data) => {
+    this.getSystemHtml(rescue).then((html) => {
+      this.setHtml(`span[data-system-name="${rescue.system.toUpperCase()}"]`, html);
+    }).catch(() => {
+      this.setHtml(`span[data-system-name="${rescue.system.toUpperCase()}"]`,
+                   '<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>');
+    });
+  },
+  getSystemHtml: function(rescue) {
+    if(!rescue) {
+      return Promise.reject("");
+    }
+    return fr.sysapi.GetSysInfo(rescue.system).then((data) => {
       window.console.debug("this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
 
       let sysInfo = data;
@@ -441,16 +442,25 @@ fr.client = !fr.config || !fr.ws || !fr.sysapi ? null : {
       if (sysInfo.id) {
         sysInfoHtml += `<a target="_blank" href="https://www.eddb.io/system/${sysInfo.id}"><span class="badge badge-green" title="View on EDDB.io" >EDDB</span></a>`;
       }
-
-      $(`span[data-system-name="${sysName}"]`)
-        .animate({ opacity: 0.2 }, 100)
-        .html(sysInfoHtml)
-        .animate({ opacity: 1 }, 500);
-    }).catch(() => {
-      $(`span[data-system-name="${rescue.system.toUpperCase()}"]`)
-        .animate({ opacity: 0.2 }, 100)
-        .html('<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>')
-        .animate({ opacity: 1 }, 500);
+      return Promise.resolve(sysInfoHtml);
     });
+  },
+  setHtml: function(target, html) {
+    $(target)
+        .animate({ opacity: 0.2 }, 100)
+        .html(html)
+        .animate({ opacity: 1 }, 500);
+  },
+  replaceHtml: function(target, html) {
+    $(target).replaceWith(html);
+    $(target)
+      .animate({opacity: 0.2}, 100)
+      .animate({opacity: 1}, 500);
+  },
+  appendHtml: function(target, html) {
+    $(target)
+        .animate({ opacity: 0.2 }, 100)
+        .append(html)
+        .animate({ opacity: 1 }, 500);
   }
 };
