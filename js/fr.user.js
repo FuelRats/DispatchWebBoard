@@ -141,6 +141,13 @@ fr.user = !fr.config ? null : {
           if (response && response.data) {
             window.console.debug('fr.user.getApiData - Retrieved authenticated user information: ', response);
             resolve(response.data);
+          } else {
+            window.console.debug("fr.user.getApiData - Invalid reponse from profile request.");
+            reject({
+              'request':null, 
+              'status':'error', 
+              'error':'Invalid Response'
+            });
           }
         },
         error: (request, status, error) => {
