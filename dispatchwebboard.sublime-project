@@ -33,7 +33,7 @@
         "@disable": false,
         "args": [
             "--config",
-            "../.jshintrc"
+            "${project}/.jshintrc"
         ],
         "excludes": []
       }
