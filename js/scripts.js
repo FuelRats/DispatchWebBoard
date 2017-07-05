@@ -1,5 +1,5 @@
-/* globals debug:false */
-/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested, makeID */
+/* globals debug:false, RatSocket:false */
+/* exported GetCookie, SetCookie, CanSetCookies, DelCookie, selfCheck, getTimeSpanString, checkNested */
 
 function GetCookie(name) {
   try {
@@ -97,16 +97,6 @@ function checkNested(obj /*, level1, level2, ... levelN*/ ) {
     obj = obj[args[i]];
   }
   return true;
-}
-
-function makeID(length) {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let text = [];
-  let i = 0;
-  for (i=0; i < length; i+=1) {
-    text.push(chars.charAt(Math.floor(Math.random() * chars.length)));
-  }
-  return text.join('');
 }
 
 window.console.debug = function() {
