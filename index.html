@@ -35,7 +35,48 @@
   <script type="text/javascript" src="js/fr.sysapi.min.js?4"></script>
   <script type="text/javascript" src="js/fr.client.min.js?8"></script>
 </head>
-<body class="loading">
+<!-- NOTE: Badge colors are unenclosed RGB values due to them being used in both RGB and RGBA statements.
+     General support for color-mod or hex-alpha can't come fast enough
+  ORIGINAL WHITE:
+  --headerBgColor: #1A1A1A;
+  --headerFgColor: #FFFFFF;
+  --headerFgColorDark: #9D9D9D;
+  --pageBgColor: #FFFFFF;
+  --pageBgColorDark: #EDEDED;
+  --pageFgColor: #000;
+  --pageFgColorDark: #000;
+  --accentColor: #D65050; 
+  --accentColorDark: #BF4848;
+  --badgeFgColor:      255, 255, 255;
+  --badgeNeutralColor: 191, 191, 191;
+  --badgeOkColor:       79, 204,  79;
+  --badgeWarningColor: 204, 204,  79;
+  --badgeErrorColor:   214,  80,  80;
+  --tableBorderColor: #ddd;
+  --tableRowInactiveColor: khaki;
+  --tableRowCoderedColor: mistyrose;
+  background-image: url(img/bg.jpg);
+-->
+<body class="loading" style="
+  --headerBgColor:         #1A1A1A;
+  --headerFgColor:         #FFFFFF;
+  --headerFgColorDark:     #9D9D9D;
+  --pageBgColor:           #1A1A1A;
+  --pageBgColorDark:       #171717;
+  --pageFgColor:           #FFF;
+  --pageFgColorDark:       #9D9D9D;
+  --accentColor:           #D65050;
+  --accentColorDark:       #BF4848;
+  --badgeFgColor:          255, 255, 255;
+  --badgeNeutralColor:     171, 171, 171;
+  --badgeOkColor:           59, 184,  59;
+  --badgeWarningColor:     184, 184,  59;
+  --badgeErrorColor:       194,  60,  60;
+  --tableBorderColor:      #3c3c3c;
+  --tableRowInactiveColor: rgba(240, 230, 140, 0.25);
+  --tableRowCoderedColor:  rgba(255, 87, 69, 0.25);
+  background-image:        url(img/bgdark.jpg);
+">
   <header class="navhead">
     <a class="branding" href="#" style="padding: 5px;"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
     <button type="button" id="navToggleBtn" class="btn btn-nav-toggle" data-target="#navbar"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></button>
