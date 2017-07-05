@@ -79,10 +79,8 @@
 ">
   <header class="navhead">
     <a class="branding" href="#" style="padding: 5px;"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
-    <button type="button" id="navToggleBtn" class="btn btn-nav-toggle" data-target="#navbar"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></button>
     <div id="navbar" class="navbar navbar-right navbar-collapse">
       <ul class="navbar-content">
-        <li><a href="https://confluence.fuelrats.com/display/FRKB" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Fuel Rats Knowledgebase"><span>News & Updates</span></a></li>
         <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;"></a></li>
       </ul>
     </div>
@@ -110,23 +108,24 @@
       </div>
     </div>
   </div>
-  <footer class="footer">
-    <div id="footerContent" class="container">
-      <span>
-        <a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Report a Problem</a>
-      </span>
-      <span class="float-right">
-        <button href="#" id="mainLogoutButton" class="button logout">Logout</button>
-      </span>
-    </div>
-  </footer>
   <div class="shutter loading-circle">
     <div id="ShutterLoginWelcome" class="shutter-text login msgtext">Welcome to The Fuel Rats Rescue Web Board!<br>A drilled rat account is required to access this resource.</div>
     <div id="ShutterLoginNeedPermission" class="shutter-text permission msgtext">Sorry, You need a drilled rat account to access the web board.</div>
     <div id="ShutterLoginSubtext" class="shutter-text login subtext">Login to begin...</div>
+    <!--<button href="#" id="shutterLogoutButton" class="button logout">Logout</button>-->
   </div>
-  <div class="user-menu">
+  <div id="userMenu" class="user-menu" data-displayState="none">
     <button class="button login">Login</button>
+    <div class="user-options">
+      <div class="rat-name">PLACEHOLDER</div>
+      <ul class="option-list">
+        <li><a href="https://confluence.fuelrats.com/display/FRKB" target="_blank" title="Fuel Rats Knowledgebase">News & Updates -</a></li>
+        <li><a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Report a Problem -</a></li>
+        <li><a href="#" class="panel-settings-toggle">Settings -</a></li>
+      </ul>
+      <button class="button logout">Logout</button>
+    </div>
+    <img class="user-icon" src="img/prof.png"></img>
   </div>
   <script type="text/javascript">
     if(selfCheck())

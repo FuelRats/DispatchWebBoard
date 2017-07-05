@@ -2,7 +2,7 @@
 /**
  * Handles stores user data and authentication information.
  */
-fr.user = !fr.config ? null : {
+fr.user = {
 
   ApiData: null,
   Settings: null,
@@ -57,15 +57,14 @@ fr.user = !fr.config ? null : {
       this.ApiData = JSON.parse(sessionStorage.getItem('user.ApiData'));
       this.handleLoginInit();
     } else {
-      this.getApiData(this.AuthHeader)
-        .then((data) => {
-          sessionStorage.setItem('user.ApiData', JSON.stringify(data));
-          this.ApiData = data;
-          this.handleLoginInit();
-        })
-        .catch((error) => {
-          this.handleApiDataFailure(error);
-        });
+      this.getApiData(this.AuthHeader).then((data) => {
+        sessionStorage.setItem('user.ApiData', JSON.stringify(data));
+        this.ApiData = data;
+        this.handleLoginInit();
+      })
+      .catch((error) => {
+        this.handleApiDataFailure(error);
+      });
     }
   },
 
@@ -87,13 +86,20 @@ fr.user = !fr.config ? null : {
         .addClass('shutter-force user-nopermission');
       return;
     }
-    $('body')
-      .on('click', 'button.logout', () => {
+    $('body').on('click', 'button.logout', () => {
         this.logoutUser();
-      });
+    });
+    $('#userMenu').attr("data-displaystate", "menu");
+    $('#userMenu .user-icon').on("error", (event) => {
+      $(event.currentTarget).attr('src', 'img/prof.png');
+    }).on('click', (event) => {
+      $('#userMenu').toggleClass('open');
+    }).attr('src', `img/prof/${this.ApiData.id}.jpg`);
+    $('#userMenu .user-options .rat-name').text(`CMDR ${this.ApiData.rats[0].CMDRname || "NotFound"}`);
+
     window.console.log('%cWelcome CMDR ' + this.ApiData.rats[0].CMDRname.toUpperCase() + '. All is well here. Fly safe!',
       'color: lightgreen; font-weight: bold; font-size: 1.25em;');
-    fr.ws.initConnection();
+
     fr.client.init();
   },
 
@@ -113,14 +119,14 @@ fr.user = !fr.config ? null : {
     window.console.debug('fr.user.displayLogin - Displaying login screen.');
 
     window.history.replaceState('', document.title, window.location.pathname);
-    $('button.login')
-      .on('click', () => {
+    $('button.login').on('click', () => {
         window.location.href = fr.config.ApiURI + 'oauth2/authorize' + '?response_type=token' + '&client_id=' + fr.config
           .ClientID + '&redirect_uri=' + window.location;
       });
     $('body')
       .removeClass('loading')
       .addClass('shutter-force user-unauthenticated');
+    $('#userMenu').attr("data-displaystate", "login");
   },
 
   /**
@@ -134,7 +140,7 @@ fr.user = !fr.config ? null : {
       $.ajax({
         url: fr.config.ApiURI + 'profile',
         beforeSend: (request) => {
-          request.setRequestHeader('Authorization', 'Bearer ' + token);
+          request.setRequestHeader('Authorization', `Bearer ${token}`);
           request.setRequestHeader('Accept', 'application/json');
         },
         success: (response) => {
