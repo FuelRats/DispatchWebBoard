@@ -19,9 +19,7 @@ function GetCookie(name) {
 }
 
 function SetCookie(name, value, expire) {
-  let temp = name + "=" + encodeURIComponent(value) + (expire !== 0 ? "; path=/; expires=" + (new Date((new Date())
-      .getTime() + expire))
-    .toUTCString() + ";" : "; path=/;");
+  let temp = name + "=" + encodeURIComponent(value) + (expire !== 0 ? "; path=/; expires=" + (new Date((new Date()).getTime() + expire)).toUTCString() + ";" : "; path=/;");
   document.cookie = temp;
 }
 
@@ -38,37 +36,40 @@ function CanSetCookies() {
 
 function selfCheck() {
   let validInstall = true;
+
   if (!fr.config) {
-    window.console.log("%cSLFCHK:CONFIG - ERROR", 'color: red; font-weight: bold;');
+    window.console.error("%cSLFCHK:CONFIG - ERROR", 'color: red; font-weight: bold;');
+    window.console.error(fr.config);
     validInstall = false;
-  } else {
-    window.console.log("%cSLFCHK:CONFIG - OK", 'color: lightgreen;');
   }
+
   if (!fr.user) {
-    window.console.log("%cSLFCHK:USER - ERROR", 'color: red; font-weight: bold;');
+    window.console.error("%cSLFCHK:USER - ERROR", 'color: red; font-weight: bold;');
+    window.console.error(fr.user);
     validInstall = false;
-  } else {
-    window.console.log("%cSLFCHK:USER - OK", 'color: lightgreen;');
   }
+
   if (!fr.sysapi) {
-    window.console.log("%cSLFCHK:SYSAPI - ERROR", 'color: red; font-weight: bold;');
+    window.console.error("%cSLFCHK:SYSAPI - ERROR", 'color: red; font-weight: bold;');
+    window.console.error(fr.sysapi);
     validInstall = false;
-  } else {
-    window.console.log("%cSLFCHK:SYSAPI - OK", 'color: lightgreen;');
-  }
-  if (!fr.ws) {
-    window.console.log("%cSLFCHK:WEBSOCKET - ERROR", 'color: red; font-weight: bold;');
+  } 
+
+  if (!RatSocket) {
+    window.console.error("%cSLFCHK:RATSOCKET - ERROR", 'color: red; font-weight: bold;');
+    window.console.error(RatSocket);
     validInstall = false;
-  } else {
-    window.console.log("%cSLFCHK:WEBSOCKET - OK", 'color: lightgreen;');
   }
+
   if (!fr.client) {
-    window.console.log("%cSLFCHK:CLIENT - ERROR", 'color: red; font-weight: bold;');
+    window.console.error("%cSLFCHK:CLIENT - ERROR", 'color: red; font-weight: bold;');
+    window.console.error(fr.client);
     validInstall = false;
-  } else {
-    window.console.log("%cSLFCHK:CLIENT - OK", 'color: lightgreen;');
   }
-  window.console.log(`%cSLFCHK:DEBUG - ${debug.toString().toUpperCase()}`, 'color: lightgreen;');
+
+  if(debug) {
+    window.console.log('%cSLFCHK:DEBUG - TRUE', 'color: yellow;');
+  }
   return validInstall;
 }
 
