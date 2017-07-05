@@ -68,6 +68,10 @@ header.navhead a:hover {
   margin: 0;
   float: left;
 }
+.navbar.navbar-right {
+  float: right;
+  margin-right: calc(4rem + 52px);
+}
 ul.navbar-content li {
   position: relative;
   display: block;
@@ -373,41 +377,9 @@ a .badge.badge-green:hover {
   content: '';
 }
 
-@media(min-width: 992px) {
-  .btn.btn-nav-toggle {
+@media(max-width: 500px) {
+  .navbar{
     display: none;
-  }
-  .navbar.navbar-collapse {
-    display: block;
-  }
-  .navbar.navbar-right {
-  float: right;
-  margin-right: calc(4rem + 52px);
-  }
-}
-
-@media(max-width: 992px) {
-  .navbar.navbar-collapse {
-  max-height: 0px;
-  transition: max-height .3s ease,
-              border-width 0s ease .25s;
-  background: var(--headerBgColor);
-  border-bottom: 0 solid var(--accentColor);
-  display: inline-block;
-  width: 100%;
-  overflow: hidden;
-  }
-  .navbar.navbar-collapse.expand {
-    max-height: 500px;
-    border-width: .3rem;
-    transition: max-height .3s ease,
-                border-width 0s ease;
-  }
-  ul.navbar-content {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
   }
 }
 
