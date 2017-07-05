@@ -90,10 +90,10 @@ fr.user = {
         this.logoutUser();
     });
     $('#userMenu').attr("data-displaystate", "menu");
-    $('#userMenu .user-icon').on("error", (event) => {
-      $(event.currentTarget).attr('src', `//api.adorable.io/avatars/${this.ApiData.id}`);
-    }).on('click', (event) => {
+    $('#userMenu .user-icon').on('click', (event) => {
       $('#userMenu').toggleClass('open');
+    }).on("error", (event) => {
+      $(event.currentTarget).attr('src', `//api.adorable.io/avatars/${this.ApiData.id}`);
     }).attr('src', `img/prof/${this.ApiData.id}.jpg`);
     
     $('#userMenu .user-options .rat-name').text(`CMDR ${this.ApiData.rats[0].CMDRname || "NotFound"}`);
