@@ -253,7 +253,7 @@ fr.client = {
     let platform = rescue.platform ? fr.const.platform[rescue.platform] : fr.const.platform.unknown;
 
     let row = $(`<tr class="rescue" data-rescue-sid="${shortid}">` +
-      `<td class="rescue-row-index">${rescue.data.boardIndex || '?'}</td>` +
+      `<td class="rescue-row-index">${typeof rescue.data.boardIndex === "number" ? rescue.data.boardIndex : '?'}</td>` +
       `<td class="rescue-row-client" title="${rescue.data.IRCNick || ''}">${rescue.client || '?'}</td>` +
       `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
       `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
