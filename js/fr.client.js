@@ -1,4 +1,4 @@
-/* globals Clipboard, getTimeSpanString, RatSocket */
+/* globals Clipboard, getTimeSpanString, RatSocket, StarSystemInfo */
 fr.client = {
 
   clipboard: null,
@@ -6,6 +6,7 @@ fr.client = {
   SelectedRescue: null,
   initComp: false,
   socket: null,
+  sysApi: null,
   theme: 'default',
 
   init: function() {
@@ -18,13 +19,13 @@ fr.client = {
     
     window.onpopstate = this.HandlePopState;
     window.onbeforeunload = () => {
-        window.localStorage.setItem('window.theme', $('body').attr('style'));
+        window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, $('body').attr('style'));
     };
 
-    if(!window.localStorage.getItem('window.theme')) {
-      window.localStorage.setItem('window.theme', 'default');
+    if(!window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`)) {
+      window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, 'default');
     } else {
-      this.theme = window.localStorage.getItem('window.theme');
+      this.theme = window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`);
     }
     if(this.theme !== 'default') {
       $('body').attr('style', this.theme);
@@ -47,6 +48,8 @@ fr.client = {
       this.clipboard = new Clipboard('.btn-clipboard');
       $('body').addClass("clipboard-enable");
     }
+
+    this.sysApi = new StarSystemInfo();
 
     this.socket = new RatSocket(fr.config.WssURI);
     this.socket.on('ratsocket:reconnect',  (context) => { this.handleReconnect(context); })
@@ -93,8 +96,8 @@ fr.client = {
     $('body').removeClass("loading");
   },
   FetchRatInfo: function(ratId) {
-    if (sessionStorage.getItem(`rat.${ratId}`)) {
-      let ratData = JSON.parse(sessionStorage.getItem(`rat.${ratId}`));
+    if (sessionStorage.getItem(`${fr.config.AppNamespace}.rat.${ratId}`)) {
+      let ratData = JSON.parse(sessionStorage.getItem(`${fr.config.AppNamespace}.rat.${ratId}`));
       window.console.debug("fr.client.FetchRatInfo - Cached Rat Requested: ", ratData);
       return Promise.resolve(ratData);
     } else {
@@ -108,7 +111,7 @@ fr.client = {
           'searchId': ratId
         }
       }).then((res) => {
-        sessionStorage.setItem(`rat.${ratId}`, JSON.stringify(res.data));
+        sessionStorage.setItem(`${fr.config.AppNamespace}.rat.${ratId}`, JSON.stringify(res.data));
         return Promise.resolve(res.data);
       });
     }

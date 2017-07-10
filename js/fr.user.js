@@ -1,4 +1,4 @@
-/* globals GetCookie, CanSetCookies, SetCookie, DelCookie */
+/* globals Util */
 /**
  * Handles stores user data and authentication information.
  */
@@ -28,22 +28,22 @@ fr.user = {
    * Initialization entry point. Run on page load.
    */
   init: function () {
-    let authHeader = GetCookie(fr.config.CookieBase + 'token'),
+    let authHeader = Util.GetCookie(`${fr.config.AppNamespace}.token`),
       tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
       token = !!tokenMatch && tokenMatch[1];
     window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
     if (token) {
       this.AuthHeader = token;
-      if (CanSetCookies()) {
-        SetCookie(fr.config.CookieBase + 'token', this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+      if (Util.CanSetCookies()) {
+        Util.SetCookie(`${fr.config.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
       if (window.history.replaceState) {
         window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
       }
     } else if (authHeader) {
       this.AuthHeader = authHeader.replace('Bearer ', '');
-      if (CanSetCookies()) {
-        SetCookie(fr.config.CookieBase + 'token', this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+      if (Util.CanSetCookies()) {
+        Util.SetCookie(`${fr.config.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
     } else {
       this.displayLogin();
@@ -53,12 +53,12 @@ fr.user = {
     window.console.debug('fr.user.init - Auth token gathered, ensuring authentication and getting user data.');
 
     // Check if user has authentication in the current session, otherwise confirm authentication with the API.
-    if (sessionStorage.getItem('user.ApiData')) {
-      this.ApiData = JSON.parse(sessionStorage.getItem('user.ApiData'));
+    if (sessionStorage.getItem(`${fr.config.AppNamespace}.user.ApiData`)) {
+      this.ApiData = JSON.parse(sessionStorage.getItem(`${fr.config.AppNamespace}.user.ApiData`));
       this.handleLoginInit();
     } else {
       this.getApiData(this.AuthHeader).then((data) => {
-        sessionStorage.setItem('user.ApiData', JSON.stringify(data));
+        sessionStorage.setItem(`${fr.config.AppNamespace}.user.ApiData`, JSON.stringify(data));
         this.ApiData = data;
         this.handleLoginInit();
       })
@@ -72,7 +72,7 @@ fr.user = {
    * Removes the user's authentication token and reloads the webpage.
    */
   logoutUser: function () {
-    DelCookie(fr.config.CookieBase + 'token');
+    Util.DelCookie(`${fr.config.AppNamespace}.token`);
     window.location.reload();
   },
 
