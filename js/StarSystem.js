@@ -95,7 +95,7 @@
 
     } else {
       window.console.debug(`StarSystems - Retrieving System Info: ${system}`);
-      return fr.sysapi._apiLookupCall(system);
+      return this._apiLookupCall(system);
     }
   };
   sap.get = alias("getSysInfo");

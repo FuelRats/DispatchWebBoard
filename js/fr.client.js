@@ -1,4 +1,4 @@
-/* globals Clipboard, getTimeSpanString, RatSocket, StarSystemInfo */
+/* globals Clipboard, RatSocket, StarSystems, Util */
 fr.client = {
 
   clipboard: null,
@@ -49,7 +49,7 @@ fr.client = {
       $('body').addClass("clipboard-enable");
     }
 
-    this.sysApi = new StarSystemInfo();
+    this.sysApi = new StarSystems();
 
     this.socket = new RatSocket(fr.config.WssURI);
     this.socket.on('ratsocket:reconnect',  (context) => { this.handleReconnect(context); })
@@ -156,7 +156,7 @@ fr.client = {
     this.appendHtml('#rescueTable', this.GetRescueTableRow(rescue));
 
     // Retrieve system information now to speed things up later on....
-    fr.sysapi.GetSysInfo(rescue.system).then(() => {
+    this.sysApi.get(rescue.system).then(() => {
       window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
     }).catch(() =>{
       window.console.debug("fr.client.AddRescue - No additional system information found.");
@@ -292,8 +292,8 @@ fr.client = {
       ':' + (nowTime.getUTCSeconds() < 10 ? '0' : '') + nowTime.getUTCSeconds());
 
     if (this.SelectedRescue !== null) {
-      $('.rdetail-timer').text(getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.createdAt)))
-          .prop('title', 'Last Updated: ' + getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
+      $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.createdAt)))
+          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
     }
 
     setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
@@ -437,7 +437,7 @@ fr.client = {
     if(!rescue) {
       return Promise.reject("");
     }
-    return fr.sysapi.GetSysInfo(rescue.system).then((data) => {
+    return this.sysApi.get(rescue.system).then((data) => {
       window.console.debug("this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
 
       let sysInfo = data;
