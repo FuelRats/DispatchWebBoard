@@ -119,9 +119,9 @@
     <div class="user-options">
       <div class="rat-name">PLACEHOLDER</div>
       <ul class="option-list">
-        <li><a href="https://confluence.fuelrats.com/display/FRKB" target="_blank" title="Fuel Rats Knowledgebase">FuelRats News -</a></li>
-        <li><a href="https://github.com/FuelRats/DispatchWebBoard/releases">DWB Changelog -</a></li>
-        <li><a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45">Send Feedback -</a></li>
+        <li><a href="https://confluence.fuelrats.com/display/FRKB" rel="noopener" target="_blank" title="Fuel Rats Knowledgebase - Fue Rats Confluence">FuelRats News -</a></li>
+        <li><a href="https://github.com/FuelRats/DispatchWebBoard/releases" rel="noopener" target="_blank" title="Releases - FuelRats/DispatchWebBoard">DWB Changelog -</a></li>
+        <li><a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45" rel="noopener" target="_blank" title="Website and API Helpdesk - Service Desk">Send Feedback -</a></li>
         <li><a href="#" class="panel-settings-toggle">Settings -</a></li>
       </ul>
       <button class="button logout">Logout</button>
@@ -129,8 +129,9 @@
     <img class="user-icon" src="img/prof.png"></img>
   </div>
   <script type="text/javascript">
-    if(selfCheck())
+    if(selfCheck()) {
       fr.user.init();
+    }
   </script>
 </body>
 </html>
