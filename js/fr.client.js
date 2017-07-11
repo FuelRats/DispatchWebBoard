@@ -52,30 +52,21 @@ fr.client = {
     this.sysApi = new StarSystems();
 
     this.socket = new RatSocket(fr.config.WssURI);
-    this.socket.on('ratsocket:reconnect',  (context) => { this.handleReconnect(context); })
-               .on('rescue:created', (context, data) => { this.AddRescue(context, data.data || null); })
-               .on('rescue:updated', (context, data) => { this.UpdateRescue(context, data.data || null); })
-               .start().then(() => {
-      return this.socket.authenticate(fr.user.AuthHeader);
-    }).then( () => {
-      return this.socket.subscribe('0xDEADBEEF');
-    }).then( () => {
-      return this.socket.request({
-        action:'rescues:read', 
-        data: { 'open': 'true' }
-      });
-    }).then((res) => {
-      this.PopulateBoard(res.context, res.data);
-    }).catch((error) => {
-      window.console.error(error);
-    });
+    this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx) )
+               .on('rescue:created', (ctx, data) => this.AddRescue(ctx, data.data))
+               .on('rescue:updated', (ctx, data) => this.UpdateRescue(ctx, data.data))
+               .connect().then(() => this.socket.authenticate(fr.user.AuthHeader))
+                         .then(() => this.socket.subscribe('0xDEADBEEF'))
+                         .then(() => this.socket.request({action:'rescues:read',data: { 'open': 'true' }}))
+                         .then(res => this.PopulateBoard(res.context, res.data))
+                         .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
 
     this.UpdateClocks();
 
     this.initComp = true;
   },
-  handleReconnect: function(context) {
-    context.request({
+  handleReconnect: function(ctx) {
+    ctx.request({
       'action': 'rescues:read',
       'data': {
         'open': 'true'
@@ -85,11 +76,11 @@ fr.client = {
       }
     });
   },
-  PopulateBoard: function(context, data) {
+  PopulateBoard: function(ctx, data) {
     let rescues = data.data;
     for (let i in rescues) {
       if (rescues.hasOwnProperty(i)) {
-        this.AddRescue(context, rescues[i]);
+        this.AddRescue(ctx, rescues[i]);
       }
     }
     this.ParseQueryString();
@@ -129,7 +120,7 @@ fr.client = {
   HandlePopState: function(event) {
     this.SetSelectedRescue(event.state.a, true);
   },
-  AddRescue: function(context, data) {
+  AddRescue: function(ctx, data) {
     if (!data) {
       return;
     }
@@ -162,7 +153,7 @@ fr.client = {
       window.console.debug("fr.client.AddRescue - No additional system information found.");
     });
   },
-  UpdateRescue: function(context, data) {
+  UpdateRescue: function(ctx, data) {
     if (!data) {
       return;
     }
