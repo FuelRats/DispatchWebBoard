@@ -31,15 +31,11 @@ fr.client = {
       $('body').attr('style', this.theme);
     }
 
-    $('body')
-      .on('click', 'button.btn.btn-detail', (event) => {
+    $('body').on('click', 'button.btn.btn-detail', (event) => {
         this.SetSelectedRescue(event.currentTarget.dataset.rescueSid);
-      })
-      .on('click', 'button.btn.btn-nav-toggle', (event) => {
-        $(event.currentTarget.dataset.target).toggleClass('expand');
-        $(event.currentTarget).toggleClass('active');
-      })
-      .on('click', 'a.panel-settings-toggle', (event) => {
+      }).on('click', '.class-toggle', (event) => {
+        $(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
+      }).on('click', 'a.panel-settings-toggle', (event) => {
         window.alert("This doesn't do anything yet. lol!");
         event.preventDefault();
       });

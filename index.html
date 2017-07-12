@@ -126,7 +126,13 @@
       </ul>
       <button class="button logout">Logout</button>
     </div>
-    <img class="user-icon" src="img/prof.png"></img>
+    <div class="user-icon-container class-toggle" data-target="#userMenu" data-target-class="open">
+      <img class="user-icon" src="img/prof.png"></img>
+      <div class="user-icon-overlay-container">
+        <i class="fa fa-bars  fa-2x user-icon-overlay overlay-open" aria-hidden="true"></i>
+        <i class="fa fa-times fa-2x user-icon-overlay overlay-close" aria-hidden="true"></i>
+      </div>
+    </div>
   </div>
   <script type="text/javascript">
     if(selfCheck()) {

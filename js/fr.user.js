@@ -90,9 +90,7 @@ fr.user = {
         this.logoutUser();
     });
     $('#userMenu').attr("data-displaystate", "menu");
-    $('#userMenu .user-icon').on('click', (event) => {
-      $('#userMenu').toggleClass('open');
-    }).on("error", (event) => {
+    $('#userMenu .user-icon').on("error", (event) => {
       $(event.currentTarget).attr('src', `//api.adorable.io/avatars/${this.ApiData.id}`);
     }).attr('src', `img/prof/${this.ApiData.id}.jpg`);
     
