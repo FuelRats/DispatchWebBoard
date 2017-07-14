@@ -68,6 +68,10 @@ header.navhead a:hover {
   margin: 0;
   float: left;
 }
+.navbar.navbar-right {
+  float: right;
+  margin-right: calc(4rem + 52px);
+}
 ul.navbar-content li {
   position: relative;
   display: block;
@@ -166,15 +170,16 @@ ul.navbar-content li a {
   padding-right: 5px;
 }
 
-.user-menu .user-icon {
+.user-menu .user-icon-container {
   position: absolute;
   width: 44px;
   height: 44px;
   top: 0;
   right: 0;
   transition: .1s ease .15s;
+  overflow: hidden;
 }
-.user-menu.open .user-icon {
+.user-menu.open .user-icon-container {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -182,7 +187,47 @@ ul.navbar-content li a {
   right: 6px;
   transition: .1s ease;
 }
-.user-menu:not([data-displaystate="menu"]) .user-icon {
+
+.user-menu .user-icon-container .user-icon,
+.user-menu .user-icon-container .user-icon-overlay-container {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+.user-menu .user-icon-container .user-icon-overlay-container {
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  transition: .1s ease;
+  color: #fff;
+}
+.user-menu .user-icon-container:hover .user-icon-overlay-container {
+  opacity: 1;
+}
+
+.user-icon-overlay-container .user-icon-overlay {
+  transition: .2s ease;
+  opacity: 1;
+  position: absolute;
+}
+.user-icon-overlay.overlay-open {
+  top: calc(50% - 14px);
+  left: calc(50% - 12px);
+}
+.user-icon-overlay.overlay-close {
+  top: calc(50% - 14px);
+  left: calc(50% - 11px);
+}
+
+.user-menu.open .user-icon-container .user-icon-overlay-container .user-icon-overlay.overlay-open {
+  opacity: 0;
+}
+.user-menu:not(.open) .user-icon-container .user-icon-overlay-container .user-icon-overlay.overlay-close {
+  opacity: 0;
+}
+
+.user-menu:not([data-displaystate="menu"]) .user-icon-container {
   display: none;
 }
 
@@ -373,41 +418,9 @@ a .badge.badge-green:hover {
   content: '';
 }
 
-@media(min-width: 992px) {
-  .btn.btn-nav-toggle {
+@media(max-width: 500px) {
+  .navbar{
     display: none;
-  }
-  .navbar.navbar-collapse {
-    display: block;
-  }
-  .navbar.navbar-right {
-  float: right;
-  margin-right: calc(4rem + 52px);
-  }
-}
-
-@media(max-width: 992px) {
-  .navbar.navbar-collapse {
-  max-height: 0px;
-  transition: max-height .3s ease,
-              border-width 0s ease .25s;
-  background: var(--headerBgColor);
-  border-bottom: 0 solid var(--accentColor);
-  display: inline-block;
-  width: 100%;
-  overflow: hidden;
-  }
-  .navbar.navbar-collapse.expand {
-    max-height: 500px;
-    border-width: .3rem;
-    transition: max-height .3s ease,
-                border-width 0s ease;
-  }
-  ul.navbar-content {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
   }
 }
 

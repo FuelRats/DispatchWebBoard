@@ -1,4 +1,4 @@
-/* globals Clipboard, getTimeSpanString, RatSocket */
+/* globals Clipboard, RatSocket, StarSystems, Util */
 fr.client = {
 
   clipboard: null,
@@ -6,6 +6,7 @@ fr.client = {
   SelectedRescue: null,
   initComp: false,
   socket: null,
+  sysApi: null,
   theme: 'default',
 
   init: function() {
@@ -18,27 +19,23 @@ fr.client = {
     
     window.onpopstate = this.HandlePopState;
     window.onbeforeunload = () => {
-        window.localStorage.setItem('window.theme', $('body').attr('style'));
+        window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, $('body').attr('style'));
     };
 
-    if(!window.localStorage.getItem('window.theme')) {
-      window.localStorage.setItem('window.theme', 'default');
+    if(!window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`)) {
+      window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, 'default');
     } else {
-      this.theme = window.localStorage.getItem('window.theme');
+      this.theme = window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`);
     }
     if(this.theme !== 'default') {
       $('body').attr('style', this.theme);
     }
 
-    $('body')
-      .on('click', 'button.btn.btn-detail', (event) => {
+    $('body').on('click', 'button.btn.btn-detail', (event) => {
         this.SetSelectedRescue(event.currentTarget.dataset.rescueSid);
-      })
-      .on('click', 'button.btn.btn-nav-toggle', (event) => {
-        $(event.currentTarget.dataset.target).toggleClass('expand');
-        $(event.currentTarget).toggleClass('active');
-      })
-      .on('click', 'a.panel-settings-toggle', (event) => {
+      }).on('click', '.class-toggle', (event) => {
+        $(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
+      }).on('click', 'a.panel-settings-toggle', (event) => {
         window.alert("This doesn't do anything yet. lol!");
         event.preventDefault();
       });
@@ -48,31 +45,24 @@ fr.client = {
       $('body').addClass("clipboard-enable");
     }
 
+    this.sysApi = new StarSystems();
+
     this.socket = new RatSocket(fr.config.WssURI);
-    this.socket.on('ratsocket:reconnect',  (context) => { this.handleReconnect(context); })
-               .on('rescue:created', (context, data) => { this.AddRescue(context, data.data || null); })
-               .on('rescue:updated', (context, data) => { this.UpdateRescue(context, data.data || null); })
-               .start().then(() => {
-      return this.socket.authenticate(fr.user.AuthHeader);
-    }).then( () => {
-      return this.socket.subscribe('0xDEADBEEF');
-    }).then( () => {
-      return this.socket.request({
-        action:'rescues:read', 
-        data: { 'open': 'true' }
-      });
-    }).then((res) => {
-      this.PopulateBoard(res.context, res.data);
-    }).catch((error) => {
-      window.console.error(error);
-    });
+    this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx) )
+               .on('rescue:created', (ctx, data) => this.AddRescue(ctx, data.data))
+               .on('rescue:updated', (ctx, data) => this.UpdateRescue(ctx, data.data))
+               .connect().then(() => this.socket.authenticate(fr.user.AuthHeader))
+                         .then(() => this.socket.subscribe('0xDEADBEEF'))
+                         .then(() => this.socket.request({action:'rescues:read',data: { 'open': 'true' }}))
+                         .then(res => this.PopulateBoard(res.context, res.data))
+                         .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
 
     this.UpdateClocks();
 
     this.initComp = true;
   },
-  handleReconnect: function(context) {
-    context.request({
+  handleReconnect: function(ctx) {
+    ctx.request({
       'action': 'rescues:read',
       'data': {
         'open': 'true'
@@ -82,19 +72,19 @@ fr.client = {
       }
     });
   },
-  PopulateBoard: function(context, data) {
+  PopulateBoard: function(ctx, data) {
     let rescues = data.data;
     for (let i in rescues) {
       if (rescues.hasOwnProperty(i)) {
-        this.AddRescue(context, rescues[i]);
+        this.AddRescue(ctx, rescues[i]);
       }
     }
     this.ParseQueryString();
     $('body').removeClass("loading");
   },
   FetchRatInfo: function(ratId) {
-    if (sessionStorage.getItem(`rat.${ratId}`)) {
-      let ratData = JSON.parse(sessionStorage.getItem(`rat.${ratId}`));
+    if (sessionStorage.getItem(`${fr.config.AppNamespace}.rat.${ratId}`)) {
+      let ratData = JSON.parse(sessionStorage.getItem(`${fr.config.AppNamespace}.rat.${ratId}`));
       window.console.debug("fr.client.FetchRatInfo - Cached Rat Requested: ", ratData);
       return Promise.resolve(ratData);
     } else {
@@ -108,7 +98,7 @@ fr.client = {
           'searchId': ratId
         }
       }).then((res) => {
-        sessionStorage.setItem(`rat.${ratId}`, JSON.stringify(res.data));
+        sessionStorage.setItem(`${fr.config.AppNamespace}.rat.${ratId}`, JSON.stringify(res.data));
         return Promise.resolve(res.data);
       });
     }
@@ -126,7 +116,7 @@ fr.client = {
   HandlePopState: function(event) {
     this.SetSelectedRescue(event.state.a, true);
   },
-  AddRescue: function(context, data) {
+  AddRescue: function(ctx, data) {
     if (!data) {
       return;
     }
@@ -153,13 +143,13 @@ fr.client = {
     this.appendHtml('#rescueTable', this.GetRescueTableRow(rescue));
 
     // Retrieve system information now to speed things up later on....
-    fr.sysapi.GetSysInfo(rescue.system).then(() => {
+    this.sysApi.get(rescue.system).then(() => {
       window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
     }).catch(() =>{
       window.console.debug("fr.client.AddRescue - No additional system information found.");
     });
   },
-  UpdateRescue: function(context, data) {
+  UpdateRescue: function(ctx, data) {
     if (!data) {
       return;
     }
@@ -250,7 +240,7 @@ fr.client = {
     let platform = rescue.platform ? fr.const.platform[rescue.platform] : fr.const.platform.unknown;
 
     let row = $(`<tr class="rescue" data-rescue-sid="${shortid}">` +
-      `<td class="rescue-row-index">${rescue.data.boardIndex || '?'}</td>` +
+      `<td class="rescue-row-index">${typeof rescue.data.boardIndex === "number" ? rescue.data.boardIndex : '?'}</td>` +
       `<td class="rescue-row-client" title="${rescue.data.IRCNick || ''}">${rescue.client || '?'}</td>` +
       `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
       `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
@@ -289,8 +279,8 @@ fr.client = {
       ':' + (nowTime.getUTCSeconds() < 10 ? '0' : '') + nowTime.getUTCSeconds());
 
     if (this.SelectedRescue !== null) {
-      $('.rdetail-timer').text(getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.createdAt)))
-          .prop('title', 'Last Updated: ' + getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
+      $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.createdAt)))
+          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
     }
 
     setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
@@ -434,7 +424,7 @@ fr.client = {
     if(!rescue) {
       return Promise.reject("");
     }
-    return fr.sysapi.GetSysInfo(rescue.system).then((data) => {
+    return this.sysApi.get(rescue.system).then((data) => {
       window.console.debug("this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
 
       let sysInfo = data;

@@ -106,7 +106,7 @@
       window.console.debug("RatSocket - Socket opened, awaiting response...");
     });
   };
-  rsp.start = alias("createSocket");
+  rsp.connect = alias("createSocket");
 
   rsp._onSocketOpen = function onSocketOpen(data) {
     if (this.reconnected) {
