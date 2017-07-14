@@ -1,6 +1,4 @@
-var fr = fr !== undefined ? fr : {};
-
-/* == Below are defined string constants == */
+/* == Below are defined string variables == */
 fr.const = {
   platform: {
     'pc': {
@@ -99,6 +97,10 @@ fr.const = {
     },
     'nb': {
       short: 'NB',
+      long: 'Norwegian Bokmål'
+    },
+    'nv': {
+      short: 'NV',
       long: 'Navajo, Navaho'
     },
     'nl': {

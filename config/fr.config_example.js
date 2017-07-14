@@ -1,5 +1,6 @@
-var fr = fr !== undefined ? fr : {};
-var debug = false;
+const fr = {};
+const debug = true;
+
 // IMPORTANT: make a copy of this file, and name it "fr.config.js"
 // Repo .gitignore ignores "fr.config.js", so updating through git pull is possible.
 fr.config = {

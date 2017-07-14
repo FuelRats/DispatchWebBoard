@@ -1,1 +1,3 @@
 config/fr.config.*
+*.sublime-workspace
+img/prof/

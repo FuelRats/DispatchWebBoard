@@ -50,7 +50,8 @@ body.rdetail-active #columnDetail {
 table {
   border-spacing: 0;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--pageBgColor);
+  color: var(--pageFgColor);
 }
 .table {
   width: 100%;
@@ -63,12 +64,12 @@ table {
   vertical-align: bottom;
 }
 .table > tbody > tr {
-  background-color: #fff;
+  background-color: var(--pageBgColor);
 }
 .table > tbody > tr > td {
   padding: 8px;
   vertical-align: middle;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--tableBorderColor);
 }
 .table > tbody > tr > td.rescue-row-detail {
   padding: 4px;
@@ -79,30 +80,30 @@ td.rescue-row-detail button.btn.btn-detail {
   width: 100%;
 }
 .table-striped > tbody > tr:nth-of-type(2n+1) {
-  background-color: #f9f9f9;
+  background-color: var(--pageBgColorDark);
 }
 
 .table-bordered {
-  border: 1px solid #ddd;
+  border: 1px solid var(--tableBorderColor);
 }
 .table-bordered > thead > tr > th {
-  border: 1px solid #ddd;
+  border: 1px solid var(--tableBorderColor);
   border-bottom-width: 2px;
   border-top: 0;
 }
 .table-bordered > tbody > tr > td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--tableBorderColor);
 }
 
 .rescue-epic {
   background-image:url("https://media.giphy.com/media/kqcjXv1FFA5IQ/giphy.gif"); 
 }
 .rescue-codered {
-  background-color: mistyrose !important;
+  background-color: var(--tableRowCoderedColor) !important;
 }
 .rescue-inactive {
   opacity: 0.4 !important;
-  background-color: khaki !important;
+  background-color: var(--tableRowInactiveColor) !important;
 }
 
 .ed-clock {
@@ -124,6 +125,7 @@ td.rescue-row-detail button.btn.btn-detail {
   display: flex;
   justify-content: space-between;
   padding: 15px 0;
+  color: var(--pageFgColor);
 }
 .rdetail-header div {
   display: inline;
@@ -153,35 +155,20 @@ td.rescue-row-detail button.btn.btn-detail {
 }
 
 #rescueDetail {
-  background: #FFF;
-  border: 1px solid #ddd;
+  background: var(--pageBgColor);
+  border: 1px solid var(--tableBorderColor);
   padding: 0 15px;
 }
 
-.button.login {
-  display: none;
-}
-body.user-unauthenticated .button.login {
-  display: block;
-}
 body.user-unauthenticated .shutter-text.login, body.user-nopermission .shutter-text.permission {
   display: block;
 }
-
-#mainLogoutButton {
-  margin-right: -12px;
-}
-body.loading .button.logout,
-body.user-unauthenticated .button.logout {
-  display: none;
-}
-
 body.clipboard-enable .btn-clipboard {
   cursor: pointer;
 }
 .btn-clipboard i {
   padding: .3rem 0;
-  color: #d65050;
+  color: var(--accentColor);
   float: right;
   opacity: 0;
   transition: opacity .2s ease;
