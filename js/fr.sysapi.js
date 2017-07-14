@@ -1,73 +1,64 @@
+var fr = fr !== undefined ? fr : {};
+var debug = debug !== undefined ? debug : false;
 fr.sysapi = {
-  
-  GetSysInfo: function (SystemName) {
-    let sysName = SystemName.toUpperCase();
-    if (sessionStorage.getItem(`system.${sysName}`)) {
-
-      let sysData = JSON.parse(sessionStorage.getItem(`system.${sysName}`));
-      window.console.debug("fr.sysapi.GetSysInfo - Cached System Info Requested: ", sysData);
-
-      if (sysData === null) {
-        return Promise.reject("System not found.");
+  GetSysInfo: function(SystemName, successCallback, failCallback) {
+    var sysName = SystemName.toUpperCase();
+    if(sessionStorage.getItem('system.' + sysName)) {
+      var sysData = JSON.parse(sessionStorage.getItem('system.' + sysName));
+      if(debug) console.log("fr.sysapi.GetSysInfo - Cached System Info Requested: ", sysData);
+      if(sysData === null) {
+        failCallback("error", "Not Found", null);
+        return;
       }
-      return Promise.resolve(sysData);
-
+      successCallback(sysData);
     } else {
-      window.console.debug(`fr.sysapi.GetSysInfo - Retrieving System Info: ${SystemName}`);
-      return fr.sysapi.ApiLookupCall(sysName);
+      if(debug) console.log("fr.sysapi.GetSysInfo - Retrieving System Info: " + SystemName);
+      fr.sysapi.ApiLookupCall(sysName, successCallback, failCallback);
     }
   },
+  ApiLookupCall: function(SystemName, successCallback, failCallback) {
+    $.ajax({
+      dataType: 'json',
+      url: 'https://system.api.fuelrats.com/systems?' + 'filter[name:eq]=' + encodeURIComponent(SystemName) + '&include=bodies',
+      success: function (response) {
+        if(response.meta.results.returned < 1) {
+          if(debug) console.log("fr.sysapi.ApiEqCall - No system info found for: \"" + SystemName + "\". Sysinfo search failed. Calling failCallback.");
+          sessionStorage.setItem('system.' + SystemName.toUpperCase(), null); // This essentially marks it as missing, and we should not look for it again.
+          failCallback();
+          return;
+        }
+        var sysData = response.data[0];
+        var sysName = sysData.attributes.name;
 
-  ApiLookupCall: function (SystemName) {
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        dataType: 'json',
-        url: `https://system.api.fuelrats.com/systems?filter[name:eq]=${encodeURIComponent(SystemName)}&include=bodies`,
-        success: function(response) {
-          if (response.meta.results.returned < 1) {
-
-            window.console.debug(`fr.sysapi.ApiEqCall - No system info found for: ${SystemName}. Sysinfo search failed. Calling failCallback.`);
-
-            sessionStorage.setItem(`system.${SystemName.toUpperCase()}`, null); // This essentially marks it as missing, and we should not look for it again.
-            reject("System not found.");
-            return;
+        //jsonAPI does not yet support included data filtering, so this cannot be offloaded to the server.
+        if(response.included && response.included[0]) {
+          sysData.bodies = response.included.filter(function(body) {
+            return body.attributes.group_name === "Star";
+          });
+          //cleanup body info
+          for (var body in sysData.bodies) {
+            delete sysData.bodies[body].relationships;
+            delete sysData.bodies[body].type;
+            delete sysData.bodies[body].links;
           }
-          let sysData = response.data[0];
-          let sysName = sysData.attributes.name;
+        }
+        //clean up other json properties.
+        delete sysData.relationships;
+        delete sysData.type;
+        delete sysData.links;
 
-          //jsonAPI does not yet support included data filtering, so this cannot be offloaded to the server.
-          if (response.included && response.included[0]) {
-            sysData.bodies = response.included.filter(function(body) {
-              return body.attributes.group_name === "Star";
-            });
-            //cleanup body info
-            for (let body in sysData.bodies) {
-              if (sysData.bodies.hasOwnProperty(body)) {
-                delete sysData.bodies[body].relationships;
-                delete sysData.bodies[body].type;
-                delete sysData.bodies[body].links;
-              }
-            }
-          }
-          //clean up other json properties.
-          delete sysData.relationships;
-          delete sysData.type;
-          delete sysData.links;
+        if(!sessionStorage.getItem('system.' + sysName)){ //we're gonna check this to be safe.
+          sessionStorage.setItem('system.' + sysName, JSON.stringify(sysData));
+        }
 
-          if (!sessionStorage.getItem('system.' + sysName)) { //we're gonna check this to be safe.
-            sessionStorage.setItem('system.' + sysName, JSON.stringify(sysData));
-          }
-
-          window.console.debug("fr.sysapi.ApiLookupCall - System information found: ", sysData);
-
-          resolve(sysData);
-        },
-      });
+        if(debug) console.log("fr.sysapi.ApiEqCall - System information found: ", sysData);
+        successCallback(sysData);
+      },
     });
   },
   DeleteCachedInfo: function(SystemName) {
-    let sysName = SystemName.toUpperCase();
-    if (sessionStorage.getItem('system.' + sysName)) {
+    var sysName = SystemName.toUpperCase();
+    if(sessionStorage.getItem('system.' + sysName)){
       sessionStorage.removeItem('system.' + sysName);
     }
   },
