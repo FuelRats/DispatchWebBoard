@@ -10,19 +10,21 @@
     "linters":
     {
       "annotations": {
-        "@disable": false,
-        "args": [],
-        "errors": [
-          "FIXME"
-        ],
-        "excludes": [],
-        "warnings": [
-          "NOTE",
-          "README",
-          "TODO",
-          "XXX",
-          "@todo"
-        ]
+          "@disable": false,
+          "args": [],
+          "errors": [
+              "FIXME",
+              "DEBUG",
+              "@debug"
+          ],
+          "excludes": [],
+          "warnings": [
+              "NOTE",
+              "README",
+              "TODO",
+              "XXX",
+              "@todo"
+          ]
       },
       "csstree": {
         "@disable": false,
