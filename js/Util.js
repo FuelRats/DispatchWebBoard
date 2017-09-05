@@ -38,6 +38,19 @@
     return can;
   };
 
+  /**
+   * Checks that the given key is a proper member of the given object, and is of the correct given type.
+   * 
+   * @param  {Object}            obj   - object containing the given property.
+   * @param  {String}            key   - Name of the property to check for.
+   * @param  {(String|String[])} ktype - Expected type of the property object.
+   * @return {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
+   */
+  Util.isValidProperty = function isValidProperty(obj, key, ktype) {
+    let isValidType = function(item, type) { return type === "array" ? Array.isArray(item) : typeof item === type; };
+    return obj.hasOwnProperty(key) && ( !Array.isArray(ktype) ? isValidType(obj[key],ktype) : ktype.some(i => isValidType(obj[key],i)) );
+  };
+
   Util.getTimeSpanString = function getTimeSpanString(startTime, endTime) {
     let secondsElapsed = Math.round(startTime / 1000) - Math.round(endTime / 1000);
     let seconds = secondsElapsed % 60;

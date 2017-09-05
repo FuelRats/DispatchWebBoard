@@ -1,3 +1,4 @@
+/* globals Util */
 ;(function (exports) {
   'use strict';
 
@@ -48,21 +49,6 @@
       text.push(chars.charAt(Math.floor(Math.random() * chars.length)));
     }
     return text.join('');
-  }
-
-  /**
-   * Checks that the given key is a proper member of the given object, and is of the correct given type.
-   * 
-   * @param  {Object}            obj   - object containing the given property.
-   * @param  {String}            key   - Name of the property to check for.
-   * @param  {(String|String[])} ktype - Expected type of the property object
-   * @return {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
-   */
-  function isValidProperty(obj, key, ktype) {
-    if(Array.isArray(ktype)) {
-      return obj.hasOwnProperty(key) && ktype.contains(typeof key);
-    }
-    return obj.hasOwnProperty(key) && typeof obj[key] === ktype;
   }
 
   /*====== Socket Handling  ======*/
@@ -170,13 +156,13 @@
     }
     data.applicationId = this.clientId;
     
-    if (!isValidProperty(data, "action", "string")) {
+    if (!Util.isValidProperty(data, "action", "string")) {
       throw TypeError("Action property must be defined.");
     }
-    if (!isValidProperty(data, "data", "object")) {
+    if (!Util.isValidProperty(data, "data", "object")) {
       data.data = {};
     }
-    if (!isValidProperty(data, "meta", "object")) {
+    if (!Util.isValidProperty(data, "meta", "object")) {
       data.meta = {};
     }
 
@@ -193,7 +179,7 @@
    */
   rsp.sendRequest = function sendRequest(data) {
 
-    if(!isValidProperty(data, "meta", "object")) {
+    if(!Util.isValidProperty(data, "meta", "object")) {
       data.meta = {};
     }
     
