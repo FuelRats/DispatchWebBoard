@@ -14,7 +14,6 @@
 
     this.WSSUri = uri;
     this.socket = null;
-    this.clientId = "";
     this.reconnected = false;
     this.isAuthenticated = false;
     this.openRequests = {};
@@ -58,23 +57,23 @@
    * 
    * @return {Promise} - Promise to be resolved when the API's welcome message is received.
    */
-  rsp.createSocket = function createSocket() {
+  rsp.createSocket = function createSocket(token) {
+    if(typeof token !== "string") {
+      throw TypeError("Invalid token string");
+    }
     return new Promise ((resolve,reject) => {
-
       let rejectTimeout = window.setTimeout(() => {
         window.console.error(`RatSocket - Connection failed.`);
+        this.socket.close();
         reject({"context": this, "data": {
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
           'meta': {}
         }});
       }, 60000);
 
-      this.once("welcome", (context, data) => {
+      this.once("ratsocket:connect", (context, data) => {
         window.clearTimeout(rejectTimeout);
-
-        this.clientId = data.meta.id;
-        window.console.debug(`RatSocket - Connection successful! Given clientId: ${this.clientId}`);
-
+        window.console.debug(`RatSocket - Connection successful!`);
         resolve({context, data});
       }).once('ratsocket:error', (context, data) => {
         window.clearTimeout(rejectTimeout);
@@ -84,7 +83,7 @@
         }});
       });
 
-      this.socket = new WebSocket(this.WSSUri);
+      this.socket = new WebSocket(`${this.WSSUri}?bearer=${token}`);
       this.socket.onopen    = (data) => {  this._onSocketOpen(data);   };
       this.socket.onclose   = (data) => {  this._onSocketClose(data);  };
       this.socket.onerror   = (data) => {  this._onSocketError(data);  };
@@ -96,13 +95,13 @@
 
   rsp._onSocketOpen = function onSocketOpen(data) {
     if (this.reconnected) {
-      window.console.debug("RatSocket - Socket reconnected!");
+      window.console.debug("RatSocket - Socket reconnected! ", data);
       this._emitEvent("ratsocket:reconnect", data);
       this.reconnected = false;
       return;
     }
     this._emitEvent("ratsocket:connect", data);
-    window.console.debug("RatSocket - Socket Connected!");
+    window.console.debug("RatSocket - Socket Connected!", data);
   };
   rsp._onSocketClose = function onSocketClose(dc) {
     if (dc.wasClean === false) {
@@ -129,8 +128,10 @@
       return;
     }
 
-    // If the message wasn't a response, emit an event of the action name.
-    this._emitEvent(_data.meta.action, _data);
+    if (_data.meta.event) {
+      // If the message wasn't a response, emit an event of the action name.
+      this._emitEvent(_data.meta.event, _data);
+    }
   };
 
   /*====== Messaging ======*/
@@ -139,7 +140,7 @@
    * Sends the given JSON Object to the API.
    * 
    * @param  {Object} data        - Object to be sent.
-   * @param  {String} data.action - Method to call on the API in the format of "Namespace:Method"
+   * @param  {Array} data.action - Method to call on the API in the format of ["Controller","Method"]
    * @param  {Object} data.data   - Serves as the message body to be sent to the given method
    * @param  {Object} data.meta   - Metadata to be returned with the message response.
    * @return {Object}             - Current instance of RatSocket
@@ -154,10 +155,9 @@
       });
       return this;
     }
-    data.applicationId = this.clientId;
     
-    if (!Util.isValidProperty(data, "action", "string")) {
-      throw TypeError("Action property must be defined.");
+    if (!Util.isValidProperty(data, "action", "array") || data.action.length > 2 || data.action.length < 1) {
+      throw TypeError("Action array must be defined.");
     }
     if (!Util.isValidProperty(data, "data", "object")) {
       data.data = {};
@@ -210,35 +210,15 @@
   rsp.request = alias("sendRequest");
 
   /**
-   * Pseudo-alias for RatSocket.request to send a preformatted authentication message to the API.
-   * 
-   * @param  {String}  token - OAuth2 bearer token string.
-   * @return {Promise}       - Promise to be resolved upon a successful response.
-   */
-  rsp.authenticate = function authenticate(token) {
-    return this.sendRequest({
-      "action": "authorization",
-      "applicationId": this.clientId,
-      "bearer": token,
-      "data": {},
-      "meta": {}
-    }).then((data) => {
-      if(data.data.id) {
-        this.isAuthenticated = true;
-      }
-    });
-  };
-
-  /**
    * Pseudo-alias for RatSocket.request to send a preformatted subscribe message to the API.
    * 
    * @param  {String}  streamName - Name of the information stream to subscribe to
    * @return {Promise}            - Promise to resolved upon a successful response.
    */
   rsp.subscribe = function subscribe(streamName) {
-    return this.sendRequest({
-      'action': 'stream:subscribe',
-      'applicationId': streamName,
+    return this.send({
+      'action': ['stream','subscribe'],
+      'id': streamName,
       "data": {},
       "meta": {}
     });
