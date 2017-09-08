@@ -49,13 +49,25 @@ fr.client = {
 
     this.socket = new RatSocket(fr.config.WssURI);
     this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx) )
-               .on('rescue:created', (ctx, data) => this.AddRescue(ctx, data.data))
-               .on('rescue:updated', (ctx, data) => this.UpdateRescue(ctx, data.data))
-               .connect().then(() => this.socket.authenticate(fr.user.AuthHeader))
-                         .then(() => this.socket.subscribe('0xDEADBEEF'))
-                         .then(() => this.socket.request({action:'rescues:read',data: { 'open': 'true' }}))
-                         .then(res => this.PopulateBoard(res.context, res.data))
-                         .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
+              .on('rescueCreated', (ctx, data) => {
+                if(data.included) {
+                  data = Util.mapRelationships(data);
+                }
+                this.AddRescue(ctx, data.data);
+              }).on('rescueUpdated', (ctx, data) => {
+                if(data.included) {
+                  data = Util.mapRelationships(data);
+                }
+                window.console.log("DEBUG 1");//DEBUG
+                for(let i = 0; i < data.data.length; i+=1) {
+                  window.console.log("DEBUG 2");//DEBUG
+                  this.UpdateRescue(ctx, data.data[i]);
+                }
+              }).connect(fr.user.AuthHeader).then(() => this.socket.subscribe('0xDEADBEEF'))
+                                            .then(() => this.socket.request({action:["rescues", "read"], data: { "open": true }}))
+                                            .then(res => this.PopulateBoard(res.context, res.data))
+                                            .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
+    $('body').removeClass("loading");
 
     this.UpdateClocks();
 
@@ -123,15 +135,7 @@ fr.client = {
     let rescue = data;
     let sid = rescue.id.split('-')[0];
 
-    // Remove need to check for edge case conditions by resolving possible nulls when they arrive.
-    if (rescue.data === null) {
-      rescue.data = {};
-    }
-    if (rescue.system === null) {
-      rescue.system = "";
-    }
-
-    // Ensure rescue doesn't already exist. If so, pass to update logic instead.
+    // Ensure rescue doesn't already exist. If it does, pass to update function instead.
     if ($(`tr.rescue[data-rescue-sid="${sid}"]`).length > 0) {
       this.UpdateRescue(rescue);
       return;
@@ -143,7 +147,7 @@ fr.client = {
     this.appendHtml('#rescueTable', this.GetRescueTableRow(rescue));
 
     // Retrieve system information now to speed things up later on....
-    this.sysApi.get(rescue.system).then(() => {
+    this.sysApi.get(rescue.attributes.system).then(() => {
       window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
     }).catch(() =>{
       window.console.debug("fr.client.AddRescue - No additional system information found.");
@@ -152,15 +156,20 @@ fr.client = {
   UpdateRescue: function(ctx, data) {
     if (!data) {
       return;
+      window.console.log("DEBUG FAIL NO DATA");//DEBUG
+      window.console.log(ctx, " - " , data);//DEBUG 
     }
+    window.console.log("DEBUG 3 - ", data);//DEBUG
+
     let rescue = data;
     let sid = rescue.id.split('-')[0];
     let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
-    if (!rescueRow) {
-      window.console.debug("fr.client.UpdateRescue: Attempted to update a non-existant rescue: ", rescue);
+    if (rescueRow.length < 1) {
+      window.console.debug("fr.client.UpdateRescue: Attempted to update a non-existent rescue: ", rescue);
+      this.AddRescue(ctx, rescue);
       return;
     }
-    if (!rescue.open) {
+    if (rescue.attributes.state === "closed") {
       setTimeout(function() {
         rescueRow.hide('slow')
           .remove();
@@ -175,8 +184,7 @@ fr.client = {
       return;
     }
 
-    window.console.debug(`fr.client.UpdateRescue - Rescue Updated: ${rescue.id} : ${rescue.client}`);
-
+    window.console.debug(`fr.client.UpdateRescue - Rescue Updated: ${rescue.id} : ${rescue}`);
     this.replaceHtml(`tr.rescue[data-rescue-sid="${sid}"]`, this.GetRescueTableRow(rescue));
 
     this.CachedRescues[sid] = rescue;
@@ -194,54 +202,33 @@ fr.client = {
     if (!rescue) {
       return;
     }
-    let updateRatInfo = (tpa) => {
-      let rat = $(`.rescue-row-rats > .rat[data-rat-uuid="${tpa.meta.searchId}"]`);
-      if (tpa.data.length > 0) {
-        let ratData = tpa.data[0];
-        rat.text(ratData.CMDRname);
-      } else {
-        rat.html('<i>Rat not found!</i>').attr('title', tpa.meta.searchId);
-      }
-    };
-    let catchRatError = (error) => {
-      window.console.error('fr.client.UpdateRescueDetail - Rat info error: ', error);
-
-      if(typeof error === "object" && 
-            typeof error.meta === "object" && 
-            typeof error.meta.searchId === "string") {
-        $(`.rescue-row-rats > .rat[data-rat-uuid="${error.meta.searchId}"]`).html('<i>Connection Error</i>').attr('title', error.meta.searchId);
-      }
-    };
 
     let shortid = rescue.id.split('-')[0];
-    let rats = rescue.rats;
+    let rats = rescue.relationships.rats.data === undefined ? rescue.relationships.rats : {};
     let ratHtml = [];
-    for (let rat in rats) {
-      if (rats.hasOwnProperty(rat)) {
-        this.FetchRatInfo(rats[rat])
-          .then(updateRatInfo)
-          .catch(catchRatError);
-        ratHtml.push(`<span class="rat" data-rat-uuid="${rescue.rats[rat]}"><i>Loading</i></span>`);
+    for (let ratID in rats) {
+      if (rats.hasOwnProperty(ratID)) {
+        ratHtml.push(`<span class="rat" data-rat-uuid="${ratID}">${rescue.relationships.rats[ratID].attributes.name}</span>`);
       }
     }
 
-    for (let rat in rescue.unidentifiedRats) {
+    for (let rat in rescue.attributes.unidentifiedRats) {
       if (rescue.unidentifiedRats.hasOwnProperty(rat)) {
-        ratHtml.push(`<span class="rat-unidentified"><i>${rescue.unidentifiedRats[rat]}</i></span>`);
+        ratHtml.push(`<span class="rat-unidentified"><i>${rescue.attributes.unidentifiedRats[rat]}</i></span>`);
       }
     }
 
-    let language = rescue.data.langID ? fr.const.language[rescue.data.langID] ? fr.const.language[rescue.data.langID] : {
-        "short": rescue.data.langID,
-        "long": rescue.data.langID
+    let language = rescue.attributes.data.langID ? fr.const.language[rescue.attributes.data.langID] ? fr.const.language[rescue.attributes.data.langID] : {
+        "short": rescue.attributes.data.langID,
+        "long": rescue.attributes.data.langID
       } :
       fr.const.language.unknown;
 
-    let platform = rescue.platform ? fr.const.platform[rescue.platform] : fr.const.platform.unknown;
+    let platform = rescue.attributes.platform ? fr.const.platform[rescue.attributes.platform] : fr.const.platform.unknown;
 
     let row = $(`<tr class="rescue" data-rescue-sid="${shortid}">` +
-      `<td class="rescue-row-index">${typeof rescue.data.boardIndex === "number" ? rescue.data.boardIndex : '?'}</td>` +
-      `<td class="rescue-row-client" title="${rescue.data.IRCNick || ''}">${rescue.client || '?'}</td>` +
+      `<td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === "number" ? rescue.attributes.data.boardIndex : '?'}</td>` +
+      `<td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>` +
       `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
       `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
       `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.system}">${rescue.system} <i class="fa fa-clipboard" title="Click to Copy!"></i></td>` +
@@ -249,22 +236,17 @@ fr.client = {
       `<td class="rescue-row-detail"><button type="button" class="btn btn-detail" data-rescue-sid="${shortid}"><span class="fa fa-info" aria-hidden="true"></span></button></td>` +
       '</tr>');
 
-    if (rescue.epic) {
-      row.addClass('rescue-epic');
-    } else {
-      row.removeClass('rescue-epic');
-    }
-    if (rescue.codeRed) {
+    if (rescue.attributes.codeRed) {
       row.addClass('rescue-codered');
     } else {
       row.removeClass('rescue-codered');
     }
-    if (!rescue.active) {
+    if (rescue.attributes.status === "inactive") {
       row.addClass('rescue-inactive');
     } else {
       row.removeClass('rescue-inactive');
     }
-    let notes = rescue.quotes.join('\n');
+    let notes = rescue.attributes.quotes.join('\n');
     row.attr('title', notes);
     return row;
   },
@@ -279,8 +261,8 @@ fr.client = {
       ':' + (nowTime.getUTCSeconds() < 10 ? '0' : '') + nowTime.getUTCSeconds());
 
     if (this.SelectedRescue !== null) {
-      $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.createdAt)))
-          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.updatedAt)));
+      $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
+          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes1.updatedAt)));
     }
 
     setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
