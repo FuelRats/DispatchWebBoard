@@ -47,8 +47,87 @@
    * @return {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
    */
   Util.isValidProperty = function isValidProperty(obj, key, ktype) {
-    let isValidType = function(item, type) { return type === "array" ? Array.isArray(item) : typeof item === type; };
+    let isValidType = function(item, type) {
+      if(type === "array" ) {
+        return Array.isArray(item);
+      } else if (type === "object") {
+        return Util.isObject(item);
+      } else {
+        return typeof item === type;
+      }
+    };
     return obj.hasOwnProperty(key) && ( !Array.isArray(ktype) ? isValidType(obj[key],ktype) : ktype.some(i => isValidType(obj[key],i)) );
+  };
+
+  Util.isObject = function isObject(object) {
+    return object != null &&
+           typeof object === 'object' &&
+           Object.prototype.toString.call(object) === '[object Object]';
+  };
+
+  /**
+   * Maps included relationship data to the relationship of the main data model.
+   *
+   * @param  {[type]} data [description]
+   * @return {[type]}      [description]
+   */
+  Util.mapRelationships =  function mapRelationships(data) {
+    // Ensure data integrity, just to be safe.
+    if (!Util.isObject(data) || 
+        !Util.isValidProperty(data, "data", ["array","object"]) || 
+        !Util.isValidProperty(data,"included", "array")) {
+      throw TypeError("Invalid data model");
+    }
+
+    function findInclude(member, included) {
+      let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === member.id && obj.type === member.type);
+      if (includeMatches.length > 1) { 
+        window.console.error("fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ", includeMatches);
+      }
+      return includeMatches[0];
+    }
+
+    function mapRelationshipItems(relationships, included) {
+      if(!Util.isObject(relationships) || !Array.isArray(included)) { throw TypeError("Invalid Parameters"); }
+
+      for(let relType in relationships) {
+        if(!relationships.hasOwnProperty(relType)) { continue; }
+
+        if(Array.isArray(relationships[relType].data) && relationships[relType].data.length > 0) {
+          let typeMembers = relationships[relType].data;
+          for (let i=0; i < typeMembers.length; i+=1) {
+            let member = typeMembers[i];
+            if(member && member.id && member.type) {
+              relationships[relType][member.id] = findInclude(member, included);
+              if (relationships[relType][member.id].hasOwnProperty("relationships")) {
+                relationships[relType][member.id].relationships = mapRelationshipItems(relationships[relType][member.id].relationships, included);
+              }
+            }
+          }
+        } else if (Util.isObject(relationships[relType].data)) {
+          let member = relationships[relType].data;
+          if(member.id && member.type) {
+            relationships[relType][member.id] = findInclude(member, included);
+            if (relationships[relType][member.id].hasOwnProperty("relationships")) {
+              relationships[relType][member.id].relationships = mapRelationshipItems(relationships[relType][member.id].relationships, included);
+            }
+          }
+        }
+        delete relationships[relType].data;
+      }
+      return relationships;
+    }
+    
+    if(Array.isArray(data.data)) {
+      for (let dataItem in data.data) {
+        if (!data.data.hasOwnProperty(dataItem)) { continue; }
+        data.data[dataItem].relationships = mapRelationshipItems(data.data[dataItem].relationships, data.included);
+      }
+    } else {
+      data.data.relationships = mapRelationshipItems(data.data.relationships, data.included);
+    }
+    
+    return data;
   };
 
   Util.getTimeSpanString = function getTimeSpanString(startTime, endTime) {
@@ -105,8 +184,4 @@ function selfCheck() {
   return validInstall;
 }
 
-window.console.debug = function() {
-  if (debug) {
-    window.console.log.apply(this, arguments);
-  }
-};
+window.console.debug = debug ? window.console.log.bind(window.console) : function(){ return false; };
