@@ -68,6 +68,10 @@ header.navhead a:hover {
   margin: 0;
   float: left;
 }
+.navbar.navbar-right {
+  float: right;
+  margin-right: calc(4rem + 52px);
+}
 ul.navbar-content li {
   position: relative;
   display: block;
@@ -99,6 +103,138 @@ ul.navbar-content li a {
   -webkit-font-smoothing: antialiased;
   text-overflow: ellipsis;
 }
+.user-menu[data-displaystate="none"] {
+  display: none;
+}
+.user-menu[data-displaystate="login"] {
+  display: flex;
+}
+.user-menu[data-displaystate="menu"] {
+  display: block;
+  min-width: 52px;
+  min-height: 52px;
+  max-width: 52px;
+  max-height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: .2s ease;
+  background: var(--headerBgColor);
+  border: .4rem solid var(--accentColor);
+}
+.user-menu[data-displaystate="login"] *:not(.login) {
+  display: none;
+}
+
+.user-menu[data-displaystate="menu"] button.button.login {
+  display: none;
+}
+
+.user-menu.open[data-displaystate="menu"] {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 0;
+  border-width: .2rem;
+}
+
+.user-menu .user-options {
+  padding: 6px;
+  opacity: 0;
+  text-align: right;
+  color: var(--headerFgColorDark);
+  transition: .2s ease;
+}
+
+.user-menu.open .user-options {
+  opacity: 1;
+  transition: .2s ease .15s;
+}
+
+.user-menu .user-options .rat-name {
+  padding-right: 38px;
+  line-height: 32px;
+  vertical-align: middle;
+  font-family: Raleway, sans-serif;
+  font-size: 1.1em;
+}
+
+.user-menu .user-options .option-list {
+  list-style: none;
+  padding: 0;
+}
+.user-menu .user-options .option-list li:not(:first-child) {
+  padding-top: 5px;
+}
+.user-menu .user-options .option-list li a {
+  color: var(--headerFgColorDark);
+  text-decoration: none;
+  transition: .2s ease, padding .075s linear;
+}
+.user-menu .user-options .option-list li a:hover {
+  color: var(--headerFgColor);
+  padding-right: 5px;
+}
+
+.user-menu .user-icon-container {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  top: 0;
+  right: 0;
+  transition: .1s ease .15s;
+  overflow: hidden;
+}
+.user-menu.open .user-icon-container {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  top: 6px;
+  right: 6px;
+  transition: .1s ease;
+}
+
+.user-menu .user-icon-container .user-icon,
+.user-menu .user-icon-container .user-icon-overlay-container {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+.user-menu .user-icon-container .user-icon-overlay-container {
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  transition: .1s ease;
+  color: #fff;
+}
+.user-menu .user-icon-container:hover .user-icon-overlay-container {
+  opacity: 1;
+}
+
+.user-icon-overlay-container .user-icon-overlay {
+  transition: .2s ease;
+  opacity: 1;
+  position: absolute;
+}
+.user-icon-overlay.overlay-open {
+  top: calc(50% - 14px);
+  left: calc(50% - 12px);
+}
+.user-icon-overlay.overlay-close {
+  top: calc(50% - 14px);
+  left: calc(50% - 11px);
+}
+
+.user-menu.open .user-icon-container .user-icon-overlay-container .user-icon-overlay.overlay-open {
+  opacity: 0;
+}
+.user-menu:not(.open) .user-icon-container .user-icon-overlay-container .user-icon-overlay.overlay-close {
+  opacity: 0;
+}
+
+.user-menu:not([data-displaystate="menu"]) .user-icon-container {
+  display: none;
+}
+
 
 .btn {
   background-color: #d65050;
@@ -283,41 +419,9 @@ a .badge.badge-green:hover {
   content: '';
 }
 
-@media(min-width: 992px) {
-  .btn.btn-nav-toggle {
+@media(max-width: 500px) {
+  .navbar{
     display: none;
-  }
-  .navbar.navbar-collapse {
-    display: block;
-  }
-  .navbar.navbar-right {
-  float: right;
-  margin-right: 15px;
-  }
-}
-
-@media(max-width: 992px) {
-  .navbar.navbar-collapse {
-  max-height: 0px;
-  transition: max-height .3s ease,
-              border-width 0s ease .25s;
-  background: #1a1a1a;
-  border-bottom: 0 solid #d65050;
-  display: inline-block;
-  width: 100%;
-  overflow: hidden;
-  }
-  .navbar.navbar-collapse.expand {
-    max-height: 500px;
-    border-width: .3rem;
-    transition: max-height .3s ease,
-                border-width 0s ease;
-  }
-  ul.navbar-content {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
   }
 }
 

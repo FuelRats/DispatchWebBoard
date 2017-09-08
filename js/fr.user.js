@@ -1,130 +1,168 @@
-var fr = fr !== undefined ? fr : {};
-var debug = debug !== undefined ? debug : false;
-
+/* globals Util */
 /**
  * Handles stores user data and authentication information.
  */
-fr.user = !fr.config ? null : {
+fr.user = {
+
   ApiData: null,
   Settings: null,
   AuthHeader: null,
+
   /**
-   * Checks if the user has a valid API session.
+   * Checks if the user is currently authenticated with the API
+   * @return {Boolean} Value representing the authentication status of the user.
    */
-  isAuthenticated: function() {
-    return fr.user.ApiData !== null && fr.user.AuthHeader !== null;
+  isAuthenticated: function () {
+    return this.ApiData !== null && this.AuthHeader !== null;
   },
+
   /**
-   * Checks user data if they have permission to use the board.
+   * Checks if the user has permission to use the dispatch board
+   * @return {Boolean} Value representing the permission status of the user.
    */
-  hasPermission: function() {
-    if (fr.user.isAuthenticated) {
-      if (fr.user.ApiData.group === "admin")
-        return true;
-      else
-        return fr.user.ApiData.drilled;
-    }
-    return false;
+  hasPermission: function () {
+    return this.isAuthenticated() && (this.ApiData.group === 'admin' || this.ApiData.drilled);
   },
+
   /**
-   * Initialization entry point. Tun on page load.
+   * Initialization entry point. Run on page load.
    */
-  init: function() {
-    var authHeader = GetCookie(fr.config.CookieBase + "token");
-    var tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
-    var token = !!tokenMatch && tokenMatch[1];
-    if(token) {
-        fr.user.AuthHeader = token;
-        if(CanSetCookies()) {
-          SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-        }
-        if(history.replaceState)
-          history.replaceState({}, document.title, window.location.pathname + window.location.search);
+  init: function () {
+    let authHeader = Util.GetCookie(`${fr.config.AppNamespace}.token`),
+      tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
+      token = !!tokenMatch && tokenMatch[1];
+    window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
+    if (token) {
+      this.AuthHeader = token;
+      if (Util.CanSetCookies()) {
+        Util.SetCookie(`${fr.config.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+      }
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      }
     } else if (authHeader) {
-      fr.user.AuthHeader = authHeader.replace("Bearer ", "");
-      if(CanSetCookies()) {
-        SetCookie(fr.config.CookieBase + "token", fr.user.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+      this.AuthHeader = authHeader.replace('Bearer ', '');
+      if (Util.CanSetCookies()) {
+        Util.SetCookie(`${fr.config.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
       }
     } else {
-      fr.user.DisplayLogin();
+      this.displayLogin();
       return;
     }
-    //for staying "authenticated" cross reloads.
-    if (sessionStorage.getItem("user.ApiData")) {
-      fr.user.ApiData = JSON.parse(sessionStorage.getItem("user.ApiData"));
-      fr.user.handleLoginInit();
+
+    window.console.debug('fr.user.init - Auth token gathered, ensuring authentication and getting user data.');
+
+    // Check if user has authentication in the current session, otherwise confirm authentication with the API.
+    if (sessionStorage.getItem(`${fr.config.AppNamespace}.user.ApiData`)) {
+      this.ApiData = JSON.parse(sessionStorage.getItem(`${fr.config.AppNamespace}.user.ApiData`));
+      this.handleLoginInit();
     } else {
-      fr.user.getApiData(fr.user.AuthHeader, function(data) {
-        sessionStorage.setItem("user.ApiData", JSON.stringify(data));
-        fr.user.ApiData = data;
-        fr.user.handleLoginInit();
-      }, function() {
-        fr.user.handleApiDataFailure();
+      this.getApiData(this.AuthHeader).then((data) => {
+        sessionStorage.setItem(`${fr.config.AppNamespace}.user.ApiData`, JSON.stringify(data));
+        this.ApiData = data;
+        this.handleLoginInit();
+      })
+      .catch((error) => {
+        this.handleApiDataFailure(error);
       });
     }
   },
+
   /**
    * Removes the user's authentication token and reloads the webpage.
    */
-  logoutUser: function() {
-    DelCookie(fr.config.CookieBase + "token");
+  logoutUser: function () {
+    Util.DelCookie(`${fr.config.AppNamespace}.token`);
     window.location.reload();
   },
+
   /**
    * Activates the web board if the user has permission
    */
-  handleLoginInit: function() {
-    if(!fr.user.hasPermission()) {
-      $("body").removeClass("loading").addClass("shutter-force user-nopermission");
+  handleLoginInit: function () {
+    if (!this.hasPermission()) {
+      $('body')
+        .removeClass('loading')
+        .addClass('shutter-force user-nopermission');
       return;
     }
-    $('body').on('click', 'button.logout',function(e) {
-      fr.user.logoutUser();
+    $('body').on('click', 'button.logout', () => {
+        this.logoutUser();
     });
-    console.log("%cWelcome CMDR " + fr.user.ApiData.rats[0].CMDRname.toUpperCase() + ". All is well here. Fly safe!", 'color: lightgreen; font-weight: bold; font-size: 1.25em;');
-    fr.ws.initConnection();
+    $('#userMenu').attr("data-displaystate", "menu");
+    $('#userMenu .user-icon').on("error", (event) => {
+      $(event.currentTarget).attr('src', `//api.adorable.io/avatars/${this.ApiData.id}`);
+    }).attr('src', `img/prof/${this.ApiData.id}.jpg`);
+    
+    $('#userMenu .user-options .rat-name').text(`CMDR ${this.ApiData.rats[0].CMDRname || "NotFound"}`);
+
+    window.console.log('%cWelcome CMDR ' + this.ApiData.rats[0].CMDRname.toUpperCase() + '. All is well here. Fly safe!',
+      'color: lightgreen; font-weight: bold; font-size: 1.25em;');
+
     fr.client.init();
   },
+
   /**
    * Handles API information retrieval errors. TODO: add better user notification that retrieval went wrong.
+   * @param {Object} error Error object passed from an Api XHR request error.
    */
-  handleApiDataFailure: function() {
-    if(debug) console.log("Api retrieval failure - Displaying login");
-    fr.user.DisplayLogin();
+  handleApiDataFailure: function (error) {
+    window.console.debug('fr.user.handleApiDataFailure - Api retrieval failure - Displaying login - Error Info: ', error);
+    this.displayLogin();
   },
+
   /**
    * Forces the page shutter, activates and displays the login button.
    */
-  DisplayLogin: function() {
-    history.replaceState('', document.title, window.location.pathname);
-    $("button.login").on('click', function(e) {
-      window.location.href = fr.config.ApiURI + "oauth2/authorize" + 
-                              "?response_type=token" +
-                              "&client_id="          + fr.config.ClientID +
-                              "&redirect_uri="       + window.location;
-    });
-    $('body').removeClass("loading").addClass("shutter-force user-unauthenticated");
+  displayLogin: function () {
+    window.console.debug('fr.user.displayLogin - Displaying login screen.');
+
+    window.history.replaceState('', document.title, window.location.pathname);
+    $('button.login').on('click', () => {
+        window.location.href = fr.config.ApiURI + 'oauth2/authorize' + '?response_type=token' + '&client_id=' + fr.config
+          .ClientID + '&redirect_uri=' + window.location;
+      });
+    $('body')
+      .removeClass('loading')
+      .addClass('shutter-force user-unauthenticated');
+    $('#userMenu').attr("data-displaystate", "login");
   },
+
   /**
-   * Gets api user info to be used durring session.
-   * @param  {Function} callback  Callback on successful user profile retrieval
+   * Gets api profile for the user matching the given auth token.
+   * @param  {string}  token OAuth2 bearer token
+   * @return {Promise}       Resolves on response with the returned data.
+   *                         Rejects on error with object of the error data.
    */
-  getApiData: function(token, successCallback, errorCallback) {
-    $.ajax({
-      url: fr.config.ApiURI + "profile",
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr.setRequestHeader('Accept',        "application/json");
-      },
-      success: function (response) {
-        var container = $('span.user');
-        if (response && response.data) {
-          if(debug) console.log("fr.user.getApiData - Retrieved authenticated user information: ", response);
-          successCallback(response.data);
+  getApiData: function (token) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: fr.config.ApiURI + 'profile',
+        beforeSend: (request) => {
+          request.setRequestHeader('Authorization', `Bearer ${token}`);
+          request.setRequestHeader('Accept', 'application/json');
+        },
+        success: (response) => {
+          if (response && response.data) {
+            window.console.debug('fr.user.getApiData - Retrieved authenticated user information: ', response);
+            resolve(response.data);
+          } else {
+            window.console.debug("fr.user.getApiData - Invalid reponse from profile request.");
+            reject({
+              'request':null, 
+              'status':'error', 
+              'error':'Invalid Response'
+            });
+          }
+        },
+        error: (request, status, error) => {
+          reject({
+            'request': request,
+            'status': status,
+            'error': error
+          });
         }
-      },
-      error: errorCallback
+      });
     });
-    return;
   }
 };

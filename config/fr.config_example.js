@@ -11,6 +11,6 @@ fr.config = {
   ApiURI: "https://api.domain.tld/",
   // FR API ClientID
   ClientID: "00000000-0000-4000-a000-000000000000",
-  // Any preferred prefix. this is to avoid confusion with other copies on the same domain.
-  CookieBase: 'cookie_prefix_'
+  // Namespacing for domain-scoped storage. This is to prevent conflicts with duplicate instances on the same domain.
+  AppNamespace: 'SomeNamespace'
 };
