@@ -130,6 +130,15 @@
     return data;
   };
 
+  Util.getDateHumanReadable = function getDateHumanReadable(date) {
+    return (date.getUTCFullYear() + 1286) +
+      ' ' + fr.const.monthString[date.getUTCMonth()] +
+      ' ' + (date.getUTCDate() < 10 ? '0' : '') + date.getUTCDate() +
+      ' ' + (date.getUTCHours() < 10 ? '0' : '') + date.getUTCHours() +
+      ':' + (date.getUTCMinutes() < 10 ? '0' : '') + date.getUTCMinutes() +
+      ':' + (date.getUTCSeconds() < 10 ? '0' : '') + date.getUTCSeconds();
+  };
+
   Util.getTimeSpanString = function getTimeSpanString(startTime, endTime) {
     let secondsElapsed = Math.round(startTime / 1000) - Math.round(endTime / 1000);
     let seconds = secondsElapsed % 60;
