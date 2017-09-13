@@ -14,6 +14,7 @@
 
     this.WSSUri = uri;
     this.socket = null;
+    this.currentToken = null;
     this.reconnected = false;
     this.isAuthenticated = false;
     this.openRequests = {};
@@ -58,13 +59,14 @@
    * @return {Promise} - Promise to be resolved when the API's welcome message is received.
    */
   rsp.createSocket = function createSocket(token) {
-    if(typeof token !== "string") {
+    if(typeof token !== "string" ) {
       throw TypeError("Invalid token string");
     }
+
+    this.currentToken = token;
     return new Promise ((resolve,reject) => {
       let rejectTimeout = window.setTimeout(() => {
         window.console.error(`RatSocket - Connection failed.`);
-        this.socket.close();
         reject({"context": this, "data": {
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
           'meta': {}
@@ -88,10 +90,19 @@
       this.socket.onclose   = (data) => {  this._onSocketClose(data);  };
       this.socket.onerror   = (data) => {  this._onSocketError(data);  };
       this.socket.onmessage = (data) => { this._onSocketMessage(data); };
-      window.console.debug("RatSocket - Socket opened, awaiting response...");
+      window.console.debug("RatSocket - Socket opened, awaiting connection confirmation...");
     });
   };
   rsp.connect = alias("createSocket");
+
+  rsp._reconnect = function reconnect() {
+    if(this.currentToken !== null) {
+      window.console.debug("RatSocket - Attempting reconnect with last known bearer token.... ", this);
+      this.createSocket(this.currentToken);
+    } else {
+      window.console.debug("RatSocket - A reconnect was attempted, but no token was found!");
+    }
+  };
 
   rsp._onSocketOpen = function onSocketOpen(data) {
     if (this.reconnected) {
@@ -105,10 +116,13 @@
   };
   rsp._onSocketClose = function onSocketClose(dc) {
     if (dc.wasClean === false) {
-      window.console.debug("RatSocket - Disconnected from API! Attempting to reconnect...");
+      window.console.debug("RatSocket - Disconnected from API! Attempting to reconnect... ", dc);
       this._emitEvent("ratsocket:disconnect", dc);
       this.initComp = false;
-      setTimeout(this.CreateSocket, 10000);
+      setTimeout(() => {
+        window.console.debug(this);
+        this._reconnect();
+      }, 5000);
       this.reconnected = true;
     }
   };
@@ -116,21 +130,22 @@
     window.console.error("RatSocket - Socket Error: ", data);
     this._emitEvent("ratsocket:error", data);
   };
+
   rsp._onSocketMessage = function onSocketMessage(data) {
+    window.console.debug("RatSocket - Received message: ", data);
+    
     let _data = JSON.parse(data.data);
-    window.console.debug("RatSocket - New message: ", _data);
 
     // Handle request responses
-    if(typeof _data.meta.dwbRequestUID === "string" && this.openRequests.hasOwnProperty(_data.meta.dwbRequestUID)) {
-      window.console.debug(`RatSocket- Detected request response. closing request: ${_data.meta.dwbRequestUID}`);
-      this.openRequests[_data.meta.dwbRequestUID](_data);
-      delete this.openRequests[_data.meta.dwbRequestUID];
+    if(typeof _data.meta.reqID === "string" && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
+      window.console.debug(`RatSocket - Detected request response. closing request: ${_data.meta.reqID}`);
+      this.openRequests[_data.meta.reqID](_data);
+      delete this.openRequests[_data.meta.reqID];
       return;
-    }
-
-    if (_data.meta.event) {
-      // If the message wasn't a response, emit an event of the action name.
+    } else if (_data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
       this._emitEvent(_data.meta.event, _data);
+    } else { //if neither of the above conditions are true, just spit it out as an error to the console. This shouldn't happen.
+      window.console.error("RatSocket - Received an unknown message from the attached websocket: ", data);
     }
   };
 
@@ -148,7 +163,7 @@
   rsp.send = function send(data) {
     if (this.socket.readyState !== 1) {
       if(this.socket.readyState > 1) {
-        this.createSocket();
+        this._reconnect();
       }
       setTimeout(() => {
         this.send(data);
@@ -184,8 +199,7 @@
     }
     
     let requestID = makeID(48);
-    data.meta.dwbRequestUID = requestID;
-    window.console.debug(`RatSocket - Generating request with id: ${requestID}`);
+    data.meta.reqID = requestID;
 
     return new Promise((resolve, reject) => {
       this.send(data);
@@ -216,9 +230,9 @@
    * @return {Promise}            - Promise to resolved upon a successful response.
    */
   rsp.subscribe = function subscribe(streamName) {
-    return this.send({
-      'action': ['stream','subscribe'],
-      'id': streamName,
+    return this.request({
+      "action": ['stream','subscribe'],
+      "id": streamName,
       "data": {},
       "meta": {}
     });
