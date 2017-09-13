@@ -62,24 +62,24 @@ fr.client = {
                   this.UpdateRescue(ctx, data.data[i]);
                 }
               }).connect(fr.user.AuthHeader).then(() => this.socket.subscribe('0xDEADBEEF'))
-                                            .then(() => this.socket.request({action:["rescues", "read"], data: { "open": true }}))
+                                            .then(() => this.socket.request({action:["rescues", "read"], status: { $not: "closed" }}))
                                             .then(res => this.PopulateBoard(res.context, res.data))
                                             .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
-    $('body').removeClass("loading");
-
+                                            
     this.UpdateClocks();
-
     this.initComp = true;
   },
   handleReconnect: function(ctx) {
     ctx.request({
-      'action': 'rescues:read',
-      'data': {
-        'open': 'true'
-      },
-      'meta': {
+      action: ["rescues", "read"],
+      status: { $not: "closed" },
+      meta: {
         'updateList': 'true'
       }
+    }).then((data) => {
+      //TODO
+    }).catch((error) => {
+      window.console.error("fr.client.handleReconnect - reconnect data update failed!", error);
     });
   },
   PopulateBoard: function(ctx, data) {
@@ -144,12 +144,14 @@ fr.client = {
     this.CachedRescues[sid] = rescue;
     this.appendHtml('#rescueTable', this.GetRescueTableRow(rescue));
 
-    // Retrieve system information now to speed things up later on....
-    this.sysApi.get(rescue.attributes.system).then(() => {
-      window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
-    }).catch(() =>{
-      window.console.debug("fr.client.AddRescue - No additional system information found.");
-    });
+    if(typeof rescue.attributes.system === "string") {
+      // Retrieve system information now to speed things up later on....
+      this.sysApi.get(rescue.attributes.system).then(() => {
+        window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
+      }).catch(() =>{
+        window.console.debug("fr.client.AddRescue - No additional system information found.");
+      });
+    }
   },
   UpdateRescue: function(ctx, data) {
     if (!data) {
@@ -223,7 +225,7 @@ fr.client = {
       `<td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>` +
       `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
       `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
-      `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system}">${rescue.attributes.system} <i class="fa fa-clipboard" title="Click to Copy!"></i></td>` +
+      `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || "Unknown"}">${rescue.attributes.system || "Unknown"} <i class="fa fa-clipboard" title="Click to Copy!"></i></td>` +
       `<td class="rescue-row-rats">${ratHtml.join(', ')}</td>` +
       `<td class="rescue-row-detail"><button type="button" class="btn btn-detail" data-rescue-sid="${shortid}"><span class="fa fa-info" aria-hidden="true"></span></button></td>` +
       '</tr>');
@@ -238,8 +240,7 @@ fr.client = {
     } else {
       row.removeClass('rescue-inactive');
     }
-    let notes = rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join("\n");
-    row.attr('title', notes);
+    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join("\n") : 'No known quotes....');
     return row;
   },
   UpdateClocks: function() {
@@ -249,7 +250,7 @@ fr.client = {
 
     if (this.SelectedRescue !== null) {
       $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
-          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes1.updatedAt)));
+          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt)));
     }
 
     setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
@@ -284,7 +285,7 @@ fr.client = {
 
     let caseNo = typeof rescue.attributes.data.boardIndex === "number" ? `#${rescue.attributes.data.boardIndex} - ` : '';
     let title = rescue.attributes.title ? rescue.attributes.title : rescue.attributes.client;
-    let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === "inactive" ? '' : ' <span class="badge badge-yellow">Inactive</span>');
+    let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === "inactive" ? ' <span class="badge badge-yellow">Inactive</span>' : '');
 
     let language = rescue.attributes.data.langID ? fr.const.language[rescue.attributes.data.langID] ? fr.const.language[rescue.attributes.data.langID] : 
                    { "short": rescue.attributes.data.langID, "long": rescue.attributes.data.langID } : fr.const.language.unknown;
@@ -309,8 +310,9 @@ fr.client = {
 
     let rats = rescue.relationships.rats.data === undefined ? rescue.relationships.rats : {};
     let ratHtml = [];
-    for (let rat of rats) {
-        ratHtml.push(`<span class="rat" data-rat-uuid="${rat.id}">${rat.attributes.name} ${rat.attributes.platform !== rescue.attributes.platform ? '<span class="badge badge-yellow">Wrong Platform!</span>' : ''}</span>`);
+    for (let ratID in rats) {
+      if(!rats.hasOwnProperty(ratID)) {continue;}
+      ratHtml.push(`<span class="rat" data-rat-uuid="${ratID}">${rats[ratID].attributes.name} ${rats[ratID].attributes.platform !== rescue.attributes.platform ? '<span class="badge badge-yellow">Wrong Platform!</span>' : ''}</span>`);
     }
     for (let rat of rescue.attributes.unidentifiedRats) {
       ratHtml.push(`<span class="rat-unidentified">${rat}</span> <span class="badge badge-yellow">unidentified</span>`);
@@ -329,7 +331,7 @@ fr.client = {
     }
 
     // Quotes
-    if (rescue.attributes.quotes.length > 0) {
+    if (rescue.attributes.quotes && rescue.attributes.quotes.length > 0) {
 
       let quotes = [];
       for (let quote of rescue.attributes.quotes) {
