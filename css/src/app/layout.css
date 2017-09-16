@@ -1,0 +1,85 @@
+/*Page layout rules*/
+
+#pageContent {
+  padding: 65px 15px;
+}
+#pageContent a {
+  text-decoration: none;
+}
+
+.container {
+  padding: 0 15px;
+}
+
+.row {
+  margin: 0 -15px;
+} 
+
+#columnSpacer {
+  transition: min-width .2s ease;
+  float: left;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  max-width: 16.66666667%;
+}
+
+#columnBoard {
+  transition: width .2s ease,
+              padding .2s ease;
+  width: 100%;
+  position: relative;
+  padding: 0 15px;
+  float: left;
+  min-height: 1px;
+}
+
+#columnDetail {
+  opacity: 0;
+  transition: opacity .2s ease,
+              padding .2s ease;
+  width: 100%;
+  position: relative;
+  padding: 0 15px;
+  float: left;
+  min-height: 1px;
+  margin-bottom: 55px;
+}
+body.rdetail-active #columnDetail {
+  opacity: 1;
+}
+
+@media(min-width: 992px) {
+  #columnSpacer {
+    min-width: 16.66666667%;
+    min-height: 1px;
+    transition: min-width .2s ease .2s;
+  }
+  body.rdetail-active #columnSpacer {
+    min-width: 0;
+    transition: min-width .2s ease;
+  }
+
+  #columnBoard {
+    width: 66.66666667%;
+    padding: 0;
+    margin-bottom: 50px;
+    transition: width .2s ease .2s,
+                padding .2s ease .2s;
+  }
+  body.rdetail-active #columnBoard {
+    width: 50%;
+    padding: 0 7.5px 0 15px;
+    transition: width .2s ease,
+                padding .2s ease;
+  }
+  #columnDetail {
+    padding: 0 15px 0 7.5px;
+    width: 50%;
+    transition: opacity .2s ease;
+  }
+  body.rdetail-active #columnDetail {
+    opacity: 1;
+    transition: opacity .2s ease .2s;
+  }
+}

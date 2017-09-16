@@ -1,0 +1,37 @@
+.badge {
+  background: rgb(var(--badgeNeutralColor));
+  color: rgb(var(--badgeFgColor));
+  padding: .10em .40em;
+  font-size: .78em;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+  font-family: "Open Sans", Arial, sans-serif;
+  transition: all 0.2s;
+}
+.badge.badge-red {
+  background: rgb(var(--badgeErrorColor));
+}
+.badge.badge-yellow {
+  background: rgb(var(--badgeWarningColor));
+}
+.badge.badge-green {
+  background: rgb(var(--badgeOkColor));
+}
+a .badge:hover {
+  background: rgba(var(--badgeNeutralColor), .2);
+  color: rgb(var(--badgeNeutralColor));
+}
+a .badge.badge-red:hover {
+  background: rgba(var(--badgeErrorColor), .2);
+  color: rgb(var(--badgeErrorColor));
+}
+a .badge.badge-yellow:hover {
+  background: rgba(var(--badgeWarningColor),.2);
+  color: rgb(var(--badgeWarningColor));
+}
+a .badge.badge-green:hover {
+  background: rgba(var(--badgeOkColor), .2);
+  color: rgb(var(--badgeOkColor));
+}
