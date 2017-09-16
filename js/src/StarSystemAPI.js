@@ -4,8 +4,8 @@
   /**
    * Class which gathers, formats, and manages star system information.
    */
-  function StarSystems() {}
-  let sap = StarSystems.prototype;
+  function StarSystemAPI() {}
+  let sap = StarSystemAPI.prototype;
 
   /**
    * Allows for definition of function aliases.
@@ -108,5 +108,5 @@
   };
   sap.delete = alias("deleteCachedInfo");
   
-  exports.StarSystems = StarSystems;
+  exports.StarSystemAPI = StarSystemAPI;
 }(this || {}));

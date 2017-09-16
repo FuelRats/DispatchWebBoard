@@ -1,4 +1,4 @@
-/* globals Clipboard, RatSocket, StarSystems, Util */
+/* globals Clipboard, RatSocket, StarSystemAPI, Util */
 fr.client = {
 
   clipboard: null,
@@ -56,7 +56,7 @@ fr.client = {
       $('body').addClass("clipboard-enable");
     }
 
-    this.sysApi = new StarSystems();
+    this.sysApi = new StarSystemAPI();
 
     this.socket = new RatSocket(fr.config.WssURI);
     this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx) )
