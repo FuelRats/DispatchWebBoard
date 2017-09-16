@@ -1,0 +1,12 @@
+/* Utility Classes */
+
+.float-right { float: right; }
+.ut-hidden { display: none !important; }
+.ut-transparent { opacity: 0 !important; }
+
+.tbl-border-none { border: none !important; }
+.tbl-border-top { border-top: 1px solid var(--tableBorderColor); }
+.tbl-border-bottom { border-bottom: 1px solid var(--tableBorderColor); }
+.tbl-border-left { border-left: 1px solid var(--tableBorderColor); }
+.tbl-border-right { border-right: 1px solid var(--tableBorderColor); }
+.tbl-border-box { border:  1px solid var(--tableBorderColor); }

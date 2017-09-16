@@ -5,24 +5,38 @@
 			"path": "."
 		}
 	],
+  "build_systems":
+  [
+    {
+      "name": "DWB Production Compile",
+      "cmd": ["bash", "./build.sh"],
+      "shell": true,
+      "working_dir": "${project_path}",
+      "windows": {
+        "cmd": ["%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", ".\\build.ps1"]
+      }
+    }
+  ],
   "SublimeLinter":
   {
     "linters":
     {
       "annotations": {
-        "@disable": false,
-        "args": [],
-        "errors": [
-          "FIXME"
-        ],
-        "excludes": [],
-        "warnings": [
-          "NOTE",
-          "README",
-          "TODO",
-          "XXX",
-          "@todo"
-        ]
+          "@disable": false,
+          "args": [],
+          "errors": [
+              "FIXME",
+              "DEBUG",
+              "@debug"
+          ],
+          "excludes": [],
+          "warnings": [
+              "NOTE",
+              "README",
+              "TODO",
+              "XXX",
+              "@todo"
+          ]
       },
       "csstree": {
         "@disable": false,

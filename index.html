@@ -12,28 +12,32 @@
   <title>Fuel Rats - Dispatch Board</title>
   <link rel="shortcut icon" href="favicon.ico" />
 
-  <!-- stylesheets -->
-  <link rel="stylesheet" type="text/css" href="css/lib/font-awesome.min.css?1" />
-  <link rel="stylesheet" type="text/css" href="css/lib.min.css?7" />
-  <link rel="stylesheet" type="text/css" href="css/app.min.css?10" />
-
-  <!-- Libraries -->
+  <!-- Libraries and Extensions -->
   <script type="text/javascript" src="js/lib/jquery.min.js?1"></script>
   <script type="text/javascript" src="js/lib/clipboard.min.js?1"></script>
-
-  <!-- App JS -->
-  <script type="text/javascript" src="config/fr.config.js?3"></script>
-  <script type="text/javascript" src="js/Util.min.js?1"></script>
   <script type="text/javascript">
     // https://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
     // Query string parsing extension.
     $.extend({getUrlParams:function(){for(var r,n=[],t=window.location.href.slice(window.location.href.indexOf("?")+1).split("&"),e=0;e<t.length;e++)r=t[e].split("="),n.push(r[0]),n[r[0]]=r[1];return n},getUrlParam:function(r){return $.getUrlParams()[r]}});
   </script>
-  <script type="text/javascript" src="config/fr.const.min.js?2"></script>
-  <script type="text/javascript" src="js/RatSocket.min.js?1"></script>
-  <script type="text/javascript" src="js/StarSystem.min.js?1"></script>
-  <script type="text/javascript" src="js/fr.user.min.js?5"></script>
-  <script type="text/javascript" src="js/fr.client.min.js?9"></script>
+  
+  <!-- stylesheets -->
+  <link rel="stylesheet" type="text/css" href="css/lib/font-awesome.min.css?1" />
+  <link rel="stylesheet" type="text/css" href="css/out/app.css?1" />
+
+  <!-- App JS -->
+  <script type="text/javascript" charset="utf-8" src="config/fr.config.js?1"></script>
+  <script type="text/javascript" charset="utf-8" src="js/out/app.js?1"></script>
+
+  <!-- un-minified APP JS/css. For dev/beta testing
+  <link rel="stylesheet" type="text/css" href="css/lib.min.css?7" />
+  <link rel="stylesheet" type="text/css" href="css/app.min.css?10" />
+  <script type="text/javascript" src="js/src/Util.js"></script>
+  <script type="text/javascript" src="js/src/fr.const.js"></script>
+  <script type="text/javascript" src="js/src/RatSocket.js"></script>
+  <script type="text/javascript" src="js/src/StarSystem.js"></script>
+  <script type="text/javascript" src="js/src/fr.user.js"></script>
+  <script type="text/javascript" src="js/src/fr.client.js"></script> -->
 </head>
 <!-- NOTE: Badge colors are unenclosed RGB values due to them being used in both RGB and RGBA statements.
      General support for color-mod or hex-alpha can't come fast enough
@@ -55,6 +59,13 @@
   --tableBorderColor: #ddd;
   --tableRowInactiveColor: khaki;
   --tableRowCoderedColor: mistyrose;
+  --textAccentRed: #D65050;
+  --textAccentBlack: #1A1A1A;
+  --textAccentGreen: #5CB85C;
+  --textAccentBlue: #5BC0DE;
+  --textAccentGrey: #AAAAAA;
+  --textAccentWhite: #FFFFFF;
+  --textAccentYellow: #F0AD4E;
   background-image: url(img/bg.jpg);
 -->
 <body class="loading" style="
@@ -75,13 +86,20 @@
   --tableBorderColor:      #3c3c3c;
   --tableRowInactiveColor: rgba(240, 230, 140, 0.25);
   --tableRowCoderedColor:  rgba(255, 87, 69, 0.25);
+  --textAccentRed:         #D65050;
+  --textAccentBlack:       #1A1A1A;
+  --textAccentGreen:       #5CB85C;
+  --textAccentBlue:        #5BC0DE;
+  --textAccentGrey:        #AAAAAA;
+  --textAccentWhite:       #FFFFFF;
+  --textAccentYellow:      #F0AD4E;
   background-image:        url(img/bgdark.jpg);
 ">
   <header class="navhead">
     <a class="branding" href="#" style="padding: 5px;"><img src="img/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></a>
     <div id="navbar" class="navbar navbar-right navbar-collapse">
       <ul class="navbar-content">
-        <li><a href="#" class="ed-clock" unselectable="on" onclick="return false;"></a></li>
+        <li><span class="ed-clock"></span></li>
       </ul>
     </div>
   </header>
