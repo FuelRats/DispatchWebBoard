@@ -18,17 +18,28 @@ fr.client = {
     $('#navbar-brand-title').text(fr.config.WebPageTitle);
     
     window.onpopstate = this.HandlePopState;
-    window.onbeforeunload = () => {
-        window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, $('body').attr('style'));
-    };
 
-    if(!window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`)) {
-      window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, 'default');
-    } else {
-      this.theme = window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`);
+    // Theming shit. This needs to be actually made a thing instead of just a hack to make it work.
+    let themever = 1;
+    function saveTheme() {
+      window.localStorage.setItem(`${fr.config.AppNamespace}.window.theme`, JSON.stringify({
+        "style": $('body').attr('style'),
+        "_meta": {
+          "version": themever
+        }
+      }));
     }
-    if(this.theme !== 'default') {
-      $('body').attr('style', this.theme);
+    window.onbeforeunload = () => {
+      saveTheme();
+    };
+    if(window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`)) {
+      this.theme = JSON.parse(window.localStorage.getItem(`${fr.config.AppNamespace}.window.theme`));
+      if(typeof this.theme !== "string" && this.theme._meta.version === themever) {
+        $('body').attr('style', this.theme.style);
+      } else {
+        //TODO preserve old theme 
+        saveTheme();
+      }
     }
 
     $('body').on('click', 'button.btn.btn-detail', (event) => {
@@ -126,11 +137,10 @@ fr.client = {
   HandlePopState: function(event) {
     this.SetSelectedRescue(event.state.a, true);
   },
-  AddRescue: function(ctx, data) {
-    if (!data) {
+  AddRescue: function(ctx, rescue) {
+    if (!rescue || rescue.attributes.status === "closed") {
       return;
     }
-    let rescue = data;
     let sid = rescue.id.split('-')[0];
 
     // Ensure rescue doesn't already exist. If it does, pass to update function instead.
@@ -153,12 +163,11 @@ fr.client = {
       });
     }
   },
-  UpdateRescue: function(ctx, data) {
-    if (!data) {
+  UpdateRescue: function(ctx, rescue) {
+    if (!rescue) {
       return;
     }
-
-    let rescue = data;
+    
     let sid = rescue.id.split('-')[0];
     let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
     if (rescueRow.length < 1) {
@@ -166,7 +175,7 @@ fr.client = {
       this.AddRescue(ctx, rescue);
       return;
     }
-    if (rescue.attributes.state === "closed") {
+    if (rescue.attributes.status === "closed") {
       setTimeout(function() {
         rescueRow.hide('slow')
           .remove();
@@ -335,7 +344,8 @@ fr.client = {
 
       let quotes = [];
       for (let quote of rescue.attributes.quotes) {
-        quotes.push(`[${Util.getDateHumanReadable(new Date(quote.createdAt))}] "${quote.message}" - ${quote.lastAuthor}`);
+        //<span class="rdetail-quote-time">[${quote.createdAt}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.author}
+        quotes.push(`<span class="rdetail-quote-time">[${Util.getDateHumanReadable(new Date(quote.createdAt))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
       }
 
       detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes[0]}</td></tr>`;

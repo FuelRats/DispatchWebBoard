@@ -154,6 +154,15 @@ td.rescue-row-detail button.btn.btn-detail {
   border: none !important;
 }
 
+.rdetail-quote-time {
+  font-size: .85em;
+  opacity: .75;
+  vertical-align: top;
+}
+.rdetail-quote-message {
+  font-style: italic;
+}
+
 #rescueDetail {
   background: var(--pageBgColor);
   border: 1px solid var(--tableBorderColor);

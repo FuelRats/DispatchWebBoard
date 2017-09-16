@@ -5,6 +5,18 @@
 			"path": "."
 		}
 	],
+  "build_systems":
+  [
+    {
+      "name": "DWB Production Compile",
+      "cmd": ["bash", "./build.sh"],
+      "shell": true,
+      "working_dir": "${project_path}",
+      "windows": {
+        "cmd": ["%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", ".\\build.ps1"]
+      }
+    }
+  ],
   "SublimeLinter":
   {
     "linters":
