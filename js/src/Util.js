@@ -169,7 +169,7 @@ function selfCheck() {
     validInstall = false;
   }
 
-  if (!StarSystems) {
+  if (!StarSystemAPI) {
     window.console.error("%cSLFCHK:SYSAPI - ERROR", 'color: red; font-weight: bold;');
     window.console.error(StarSystems);
     validInstall = false;
