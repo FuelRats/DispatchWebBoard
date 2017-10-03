@@ -1,4 +1,4 @@
-import {makeID, isValidProperty} from '../util/Util.js';
+import {makeID, isValidProperty} from '../helpers';
 export default class RatSocket {
   /**
    * Websocket handler for the FuelRats API

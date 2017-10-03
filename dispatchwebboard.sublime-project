@@ -1,33 +1,48 @@
 {
-	"folders": [
+	"SublimeLinter":
+	{
+		"linters":
+		{
+			"annotations":
+			{
+				"@disable": false,
+				"args":
+				[
+				],
+				"errors":
+				[
+					"FIXME",
+					"DEBUG",
+					"@debug"
+				],
+				"excludes":
+				[
+				],
+				"warnings":
+				[
+					"NOTE",
+					"README",
+					"TODO",
+					"XXX",
+					"@todo"
+				]
+			},
+			"csstree":
+			{
+				"@disable": false,
+				"args":
+				[
+				],
+				"excludes":
+				[
+				]
+			}
+		}
+	},
+	"folders":
+	[
 		{
 			"path": "."
 		}
-	],
-  "SublimeLinter": {
-    "linters": {
-      "annotations": {
-          "@disable": false,
-          "args": [],
-          "errors": [
-              "FIXME",
-              "DEBUG",
-              "@debug"
-          ],
-          "excludes": [],
-          "warnings": [
-              "NOTE",
-              "README",
-              "TODO",
-              "XXX",
-              "@todo"
-          ]
-      },
-      "csstree": {
-        "@disable": false,
-        "args": [],
-        "excludes": []
-      },
-    }
-  }
+	]
 }

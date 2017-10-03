@@ -2,24 +2,26 @@ import $ from 'jquery'; // I'm so sorry.
 import AppConfig from '../../app.config.js';
 import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
-import StarSystemAPI from './classes/StarSystemAPI.js';
+import * as StarSystemAPI from './api/StarSystemAPI.js';
 import * as frConst from './util/frConstants.js';
-import * as Util from './util/Util.js';
+import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable} from './helpers';
 
 let instance = null;
 export default class ClientControl {
   constructor(AuthHeader) {
+
     if(!instance) {
       instance = this;
+    }
 
-      this.clipboard = null;
-      this.CachedRescues = {};
-      this.SelectedRescue = null;
-      this.socket = null;
-      this.theme = 'default';
-      this.AuthHeader = AuthHeader;
+    this.clipboard = null;
+    this.CachedRescues = {};
+    this.SelectedRescue = null;
+    this.socket = null;
+    this.theme = 'default';
+    this.AuthHeader = AuthHeader;
     
-    window.console.debug("fr.client.init - Client manager loaded.");
+    window.console.debug('fr.client.init - Client manager loaded.');
     $('#navbar-brand-title').text(AppConfig.WebPageTitle);
     
     window.onpopstate = this.HandlePopState;
@@ -28,9 +30,9 @@ export default class ClientControl {
     let themever = 1;
     let saveTheme = function saveTheme() {
       window.localStorage.setItem(`${AppConfig.AppNamespace}.window.theme`, JSON.stringify({
-        "style": $('body').attr('style'),
-        "_meta": {
-          "version": themever
+        'style': $('body').attr('style'),
+        '_meta': {
+          'version': themever
         }
       }));
     };
@@ -39,64 +41,62 @@ export default class ClientControl {
     };
     if(window.localStorage.getItem(`${AppConfig.AppNamespace}.window.theme`)) {
       this.theme = JSON.parse(window.localStorage.getItem(`${AppConfig.AppNamespace}.window.theme`));
-      if(typeof this.theme !== "string" && this.theme._meta.version === themever) {
+      if(typeof this.theme !== 'string' && this.theme._meta.version === themever) {
         $('body').attr('style', this.theme.style);
       } else {
-        //TODO preserve old theme... somehow....
+        // TODO preserve old theme... somehow....
         saveTheme();
       }
     }
 
     $('body').on('click', 'button.btn.btn-detail', (event) => {
-        this.SetSelectedRescue(event.currentTarget.dataset.rescueSid);
-      }).on('click', '.class-toggle', (event) => {
-        $(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
-      }).on('click', 'a.panel-settings-toggle', (event) => {
-        window.alert("This doesn't do anything yet. lol!");
-        event.preventDefault();
-      });
+      this.SetSelectedRescue(event.currentTarget.dataset.rescueSid);
+    }).on('click', '.class-toggle', (event) => {
+      $(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
+    }).on('click', 'a.panel-settings-toggle', (event) => {
+      window.alert("This doesn't do anything yet. lol!");
+      event.preventDefault();
+    });
 
     if (Clipboard && Clipboard.isSupported()) {
       this.clipboard = new Clipboard('.btn-clipboard');
-      $('body').addClass("clipboard-enable");
+      $('body').addClass('clipboard-enable');
     }
 
     this.socket = new RatSocket(AppConfig.WssURI);
-    this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx) )
-              .on('rescueCreated', (ctx, data) => {
-                if(data.included) {
-                  data = Util.mapRelationships(data);
-                }
-                this.AddRescue(ctx, data.data);
-              }).on('rescueUpdated', (ctx, data) => {
-                if(data.included) {
-                  data = Util.mapRelationships(data);
-                }
-                for(let i = 0; i < data.data.length; i+=1) {
-                  this.UpdateRescue(ctx, data.data[i]);
-                }
-              }).connect(this.AuthHeader).then(() => this.socket.subscribe('0xDEADBEEF'))
-                                            .then(() => this.socket.request({action:["rescues", "read"], status: { $not: "closed" }}))
-                                            .then(res => this.PopulateBoard(res.context, res.data))
-                                            .catch(error => window.console.error(error)); //TODO proper error handling, display shutter with error message.
+    this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx))
+      .on('rescueCreated', (ctx, data) => {
+        if(data.included) { data = mapRelationships(data); }
+        this.AddRescue(ctx, data.data);
+      }).on('rescueUpdated', (ctx, data) => {
+        if(data.included) {
+          data = mapRelationships(data);
+        }
+        for(let i = 0; i < data.data.length; i += 1) {
+          this.UpdateRescue(ctx, data.data[i]);
+        }
+      }).connect(this.AuthHeader)
+      .then(() => this.socket.subscribe('0xDEADBEEF'))
+      .then(() => this.socket.request({action:['rescues', 'read'], status: { $not: 'closed' }}))
+      .then(res => this.PopulateBoard(res.context, res.data))
+      .catch(error => window.console.error(error)); // TODO proper error handling, display shutter with error message.
                                             
     this.UpdateClocks();
 
-    }
     return instance;
   }
 
-handleReconnect(ctx) {
+  handleReconnect(ctx) {
     ctx.request({
-      action: ["rescues", "read"],
-      status: { $not: "closed" },
+      action: ['rescues', 'read'],
+      status: { $not: 'closed' },
       meta: {
         'updateList': 'true'
       }
     }).then((data) => {
-      window.console.debug("ClientControl.handleReconnect - Data Received: ", data);
+      window.console.debug('ClientControl.handleReconnect - Data Received: ', data);
     }).catch((error) => {
-      window.console.error("fr.client.handleReconnect - reconnect data update failed!", error);
+      window.console.error('fr.client.handleReconnect - reconnect data update failed!', error);
     });
   }
 
@@ -108,13 +108,13 @@ handleReconnect(ctx) {
       }
     }
     this.ParseQueryString();
-    $('body').removeClass("loading");
+    $('body').removeClass('loading');
   }
 
   FetchRatInfo(ratId) {
     if (sessionStorage.getItem(`${AppConfig.AppNamespace}.rat.${ratId}`)) {
       let ratData = JSON.parse(sessionStorage.getItem(`${AppConfig.AppNamespace}.rat.${ratId}`));
-      window.console.debug("fr.client.FetchRatInfo - Cached Rat Requested: ", ratData);
+      window.console.debug('fr.client.FetchRatInfo - Cached Rat Requested: ', ratData);
       return Promise.resolve(ratData);
     } else {
       window.console.debug(`fr.client.FetchRatInfo - Gathering RatInfo: ${ratId}`);
@@ -134,12 +134,12 @@ handleReconnect(ctx) {
   }
 
   ParseQueryString() {
-    let activeRescue = Util.getUrlParam("a");
+    let activeRescue = getUrlParam('a');
     if (activeRescue && this.CachedRescues[activeRescue]) {
       this.SetSelectedRescue(activeRescue, true);
     } else if (history.replaceState) {
       window.history.replaceState({
-        "a": null
+        'a': null
       }, document.title, window.location.pathname);
     }
   }
@@ -149,7 +149,7 @@ handleReconnect(ctx) {
   }
 
   AddRescue(ctx, rescue) {
-    if (!rescue || rescue.attributes.status === "closed") {
+    if (!rescue || rescue.attributes.status === 'closed') {
       return;
     }
     let sid = rescue.id.split('-')[0];
@@ -160,17 +160,17 @@ handleReconnect(ctx) {
       return;
     }
 
-    window.console.debug("fr.client.AddRescue: Rescue Added to board.");
+    window.console.debug('fr.client.AddRescue: Rescue Added to board.');
 
     this.CachedRescues[sid] = rescue;
     this.appendHtml('#rescueRows', this.GetRescueTableRow(rescue));
 
-    if(typeof rescue.attributes.system === "string") {
+    if(typeof rescue.attributes.system === 'string') {
       // Retrieve system information now to speed things up later on....
-      StarSystemAPI.get(rescue.attributes.system).then(() => {
-        window.console.debug("fr.client.AddRescue - Additional info found! Caching...");
+      StarSystemAPI.getSystem(rescue.attributes.system).then(() => {
+        window.console.debug('fr.client.AddRescue - Additional info found! Caching...');
       }).catch(() =>{
-        window.console.debug("fr.client.AddRescue - No additional system information found.");
+        window.console.debug('fr.client.AddRescue - No additional system information found.');
       });
     }
   }
@@ -183,11 +183,11 @@ handleReconnect(ctx) {
     let sid = rescue.id.split('-')[0];
     let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
     if (rescueRow.length < 1) {
-      window.console.debug("fr.client.UpdateRescue: Attempted to update a non-existent rescue: ", rescue);
+      window.console.debug('fr.client.UpdateRescue: Attempted to update a non-existent rescue: ', rescue);
       this.AddRescue(ctx, rescue);
       return;
     }
-    if (rescue.attributes.status === "closed") {
+    if (rescue.attributes.status === 'closed') {
       setTimeout(function() {
         rescueRow.hide('slow')
           .remove();
@@ -235,19 +235,19 @@ handleReconnect(ctx) {
     }
 
     let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : {
-        "short": rescue.attributes.data.langID,
-        "long": rescue.attributes.data.langID
-      } :
+      'short': rescue.attributes.data.langID,
+      'long': rescue.attributes.data.langID
+    } :
       frConst.language.unknown;
 
     let platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown;
 
     let row = $(`<tr class="rescue" data-rescue-sid="${shortid}">` +
-      `<td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === "number" ? rescue.attributes.data.boardIndex : '?'}</td>` +
+      `<td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?'}</td>` +
       `<td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>` +
       `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
       `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
-      `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || "Unknown"}">${rescue.attributes.system || "Unknown"} <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span></td>` +
+      `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || 'Unknown'}">${rescue.attributes.system || 'Unknown'} <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span></td>` +
       `<td class="rescue-row-rats">${ratHtml.join(', ')}</td>` +
       `<td class="rescue-row-detail"><button type="button" class="btn btn-detail" data-rescue-sid="${shortid}" title="More details...">${frConst.iconSVG.more}</button></td>` +
       '</tr>');
@@ -257,23 +257,23 @@ handleReconnect(ctx) {
     } else {
       row.removeClass('rescue-codered');
     }
-    if (rescue.attributes.status === "inactive") {
+    if (rescue.attributes.status === 'inactive') {
       row.addClass('rescue-inactive');
     } else {
       row.removeClass('rescue-inactive');
     }
-    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join("\n") : 'No known quotes....');
+    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join('\n') : 'No known quotes....');
     return row;
   }
 
   UpdateClocks() {
     let nowTime = new Date();
 
-    $('.ed-clock').text(Util.getDateHumanReadable(nowTime));
+    $('.ed-clock').text(makeDateHumanReadable(nowTime));
 
     if (this.SelectedRescue !== null) {
-      $('.rdetail-timer').text(Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
-          .prop('title', 'Last Updated: ' + Util.getTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt)));
+      $('.rdetail-timer').text(makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
+        .prop('title', 'Last Updated: ' + makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt)));
     }
 
     setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
@@ -283,7 +283,7 @@ handleReconnect(ctx) {
     if (key === null || this.SelectedRescue && key.toString() === this.SelectedRescue.id.split('-')[0]) {
       this.SelectedRescue = null;
       if (history.pushState && !preventPush) {
-        window.history.pushState({"a": null}, document.title, window.location.pathname);
+        window.history.pushState({'a': null}, document.title, window.location.pathname);
       }
       this.UpdateRescueDetail();
       return;
@@ -295,7 +295,7 @@ handleReconnect(ctx) {
     window.console.debug(`fr.client.SetSelectedRescue - New SelectedRescue: ${this.CachedRescues[key].id}`);
     this.SelectedRescue = this.CachedRescues[key];
     if (history.pushState && !preventPush) {
-      window.history.pushState({"a": key}, document.title, window.location.pathname + `?a=${encodeURIComponent(key)}`);
+      window.history.pushState({'a': key}, document.title, window.location.pathname + `?a=${encodeURIComponent(key)}`);
     }
     this.UpdateRescueDetail();
   }
@@ -308,30 +308,52 @@ handleReconnect(ctx) {
     }
     let rescue = this.SelectedRescue;
 
-    let caseNo = typeof rescue.attributes.data.boardIndex === "number" ? `#${rescue.attributes.data.boardIndex} - ` : '';
+    let caseNo = typeof rescue.attributes.data.boardIndex === 'number' ? `#${rescue.attributes.data.boardIndex} - ` : '';
     let title = rescue.attributes.title ? rescue.attributes.title : rescue.attributes.client;
-    let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === "inactive" ? ' <span class="badge badge-yellow">Inactive</span>' : '');
+    let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === 'inactive' ? ' <span class="badge badge-yellow">Inactive</span>' : '');
 
     let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : 
-                   { "short": rescue.attributes.data.langID, "long": rescue.attributes.data.langID } : frConst.language.unknown;
+      { 'short': rescue.attributes.data.langID, 'long': rescue.attributes.data.langID } : frConst.language.unknown;
 
     let platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown;
 
-    //Construct detail html.
-    let detailContent = `<div class="rdetail-header"><div class="rdetail-title">${caseNo + title + tags}</div><div class="rdetail-timer">00:00:00</div></div>` +
-      '<table class="rdetail-body table table-rescue"><thead><td width="90px"></td><td></td></thead><tbody>' +
-      (rescue.attributes.data.IRCNick ? '<tr class="rdetail-info"><td class="rdetail-info-title">IRC Nick</td>' +
-        `<td class="rdetail-info-value">${rescue.attributes.data.IRCNick}</td></tr>` : '') +
-      (rescue.attributes.system ? '<tr class="rdetail-info"><td class="rdetail-info-title">System</td>' + 
-        `<td class="rdetail-info-value">${rescue.attributes.system}` + 
-        `<span class="float-right system-apidata" data-system-name="${rescue.attributes.system.toUpperCase()}"><i>Retrieving info...</i></span></td></tr>` : '') +
-      (rescue.attributes.platform ? '<tr class="rdetail-info"><td class="rdetail-info-title">Platform</td>' + 
-        `<td class="rdetail-info-value">${platform.long}</td></tr>` : '') +
-      (rescue.attributes.data.langID ? '<tr class="rdetail-info"><td class="rdetail-info-title">Language</td>' +
-        `<td class="rdetail-info-value">${language.long} (${language.short})</td></tr>` : '') +
-      '<tr class="rdetail-info"><td class="rdetail-info-title">UUID</td>' + 
-        `<td class="rdetail-info-value">${rescue.id}</td></tr>` +
-      '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>';
+    // Construct detail html.
+    let detailContent =                `<div class="rdetail-header">
+                                          <div class="rdetail-title">${caseNo + title + tags}</div>
+                                          <div class="rdetail-timer">00:00:00</div>
+                                        </div>
+                                        <table class="rdetail-body table table-rescue">
+                                        <thead>
+                                          <td width="90px"></td>
+                                          <td></td>
+                                        </thead>
+                                        <tbody>
+      ${rescue.attributes.data.IRCNick ? `<tr class="rdetail-info">
+                                            <td class="rdetail-info-title">IRC Nick</td>
+                                            <td class="rdetail-info-value">${rescue.attributes.data.IRCNick}</td>
+                                          </tr>` : ''}
+      ${rescue.attributes.system ?       `<tr class="rdetail-info">
+                                            <td class="rdetail-info-title">System</td>
+                                            <td class="rdetail-info-value">
+                                              ${rescue.attributes.system} 
+                                              <span class="float-right system-apidata" data-system-name="${rescue.attributes.system.toUpperCase()}">
+                                                <i>Retrieving info...</i>
+                                              </span>
+                                            </td>
+                                          </tr>` : ''}
+      ${rescue.attributes.platform ?     `<tr class="rdetail-info">
+                                            <td class="rdetail-info-title">Platform</td>
+                                            <td class="rdetail-info-value">${platform.long}</td>
+                                          </tr>` : ''}
+      ${rescue.attributes.data.langID ?  `<tr class="rdetail-info">
+                                            <td class="rdetail-info-title">Language</td>
+                                            <td class="rdetail-info-value">${language.long} (${language.short})</td>
+                                          </tr>` : ''}
+                                          <tr class="rdetail-info">
+                                            <td class="rdetail-info-title">UUID</td>
+                                            <td class="rdetail-info-value">${rescue.id}</td>
+                                          </tr>
+                                          <tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>`;
 
     let rats = rescue.relationships.rats.data === undefined ? rescue.relationships.rats : {};
     let ratHtml = [];
@@ -349,7 +371,7 @@ handleReconnect(ctx) {
         ratHtml[0] + '</td></tr>';
       if (ratHtml.length > 1) {
         for (let rh = 1; rh < ratHtml.length; rh++) {
-          detailContent +=`<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${ratHtml[rh]}</td></tr>`;
+          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${ratHtml[rh]}</td></tr>`;
         }
       }
       detailContent += '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>'; // Separator
@@ -360,8 +382,8 @@ handleReconnect(ctx) {
 
       let quotes = [];
       for (let quote of rescue.attributes.quotes) {
-        //<span class="rdetail-quote-time">[${quote.createdAt}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.author}
-        quotes.push(`<span class="rdetail-quote-time">[${Util.getDateHumanReadable(new Date(quote.createdAt))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
+        // <span class="rdetail-quote-time">[${quote.createdAt}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.author}
+        quotes.push(`<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(quote.createdAt))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
       }
 
       detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes[0]}</td></tr>`;
@@ -374,7 +396,7 @@ handleReconnect(ctx) {
     }
     detailContent += '</tbody></table>';
 
-    //Update the detail section.
+    // Update the detail section.
 
     window.console.debug(`fr.client.UpdateRescueDetail - Rescue DetailView Updated: ${rescue.id} :`, rescue);
 
@@ -387,21 +409,21 @@ handleReconnect(ctx) {
       return;
     }
 
-    window.console.debug("fr.client.UpdateRescueDetail - Checking sysapi for additional system info.");
+    window.console.debug('fr.client.UpdateRescueDetail - Checking sysapi for additional system info.');
     this.getSystemHtml(rescue).then((html) => {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`, html);
     }).catch(() => {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`,
-                   '<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>');
+        '<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>');
     });
   }
 
   getSystemHtml(rescue) {
     if(!rescue) {
-      return Promise.reject("");
+      return Promise.reject('');
     }
-    return StarSystemAPI.get(rescue.attributes.system).then((data) => {
-      window.console.debug("this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.");
+    return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
+      window.console.debug('this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.');
 
       let sysInfo = data;
       let sysInfoHtml = '';
@@ -420,9 +442,7 @@ handleReconnect(ctx) {
         });
         if (mainStar && frConst.scoopables.includes(mainStar.attributes.spectral_class)) {
           sysInfoHtml += ' <span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span> ';
-        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter(function(body) {
-            return frConst.scoopables.includes(body.attributes.spectral_class);
-          }).length > 0) {
+        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => frConst.scoopables.includes(body.attributes.spectral_class)).length > 0) {
           sysInfoHtml += ' <span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span> ';
         }
       }
@@ -435,9 +455,9 @@ handleReconnect(ctx) {
   }
   setHtml(target, html) {
     $(target)
-        .animate({ opacity: 0.2 }, 100)
-        .html(html)
-        .animate({ opacity: 1 }, 500);
+      .animate({ opacity: 0.2 }, 100)
+      .html(html)
+      .animate({ opacity: 1 }, 500);
   }
   replaceHtml(target, html) {
     $(target).replaceWith(html);

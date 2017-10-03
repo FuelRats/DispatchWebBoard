@@ -1,7 +1,8 @@
 import $ from 'jquery'; // I'm so sorry.
 import AppConfig from '../../app.config.js';
 import Client from './Client.js';
-import {mapRelationships, GetCookie, SetCookie, CanSetCookies, DelCookie} from './util/Util.js';
+import {mapRelationships, GetCookie, SetCookie, CanSetCookies, DelCookie} from './helpers';
+import * as FuelRatsApi from './api/FuelRatsApi';
 
 let instance = null;
 export default class UserControl {
@@ -15,15 +16,16 @@ export default class UserControl {
       this.AuthHeader = null;
 
       let authHeader = GetCookie(`${AppConfig.AppNamespace}.token`),
-      tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
-      token = !!tokenMatch && tokenMatch[1];
+        tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
+        token = !!tokenMatch && tokenMatch[1];
 
       window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
 
       if (token) {
         this.AuthHeader = token;
         if (CanSetCookies()) {
-          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milise
+          localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
         }
         if (window.history.replaceState) {
           window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
@@ -32,6 +34,7 @@ export default class UserControl {
         this.AuthHeader = authHeader.replace('Bearer ', '');
         if (CanSetCookies()) {
           SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
+          localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
         }
       } else {
         this.displayLogin();
@@ -46,12 +49,13 @@ export default class UserControl {
         window.console.debug(this.ApiData);
         this.handleLoginSuccess();
       } else {
-        this.getApiData(this.AuthHeader).then((data) => {
+        FuelRatsApi.getProfile().then(data => {
           this.ApiData = data;
           sessionStorage.setItem(`${AppConfig.AppNamespace}.user.ApiData`, JSON.stringify(this.ApiData));
+
           this.handleLoginSuccess();
-        })
-        .catch((error) => {
+
+        }).catch((error) => {
           this.handleApiDataFailure(error);
         });
       }
@@ -114,6 +118,7 @@ export default class UserControl {
    */
   logoutUser() {
     DelCookie(`${AppConfig.AppNamespace}.token`);
+    localStorage.setItem(`${AppConfig.AppNamespace}.token`, null);
     window.location.reload();
   }
 
@@ -143,49 +148,11 @@ export default class UserControl {
 
     window.history.replaceState('', document.title, window.location.pathname);
     $('button.login').on('click', () => {
-        window.location.href = encodeURI(`${AppConfig.ApiURI}oauth2/authorize?response_type=token&scope=rescue.read rescue.write rescue.delete&client_id=${AppConfig.ClientID}&redirect_uri=${window.location}`);
-      });
+      window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=rescue.read&response_type=token&state=iwanttologinplease`);
+    });
     $('body')
       .removeClass('loading')
       .addClass('shutter-force user-unauthenticated');
     $('#userMenu').attr("data-displaystate", "login");
-  }
-
-  /**
-   * Gets api profile for the user matching the given auth token.
-   * @param  {string}  token OAuth2 bearer token
-   * @return {Promise}       Resolves on response with the returned data.
-   *                         Rejects on error with object of the error data.
-   */
-  getApiData(token) {
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        url: AppConfig.ApiURI + 'profile',
-        beforeSend: (request) => {
-          request.setRequestHeader('Authorization', `Bearer ${token}`);
-          request.setRequestHeader('Accept', 'application/json');
-        },
-        success: (response) => {
-          if (response && response.data) {
-            window.console.debug('fr.user.getApiData - Retrieved authenticated user information: ', response);
-            resolve(mapRelationships(response).data);
-          } else {
-            window.console.debug("fr.user.getApiData - Invalid reponse from profile request.");
-            reject({
-              'request':null, 
-              'status':'error', 
-              'error':'Invalid Response'
-            });
-          }
-        },
-        error: (request, status, error) => {
-          reject({
-            'request': request,
-            'status': status,
-            'error': error
-          });
-        }
-      });
-    });
   }
 }
