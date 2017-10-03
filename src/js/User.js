@@ -148,7 +148,7 @@ export default class UserControl {
 
     window.history.replaceState('', document.title, window.location.pathname);
     $('button.login').on('click', () => {
-      window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=rescue.read&response_type=token&state=iwanttologinplease`);
+      window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=user.read.me rescue.read&response_type=token&state=iwanttologinplease`);
     });
     $('body')
       .removeClass('loading')
