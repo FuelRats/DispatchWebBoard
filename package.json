@@ -7,14 +7,21 @@
     "build": "gulp --production",
     "gulp": "gulp"
   },
-  "repository": { "type": "git", "url": "git+https://UncleClapton@github.com/FuelRats/DispatchWebBoard.git" },
-  "keywords": [ "fuelrats" ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://UncleClapton@github.com/FuelRats/DispatchWebBoard.git"
+  },
+  "keywords": [
+    "fuelrats"
+  ],
   "contributors": [
     "Cameron Welter <clapton@fuelrats.com> (https://www.uncleclapton.me/)",
     "Chris Gårdenberg <nolifeking@fuelrats.com> (https://www.itssimple.se/)"
   ],
   "license": "BSD-3-Clause",
-  "bugs": { "url": "https://github.com/FuelRats/DispatchWebBoard/issues" },
+  "bugs": {
+    "url": "https://github.com/FuelRats/DispatchWebBoard/issues"
+  },
   "homepage": "https://github.com/FuelRats/DispatchWebBoard#readme",
   "dependencies": {
     "clipboard": "^1.7.1",
@@ -31,6 +38,7 @@
     "react-dom": "^16.0.0",
     "uglify-es": "^3.1.2",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
+    "url": "^0.11.0",
     "webpack-stream": "^4.0.0",
     "webpack-strip-block": "^0.2.0"
   },
