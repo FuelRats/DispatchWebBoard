@@ -1,5 +1,5 @@
 import $ from 'jquery'; // I'm so sorry.
-import AppConfig from '../../app.config.js';
+import AppConfig from './config/config.js';
 import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
 import * as StarSystemAPI from './api/StarSystemAPI.js';
@@ -22,7 +22,7 @@ export default class ClientControl {
     this.AuthHeader = AuthHeader;
     
     window.console.debug('fr.client.init - Client manager loaded.');
-    $('#navbar-brand-title').text(AppConfig.WebPageTitle);
+    $('#navbar-brand-title').text(AppConfig.AppTitle);
     
     window.onpopstate = this.HandlePopState;
 

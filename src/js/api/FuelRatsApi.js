@@ -1,6 +1,6 @@
 
 // App Imports
-import AppConfig from '../../../app.config.js';
+import AppConfig from '../config/config.js';
 import { mapRelationships, http } from '../helpers';
 
 // Module Imports

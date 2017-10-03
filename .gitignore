@@ -1,6 +1,5 @@
 # User-specific project files.
-app.config.js
-rsync.config.js
+app.*.config.js
 *.sublime-workspace
 
 # Build directory

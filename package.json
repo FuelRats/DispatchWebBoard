@@ -4,7 +4,7 @@
   "description": "The official FuelRats rescue info tracking application.",
   "main": "js/app.js",
   "scripts": {
-    "build": "gulp --production",
+    "build": "gulp --env=prod",
     "gulp": "gulp"
   },
   "repository": {

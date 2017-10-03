@@ -1,5 +1,5 @@
 import $ from 'jquery'; // I'm so sorry.
-import AppConfig from '../../app.config.js';
+import AppConfig from './config/config.js';
 import Client from './Client.js';
 import {mapRelationships, GetCookie, SetCookie, CanSetCookies, DelCookie} from './helpers';
 import * as FuelRatsApi from './api/FuelRatsApi';
@@ -148,7 +148,7 @@ export default class UserControl {
 
     window.history.replaceState('', document.title, window.location.pathname);
     $('button.login').on('click', () => {
-      window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=user.read.me rescue.read&response_type=token&state=iwanttologinplease`);
+      window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=${AppConfig.AppScope}&response_type=token&state=iwanttologinplease`);
     });
     $('body')
       .removeClass('loading')

@@ -1,4 +1,4 @@
-import AppConfig from '../../../app.config.js';
+import AppConfig from '../config/config.js';
 import {http, isObject} from '../helpers';
 import url from 'url';
 

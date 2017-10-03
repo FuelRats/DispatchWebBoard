@@ -1,23 +1,33 @@
 /* jslint node:true */
 
-const gulp = require('gulp'),
+// Required Modules
+const 
+  gulp = require('gulp'),
   gulpUtil = require('gulp-util'),
   path = require('path'),
   del = require('del'),
   cpx = require('cpx'),
   mkdirp = require('mkdirp'),
   cleanCSS = require('gulp-clean-css'),
-  webpack = require('webpack-stream');
+  webpack = require('webpack'),
+  webpackStream = require('webpack-stream');
 
-const production = gulpUtil.env['production'] || gulpUtil.env['rs-prod'];
-const deploy = gulpUtil.env['deploy'];
+// Env Variables
+const 
+  buildEnvironment = gulpUtil.env['env'] || 'dev',
+  deploy = gulpUtil.env['deploy'];
 
-const paths = {
-  jsEntry: 'src/js/app.js',
-  cssEntry: 'src/css/app.css',
-  distDir: path.resolve(__dirname, 'deploy', 'dist'),
-  buildDir: 'deploy'
-};
+// Build Configs
+const 
+  gulpConf = require(`./app.${buildEnvironment}.config.js`),
+  paths = {
+    jsEntry: 'src/js/app.js',
+    cssEntry: 'src/css/app.css',
+    distDir: path.resolve(__dirname, 'deploy', 'dist'),
+    buildDir: 'deploy'
+  };
+
+// Tasks
 
 gulp.task('preBuild', function(next) {
   del([paths.buildDir]).then(() => {
@@ -27,9 +37,13 @@ gulp.task('preBuild', function(next) {
   });
 });
 
+
 gulp.task('postBuild', function(next) {
+
+  // Copy all static files from src dir.
   cpx.copySync('src/**/*.{html,png,jpg,ico}', paths.buildDir);
-  
+
+  // Deployment
   if(!deploy) {
     next();
     return;
@@ -39,10 +53,10 @@ gulp.task('postBuild', function(next) {
   const rsconf = Object.assign({
     root: `${paths.buildDir}/`,
     recursive: true
-  }, require('./rsync.config.js'));
+  }, gulpConf.rsync);
   
   if(!rsconf.hostname || !rsconf.destination) {
-    gulpUtil.log('Deployment failed. Invalid rsync.config.js');
+    gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
     next();
     return;
   }
@@ -52,7 +66,9 @@ gulp.task('postBuild', function(next) {
     .pipe(rsync(rsconf));
 });
 
+
 gulp.task('webpack', function() {
+  
   let conf = {
     bail: true,
     module: {
@@ -77,7 +93,24 @@ gulp.task('webpack', function() {
     }
   };
 
-  if(production) {
+  conf.plugins.push(new webpack.DefinePlugin({
+    ENV: {
+      FR: {
+        'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),
+        'APIURI': JSON.stringify(gulpConf.appconf.ApiURI),
+        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI)
+      },
+      APP: {
+        'CLIENTID': JSON.stringify(gulpConf.appconf.ClientID),
+        'APPTITLE': JSON.stringify(gulpConf.appconf.AppTitle),
+        'APPURI': JSON.stringify(gulpConf.appconf.AppURI),
+        'APPSCOPE': JSON.stringify(gulpConf.appconf.AppScope),
+        'APPNAMESPACE': JSON.stringify(gulpConf.appconf.AppNamespace)
+      }
+    }
+  }));
+
+  if(gulpConf.gulp.production) {
     // Minify
     const ujs = require('uglifyjs-webpack-plugin');
     conf.plugins.push(new ujs({
@@ -116,7 +149,7 @@ gulp.task('webpack', function() {
   }
 
   return gulp.src(paths.jsEntry)
-    .pipe(webpack(conf))
+    .pipe(webpackStream(conf))
     .pipe(gulp.dest(paths.distDir));
 });
 
@@ -125,11 +158,13 @@ gulp.task('cleancss', function() {
     .pipe(cleanCSS({
       level: 2,
       inline: ['local', 'fonts.googleapis.com'],
-      format: production ? false : 'beautify'
+      format: gulpConf.gulp.production ? false : 'beautify'
     }))
     .pipe(gulp.dest(paths.distDir));
 });
 
+
+// Task Defaults and Shortcuts
 gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss'), 'postBuild'));
 gulp.task('js', gulp.series('webpack', 'postBuild'));
 gulp.task('css', gulp.series('cleancss', 'postBuild'));
