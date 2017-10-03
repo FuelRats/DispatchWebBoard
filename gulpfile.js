@@ -9,9 +9,8 @@ const gulp = require('gulp'),
   cleanCSS = require('gulp-clean-css'),
   webpack = require('webpack-stream');
 
-const production = gulpUtil.env.production;
-const deploy = gulpUtil.env.deploy;
-
+const production = gulpUtil.env['production'] || gulpUtil.env['rs-prod'];
+const deploy = gulpUtil.env['deploy'];
 
 const paths = {
   jsEntry: 'src/js/app.js',
