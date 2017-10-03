@@ -43,7 +43,7 @@ export default class RatSocket {
         }});
       }, 60000);
 
-      this.once("ratsocket:connect", (context, data) => {
+      this.once("connection", (context, data) => {
         window.clearTimeout(rejectTimeout);
         window.console.debug(`RatSocket - Connection successful!`);
         resolve({context, data});
