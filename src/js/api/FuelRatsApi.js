@@ -16,5 +16,5 @@ export function getProfile() {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
     }
-  }).then(response => { return mapRelationships(response); });
+  }).then(response => { return mapRelationships(response.json()).data; });
 }
