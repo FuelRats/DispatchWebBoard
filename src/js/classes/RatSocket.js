@@ -67,7 +67,7 @@ export default class RatSocket {
   _reconnect() {
     if(this.currentToken !== null) {
       window.console.debug("RatSocket - Attempting reconnect with last known bearer token.... ", this);
-      this.createSocket(this.currentToken);
+      this.connect(this.currentToken);
     } else {
       window.console.debug("RatSocket - A reconnect was attempted, but no token was found!");
     }
