@@ -101,7 +101,7 @@ export default class ClientControl {
   }
 
   PopulateBoard(ctx, data) {
-    let rescues = data.data;
+    let rescues = mapRelationships(data).data;
     for (let i in rescues) {
       if (rescues.hasOwnProperty(i)) {
         this.AddRescue(ctx, rescues[i]);
