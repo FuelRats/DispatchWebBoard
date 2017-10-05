@@ -1,0 +1,49 @@
+{
+  "name": "dispatch-web-board",
+  "version": "0.5.0",
+  "description": "The official FuelRats rescue info tracking application.",
+  "main": "js/app.js",
+  "scripts": {
+    "build": "gulp --env=prod",
+    "gulp": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://UncleClapton@github.com/FuelRats/DispatchWebBoard.git"
+  },
+  "keywords": [
+    "fuelrats"
+  ],
+  "contributors": [
+    "Cameron Welter <clapton@fuelrats.com> (https://www.uncleclapton.me/)",
+    "Chris Gårdenberg <nolifeking@fuelrats.com> (https://www.itssimple.se/)"
+  ],
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/FuelRats/DispatchWebBoard/issues"
+  },
+  "homepage": "https://github.com/FuelRats/DispatchWebBoard#readme",
+  "dependencies": {
+    "clipboard": "^1.7.1",
+    "cpx": "^1.5.0",
+    "del": "^3.0.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-rsync": "0.0.8",
+    "gulp-util": "^3.0.8",
+    "jquery": "^3.2.1",
+    "mkdirp": "^0.5.1",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "uglify-es": "^3.1.2",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
+    "url": "^0.11.0",
+    "webpack-stream": "^4.0.0",
+    "webpack-strip-block": "^0.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.7.2",
+    "eslint-plugin-react": "^7.4.0"
+  }
+}

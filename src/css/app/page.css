@@ -1,0 +1,28 @@
+/* html/body level rules */
+
+html,body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+html {
+  font-size: 10px;
+}
+body {
+  font-size: 14px;
+  font-family: "Open Sans", Arial, sans-serif;
+  overflow: scroll;
+  background: var(--pageBgColorDark) url(../static/bg.jpg) no-repeat center fixed;
+  background-size: cover;
+}
+a, a:hover, a:active, a:focus {
+  outline: 0;
+}
+
+*, *::after, *::before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}

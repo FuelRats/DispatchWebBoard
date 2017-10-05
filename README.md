@@ -1,27 +1,52 @@
 # DispatchWebBoard
 The Official FuelRats rescue info tracking application.
 
-## DWB Deployment (How do I use this thing again?)
+## Deployment (How do I use this thing again?)
 It is recommended that users wishing to just use the board should use [the official live version](https://dispatch.fuelrats.com) instead of running their own. 
 
 Setting up the DWB for your own uses requires oauth client registration with the Fuel Rats API. If you wish to develop and test against a live server, contact Clapton on the FuelRats IRC. ( [IRC Web Client](http://kiwi.fuelrats.com:7779/) / irc.fuelrats.com:+6697 ) The following guide assumes you have already done so, and have already registered your client.
+### Prerequisites 
 
-### Setup Steps
-* Clone the repo branch of your choosing to a directory on your webserver.
-  * We recommend NGINX or Apache
-  * Users wishing to use the FuelRats production API are REQUIRED to have a properly configured https-only server.
-* Configure the board's setting files
-  * Navigate to the config folder
-  * Configure fr.config.js
-    * Duplicate and rename fr.config_example.js to fr.config.js
+* Node.js & NPM (for building the app)
+* A Web Server (We recommend NGINX)
+
+### Setup
+1. Clone the repo `git clone https://github.com/FuelRats/DispatchWebBoard.git`
+2. install dependencies
+    * `npm install`
+3. Configure
+    * Duplicate and rename AppConfig_example.js to AppConfig.js, then open it.
     * Note the debug boolean at the top. Use this to control console information output.
     * Ensure WssURI and ApiURI are pointed to the correct api address. ClientID should be the UUID given to you upon oauth client creation.
-    * WebPageTitle and CookieBase can be set to any value of your choosing.
-  * Configure fr.const.js
-    * Nothing needs to be done here, however you can change strings to how you see fit. const will soon contain all major strings to easily support translations in the future.
-* Load the page from your browser for the first time, and attempt to login. If all is done right, you should now have a working dispatch board. ready for development testing
+    * WebPageTitle and AppNamespace can be set to any value of your choosing.
+4. Build
+    * `npm run build`
+5. Setup NGINX
+    * Either copy the generated "deploy" directory to a directory on your webserver, or point the webserver directly to it.
+
+After this, load the page from the server and ensure that it's working correctly. If you can login and get rescues, then all should be running properly.
 
 ## Contributing
 PRs are always welcome! If you wish to see open issues, visit the [FuelRats JIRA](https://jira.fuelrats.com/projects/DWB/issues) (Project key: DWB)
 
 See our [CONTRIBUTING.md](CONTRIBUTING.md) before developing for the Dispatch Web Board.
+
+### Notes for Development
+* We use gulp for our build tasks. We recommend you install gulp-cli (`npm i -g gulp-cli`) to build the project for development, however `npm run gulp` works as well.
+* Use `gulp default` or `gulp` when building for development.
+* This project's gulpfile has a rsync runner which is ran during the postBuild phase. To use it, setup the `rsync.config.js` file first, then activate it by using the `--deploy` flag.
+* the gulp `--production` flag activates uglifyJS, cleans up any calls to `window.console.debug()`, and removes any code wrapped in `/* DEVBLOCK:START */` and `/* DEVBLOCK:END */`.
+
+
+## Dependencies / Packages
+
+### Build Dependencies
+* [clean-css](https://github.com/jakubpawlowicz/clean-css) - CSS compressor / build tool
+* [gulp 4](https://github.com/gulpjs/gulp/tree/4.0) - Task runner.
+* [npm](https://github.com/npm/npm) - Package Manager
+* [uglify-es](https://github.com/mishoo/UglifyJS2/tree/harmony) - JavaScript compressor
+* [Webpack](https://github.com/webpack/webpack) - JavaScript bundler / build tool
+
+### Libraries
+* [clipboard.js](https://github.com/zenorocha/clipboard.js) - click-to-copy library.
+* [jQuery](https://github.com/jquery/jquery) - "The oversized swiss army knife".
