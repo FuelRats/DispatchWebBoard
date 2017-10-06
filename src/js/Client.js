@@ -24,7 +24,7 @@ export default class ClientControl {
     window.console.debug('fr.client.init - Client manager loaded.');
     $('#navbar-brand-title').text(AppConfig.AppTitle);
     
-    window.onpopstate = this.HandlePopState;
+    window.onpopstate = this.HandlePopState.bind(this);
 
     // Theming shit. This needs to be actually made a thing instead of just a hack to make it work.
     let themever = 1;
