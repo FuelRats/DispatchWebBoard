@@ -93,11 +93,22 @@ export default class ClientControl {
       meta: {
         'updateList': 'true'
       }
-    }).then((data) => {
-      window.console.debug('ClientControl.handleReconnect - Data Received: ', data);
+    }).then((response) => {
+      this.ReloadBoard(response.context, response.data)
     }).catch((error) => {
       window.console.error('fr.client.handleReconnect - reconnect data update failed!', error);
     });
+  }
+
+  ReloadBoard(ctx, data) {
+    let oldSelected = this.SelectedRescue ? this.SelectedRescue.id.split('-')[0] : null;
+    
+    this.SelectedRescue = null;
+    this.CachedRescues = {};
+    this.setHtml('#rescueRows', '');
+    
+    this.PopulateBoard(ctx, data);
+    this.SetSelectedRescue(oldSelected);
   }
 
   PopulateBoard(ctx, data) {
