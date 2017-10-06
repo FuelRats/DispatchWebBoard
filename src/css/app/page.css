@@ -13,7 +13,7 @@ html {
 body {
   font-size: 14px;
   font-family: "Open Sans", Arial, sans-serif;
-  overflow: scroll;
+  overflow: auto;
   background: var(--pageBgColorDark) url(../static/bg.jpg) no-repeat center fixed;
   background-size: cover;
 }
