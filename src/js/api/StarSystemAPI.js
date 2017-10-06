@@ -1,5 +1,5 @@
 import AppConfig from '../config/config.js';
-import {http, isObject} from '../helpers';
+import {http, isObject, htmlSanitizeObject} from '../helpers';
 import url from 'url';
 
 export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
@@ -21,7 +21,7 @@ export const getSystem = (system) => {
 
     return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
       .then(response => {
-        let sysData = processNewStarSystemData(response.json());
+        let sysData = htmlSanitizeObject(processNewStarSystemData(response.json()));
 
         sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
         
@@ -31,7 +31,7 @@ export const getSystem = (system) => {
   }
 };
 
-const processNewStarSystemData = function processNewStarSystemData(data) {
+const processNewStarSystemData = (data) => {
   if (!isObject(data) || data.meta.results.returned < 1) {
     return null;
   }

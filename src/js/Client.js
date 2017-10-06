@@ -4,7 +4,7 @@ import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
 import * as StarSystemAPI from './api/StarSystemAPI.js';
 import * as frConst from './util/frConstants.js';
-import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable} from './helpers';
+import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable, htmlSanitizeObject} from './helpers';
 
 let instance = null;
 export default class ClientControl {
@@ -148,10 +148,11 @@ export default class ClientControl {
     this.SetSelectedRescue(event.state.a, true);
   }
 
-  AddRescue(ctx, rescue) {
-    if (!rescue || rescue.attributes.status === 'closed') {
+  AddRescue(ctx, data) {
+    if (!data || data.attributes.status === 'closed') {
       return;
     }
+    let rescue = htmlSanitizeObject(data);
     let sid = rescue.id.split('-')[0];
 
     // Ensure rescue doesn't already exist. If it does, pass to update function instead.
@@ -175,12 +176,13 @@ export default class ClientControl {
     }
   }
 
-  UpdateRescue(ctx, rescue) {
-    if (!rescue) {
+  UpdateRescue(ctx, data) {
+    if (!data) {
       return;
     }
-    
+    let rescue = htmlSanitizeObject(data);
     let sid = rescue.id.split('-')[0];
+
     let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
     if (rescueRow.length < 1) {
       window.console.debug('fr.client.UpdateRescue: Attempted to update a non-existent rescue: ', rescue);
