@@ -6,8 +6,8 @@ export default class RatSocket {
    * @return {Object}     - Current instance of RatSocket
    */
   constructor(uri, token) {
-    if(typeof uri !== "string") {
-      throw new TypeError("URI must be a string");
+    if(typeof uri !== 'string') {
+      throw new TypeError('URI must be a string');
     }
     this.WSSUri = uri;
     this.socket = null;
@@ -29,27 +29,27 @@ export default class RatSocket {
    * @return {Promise} - Promise to be resolved when the API's welcome message is received.
    */
   connect(token) {
-    if(typeof token !== "string" ) {
-      throw TypeError("Invalid token string");
+    if(typeof token !== 'string') {
+      throw TypeError('Invalid token string');
     }
 
     this.currentToken = token;
     return new Promise ((resolve,reject) => {
       let rejectTimeout = window.setTimeout(() => {
-        window.console.error(`RatSocket - Connection failed.`);
-        reject({"context": this, "data": {
+        window.console.error('RatSocket - Connection failed.');
+        reject({'context': this, 'data': {
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
           'meta': {}
         }});
       }, 60000);
 
-      this.once("connection", (context, data) => {
+      this.once('connection', (context, data) => {
         window.clearTimeout(rejectTimeout);
-        window.console.debug(`RatSocket - Connection successful!`);
+        window.console.debug('RatSocket - Connection successful!');
         resolve({context, data});
       }).once('ratsocket:error', (context, data) => {
         window.clearTimeout(rejectTimeout);
-        reject({"context": context, "data": {
+        reject({'context': context, 'data': {
           'errors': [ {'code': 500, 'detail': data, 'status': 'Error.', 'title': 'Error.'} ],
           'meta': {}
         }});
@@ -60,34 +60,34 @@ export default class RatSocket {
       this.socket.onclose   = (data) => {  this._onSocketClose(data);  };
       this.socket.onerror   = (data) => {  this._onSocketError(data);  };
       this.socket.onmessage = (data) => { this._onSocketMessage(data); };
-      window.console.debug("RatSocket - Socket opened, awaiting connection confirmation...");
+      window.console.debug('RatSocket - Socket opened, awaiting connection confirmation...');
     });
   }
 
   _reconnect() {
     if(this.currentToken !== null) {
-      window.console.debug("RatSocket - Attempting reconnect with last known bearer token.... ", this);
+      window.console.debug('RatSocket - Attempting reconnect with last known bearer token.... ', this);
       this.connect(this.currentToken);
     } else {
-      window.console.debug("RatSocket - A reconnect was attempted, but no token was found!");
+      window.console.debug('RatSocket - A reconnect was attempted, but no token was found!');
     }
   }
 
   _onSocketOpen(data) {
     if (this.reconnected) {
-      window.console.debug("RatSocket - Socket reconnected! ", data);
-      this._emitEvent("ratsocket:reconnect", data);
+      window.console.debug('RatSocket - Socket reconnected! ', data);
+      this._emitEvent('ratsocket:reconnect', data);
       this.reconnected = false;
       return;
     }
-    this._emitEvent("ratsocket:connect", data);
-    window.console.debug("RatSocket - Socket Connected!", data);
+    this._emitEvent('ratsocket:connect', data);
+    window.console.debug('RatSocket - Socket Connected!', data);
   }
 
   _onSocketClose(dc) {
     if (dc.wasClean === false) {
-      window.console.debug("RatSocket - Disconnected from API! Attempting to reconnect... ", dc);
-      this._emitEvent("ratsocket:disconnect", dc);
+      window.console.debug('RatSocket - Disconnected from API! Attempting to reconnect... ', dc);
+      this._emitEvent('ratsocket:disconnect', dc);
       this.initComp = false;
       setTimeout(() => {
         window.console.debug(this);
@@ -106,7 +106,6 @@ export default class RatSocket {
     window.console.debug('RatSocket - Received message: ', data);
     
     let _data = JSON.parse(data.data);
-
     // Handle request responses
     if(typeof _data.meta.reqID === 'string' && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
       window.console.debug(`RatSocket - Detected request response. closing request: ${_data.meta.reqID}`);
@@ -126,7 +125,7 @@ export default class RatSocket {
    * Sends the given JSON Object to the API.
    * 
    * @param  {Object} data        - Object to be sent.
-   * @param  {Array} data.action - Method to call on the API in the format of ["Controller","Method"]
+   * @param  {Array} data.action - Method to call on the API in the format of ['Controller','Method']
    * @param  {Object} data.data   - Serves as the message body to be sent to the given method
    * @param  {Object} data.meta   - Metadata to be returned with the message response.
    * @return {Object}             - Current instance of RatSocket
@@ -159,7 +158,7 @@ export default class RatSocket {
   }
 
   /**
-   * Promise "wrapper" for RatSocket.send.
+   * Promise 'wrapper' for RatSocket.send.
    * 
    * @param  {Object}  data         - Object to be sent.
    * @param  {Object}  opts         - Request options. All options are optional.
@@ -209,16 +208,16 @@ export default class RatSocket {
    */
   subscribe(streamName, opts) {
     return this.request({
-      "action": ['stream','subscribe'],
-      "id": streamName,
-      "data": {},
-      "meta": {}
+      'action': ['stream','subscribe'],
+      'id': streamName,
+      'data': {},
+      'meta': {}
     }, opts || {
       'timeout': 15
     });
   }
 
-  /*====== Event Handling ======*/
+  /* ====== Event Handling ====== */
   
   /**
    * Adds listener for the given event name.
@@ -228,7 +227,7 @@ export default class RatSocket {
    * @return {Object}        - Current instance of RatSocket.
    */
   on(evt, func) {
-    if(typeof evt !== "string" || typeof func === null) {
+    if(typeof evt !== 'string' || func === null) {
       throw new TypeError('Invalid argument(s)');
     }
 
@@ -237,8 +236,8 @@ export default class RatSocket {
     }
 
     this.listeners[evt].push(typeof func === 'object' ? func : { 
-      "func": func, 
-      "once": false 
+      'func': func, 
+      'once': false 
     });
 
     return this;
@@ -259,7 +258,7 @@ export default class RatSocket {
    * @return {Object}        - Current instance of RatSocket.
    */
   off(evt, func) {
-    if(typeof evt !== "string" || typeof func !== "function") {
+    if(typeof evt !== 'string' || typeof func !== 'function') {
       throw new TypeError('Invalid argument(s)');
     }
 
@@ -283,12 +282,12 @@ export default class RatSocket {
    * @return {Object}         - Current instance of RatSocket.
    */
   _emitEvent(evt, args) {
-    if (typeof evt !== "string") {
-      throw new TypeError("Event must be string");
+    if (typeof evt !== 'string') {
+      throw new TypeError('Event must be string');
     }
 
     if(!this.listeners.hasOwnProperty(evt)) {
-      window.console.debug(`RatSocket - Event: "${evt}" has no listener. Returning...`);
+      window.console.debug(`RatSocket - Event: '${evt}' has no listener. Returning...`);
       return;
     }
 
@@ -309,7 +308,7 @@ export default class RatSocket {
       // Execute function and get response from it.
       let res = listener.func.apply(this, evtargs);
 
-      // If the listener was set to run once, or returned as "true", remove it from the listener list.
+      // If the listener was set to run once, or returned as 'true', remove it from the listener list.
       if(listener.once === true || res === true) {
         this.off(evt, listener.func);
       }

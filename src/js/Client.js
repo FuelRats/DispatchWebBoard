@@ -4,7 +4,7 @@ import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
 import * as StarSystemAPI from './api/StarSystemAPI.js';
 import * as frConst from './util/frConstants.js';
-import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable} from './helpers';
+import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable, htmlSanitizeObject} from './helpers';
 
 let instance = null;
 export default class ClientControl {
@@ -24,7 +24,7 @@ export default class ClientControl {
     window.console.debug('fr.client.init - Client manager loaded.');
     $('#navbar-brand-title').text(AppConfig.AppTitle);
     
-    window.onpopstate = this.HandlePopState;
+    window.onpopstate = this.HandlePopState.bind(this);
 
     // Theming shit. This needs to be actually made a thing instead of just a hack to make it work.
     let themever = 1;
@@ -93,15 +93,26 @@ export default class ClientControl {
       meta: {
         'updateList': 'true'
       }
-    }).then((data) => {
-      window.console.debug('ClientControl.handleReconnect - Data Received: ', data);
+    }).then((response) => {
+      this.ReloadBoard(response.context, response.data)
     }).catch((error) => {
       window.console.error('fr.client.handleReconnect - reconnect data update failed!', error);
     });
   }
 
+  ReloadBoard(ctx, data) {
+    let oldSelected = this.SelectedRescue ? this.SelectedRescue.id.split('-')[0] : null;
+    
+    this.SelectedRescue = null;
+    this.CachedRescues = {};
+    this.setHtml('#rescueRows', '');
+    
+    this.PopulateBoard(ctx, data);
+    this.SetSelectedRescue(oldSelected);
+  }
+
   PopulateBoard(ctx, data) {
-    let rescues = data.data;
+    let rescues = mapRelationships(data).data;
     for (let i in rescues) {
       if (rescues.hasOwnProperty(i)) {
         this.AddRescue(ctx, rescues[i]);
@@ -148,10 +159,11 @@ export default class ClientControl {
     this.SetSelectedRescue(event.state.a, true);
   }
 
-  AddRescue(ctx, rescue) {
-    if (!rescue || rescue.attributes.status === 'closed') {
+  AddRescue(ctx, data) {
+    if (!data || data.attributes.status === 'closed') {
       return;
     }
+    let rescue = htmlSanitizeObject(data);
     let sid = rescue.id.split('-')[0];
 
     // Ensure rescue doesn't already exist. If it does, pass to update function instead.
@@ -175,12 +187,13 @@ export default class ClientControl {
     }
   }
 
-  UpdateRescue(ctx, rescue) {
-    if (!rescue) {
+  UpdateRescue(ctx, data) {
+    if (!data) {
       return;
     }
-    
+    let rescue = htmlSanitizeObject(data);
     let sid = rescue.id.split('-')[0];
+
     let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
     if (rescueRow.length < 1) {
       window.console.debug('fr.client.UpdateRescue: Attempted to update a non-existent rescue: ', rescue);
