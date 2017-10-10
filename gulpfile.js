@@ -17,12 +17,8 @@ const
 // Utility Functions
 
 function makeID(length = 24) {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let text = [];
-  let i = 0;
-  for (i = 0; i < length; i += 1) {
-    text.push(chars.charAt(Math.floor(Math.random() * chars.length)));
-  }
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', text = [];
+  for (let i = 0; i < length; i += 1) { text.push(chars.charAt(Math.floor(Math.random() * chars.length))); }
   return text.join('');
 }
 
@@ -30,8 +26,8 @@ function makeID(length = 24) {
 
 const 
   buildEnvironment = gulpUtil.env['env'] || 'dev', // Sets which app config to use
+  indexSuffix = gulpUtil.env['index'] || 'main',   // Sets which index file to use
   deploy = gulpUtil.env['deploy'],                 // Enables automatic deployment to remote server
-  offline = gulpUtil.env['offline'],               // Build with the "offline" index instead.
   fingerprint = makeID();                          // Randomized fingerprint for the build.
 
 
@@ -40,9 +36,9 @@ const
 const 
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
-    buildDir: 'deploy',
     jsEntry: 'src/js/app.js',
     cssEntry: 'src/css/app.css',
+    buildDir: 'deploy',
     distDir: path.resolve(__dirname, 'deploy', 'dist')
   };
 
@@ -56,17 +52,13 @@ gulp.task('preBuild', function(next) {
   });
 });
 
-
 gulp.task('postBuild', function(next) {
 
   // Copy all static files from src dir.
   cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir);
 
   // Deployment
-  if(!deploy) {
-    next();
-    return;
-  }
+  if(!deploy) { next(); return; }
 
   const rsync = require('gulp-rsync');
   const rsconf = Object.assign({
@@ -186,7 +178,7 @@ gulp.task('cleancss', function() {
 });
 
 gulp.task('html', function() {
-  return gulp.src(offline ? './src/index_closed.html' : './src/index.html')
+  return gulp.src(`./src/index.${indexSuffix}.html`)
     .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
     .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
     .pipe(rename('index.html'))
