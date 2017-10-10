@@ -8,23 +8,42 @@ const
   del = require('del'),
   cpx = require('cpx'),
   mkdirp = require('mkdirp'),
+  rename = require('gulp-rename'),
+  inject = require('gulp-inject-string'),
   cleanCSS = require('gulp-clean-css'),
   webpack = require('webpack'),
   webpackStream = require('webpack-stream');
 
-// Env Variables
+// Utility Functions
+
+function makeID(length = 24) {
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = [];
+  let i = 0;
+  for (i = 0; i < length; i += 1) {
+    text.push(chars.charAt(Math.floor(Math.random() * chars.length)));
+  }
+  return text.join('');
+}
+
+// Variables
+
 const 
-  buildEnvironment = gulpUtil.env['env'] || 'dev',
-  deploy = gulpUtil.env['deploy'];
+  buildEnvironment = gulpUtil.env['env'] || 'dev', // Sets which app config to use
+  deploy = gulpUtil.env['deploy'],                 // Enables automatic deployment to remote server
+  offline = gulpUtil.env['offline'],               // Build with the "offline" index instead.
+  fingerprint = makeID();                          // Randomized fingerprint for the build.
+
 
 // Build Configs
+
 const 
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
+    buildDir: 'deploy',
     jsEntry: 'src/js/app.js',
     cssEntry: 'src/css/app.css',
-    distDir: path.resolve(__dirname, 'deploy', 'dist'),
-    buildDir: 'deploy'
+    distDir: path.resolve(__dirname, 'deploy', 'dist')
   };
 
 // Tasks
@@ -41,7 +60,7 @@ gulp.task('preBuild', function(next) {
 gulp.task('postBuild', function(next) {
 
   // Copy all static files from src dir.
-  cpx.copySync('src/**/*.{html,png,jpg,ico}', paths.buildDir);
+  cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir);
 
   // Deployment
   if(!deploy) {
@@ -75,7 +94,7 @@ gulp.task('webpack', function() {
       rules: []
     },
     output: {
-      filename: 'app.js'
+      filename: `app.${fingerprint}.js`
     },
     plugins: [],
     stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
@@ -160,11 +179,22 @@ gulp.task('cleancss', function() {
       inline: ['local', 'fonts.googleapis.com'],
       format: gulpConf.gulp.production ? false : 'beautify'
     }))
+    .pipe(rename({
+      suffix: `.${fingerprint}`
+    }))
     .pipe(gulp.dest(paths.distDir));
+});
+
+gulp.task('html', function() {
+  return gulp.src(offline ? './src/index_closed.html' : './src/index.html')
+    .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
+    .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
+    .pipe(rename('index.html'))
+    .pipe(gulp.dest(paths.buildDir))
 });
 
 
 // Task Defaults and Shortcuts
-gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss'), 'postBuild'));
+gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss', 'html'), 'postBuild'));
 gulp.task('js', gulp.series('webpack', 'postBuild'));
 gulp.task('css', gulp.series('cleancss', 'postBuild'));
