@@ -15,10 +15,8 @@ Setting up the DWB for your own uses requires oauth client registration with the
 2. install dependencies
     * `npm install`
 3. Configure
-    * Duplicate and rename AppConfig_example.js to AppConfig.js, then open it.
-    * Note the debug boolean at the top. Use this to control console information output.
-    * Ensure WssURI and ApiURI are pointed to the correct api address. ClientID should be the UUID given to you upon oauth client creation.
-    * WebPageTitle and AppNamespace can be set to any value of your choosing.
+    * Duplicate and rename app.prod.config_example.js to app.prod.config.js, then open it.
+    * Refer to documentation in the example file to properly configure the config file.
 4. Build
     * `npm run build`
 5. Setup NGINX
