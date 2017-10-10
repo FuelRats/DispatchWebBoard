@@ -63,7 +63,8 @@ gulp.task('postBuild', function(next) {
   const rsync = require('gulp-rsync');
   const rsconf = Object.assign({
     root: `${paths.buildDir}/`,
-    recursive: true
+    recursive: true,
+    clean: true
   }, gulpConf.rsync);
   
   if(!rsconf.hostname || !rsconf.destination) {
