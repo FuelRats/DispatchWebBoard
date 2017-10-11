@@ -14,15 +14,20 @@ export function isObject(object) {
  */
 export function isValidProperty(obj, key, ktype) {
   let isValidType = function(item, type) {
-    if(type === 'array') {
+    switch(type) {
+    case 'array':
       return Array.isArray(item);
-    } else if (type === 'object') {
+    case 'object':
       return isObject(item);
-    } else {
+    case 'null':
+      return item === null;
+    case 'undefined':
+      return item === undefined;
+    default:
       return typeof item === type;
     }
   };
-  return obj.hasOwnProperty(key) && (!Array.isArray(ktype) ? isValidType(obj[key],ktype) : ktype.some(i => isValidType(obj[key],i)));
+  return Array.isArray(ktype) ? ktype.some(i => isValidType(obj[key],i)) : isValidType(obj[key],ktype);
 }
 
 export function isInRange(num, min, max) {
