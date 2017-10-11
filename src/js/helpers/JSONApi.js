@@ -7,11 +7,15 @@ import {isObject, isValidProperty} from './Validation.js';
  * @return {[type]}      [description]
  */
 export function mapRelationships(data) {
-  // Ensure data integrity, just to be safe.
+  // Ensure some level of integrity, just to be safe.
   if (!isObject(data) || 
-      !isValidProperty(data, 'data', ['array','object']) || 
-      !isValidProperty(data,'included', 'array')) {
+      !isValidProperty(data, 'data', ['array', 'object'])) {
     throw TypeError('Invalid data model');
+  }
+  
+  // If there is no included data to map, then just return the data as-is.
+  if (!isValidProperty(data, 'included', 'array')) {
+    return data; 
   }
 
   function findInclude(member, included) {
