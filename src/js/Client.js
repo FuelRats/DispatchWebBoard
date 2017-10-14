@@ -275,7 +275,7 @@ export default class ClientControl {
     } else {
       row.removeClass('rescue-inactive');
     }
-    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join('\n') : 'No known quotes....');
+    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}] "${quote.message}" - ${quote.author}`).join('\n') : 'No known quotes....');
     return row;
   }
 
