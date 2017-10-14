@@ -322,7 +322,7 @@ export default class ClientControl {
     let rescue = this.SelectedRescue;
 
     let caseNo = typeof rescue.attributes.data.boardIndex === 'number' ? `#${rescue.attributes.data.boardIndex} - ` : '';
-    let title = rescue.attributes.title ? rescue.attributes.title : rescue.attributes.client;
+    let title = rescue.attributes.title ? `Operation ${rescue.attributes.title}` : rescue.attributes.client;
     let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === 'inactive' ? ' <span class="badge badge-yellow">Inactive</span>' : '');
 
     let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : 
