@@ -42,6 +42,10 @@ let makeXHR = function makeXHR(method, dest, opts) {
       }
     };
 
+    xhr.onerror = (err) => {
+      reject(getXHRResponse(xhr));
+    };
+
     // Open Request
     xhr.open(
       method, 

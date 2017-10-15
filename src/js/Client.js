@@ -275,7 +275,7 @@ export default class ClientControl {
     } else {
       row.removeClass('rescue-inactive');
     }
-    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${quote.createdAt}] "${quote.message}" - ${quote.author}`).join('\n') : 'No known quotes....');
+    row.attr('title', rescue.attributes.quotes !== null ? rescue.attributes.quotes.map(quote => `[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}] "${quote.message}" - ${quote.author}`).join('\n') : 'No known quotes....');
     return row;
   }
 
@@ -322,7 +322,7 @@ export default class ClientControl {
     let rescue = this.SelectedRescue;
 
     let caseNo = typeof rescue.attributes.data.boardIndex === 'number' ? `#${rescue.attributes.data.boardIndex} - ` : '';
-    let title = rescue.attributes.title ? rescue.attributes.title : rescue.attributes.client;
+    let title = rescue.attributes.title ? `Operation ${rescue.attributes.title}` : rescue.attributes.client;
     let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === 'inactive' ? ' <span class="badge badge-yellow">Inactive</span>' : '');
 
     let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : 
@@ -391,13 +391,9 @@ export default class ClientControl {
     }
 
     // Quotes
-    if (rescue.attributes.quotes && rescue.attributes.quotes.length > 0) {
+    if (Array.isArray(rescue.attributes.quotes) && rescue.attributes.quotes.length > 0) {
 
-      let quotes = [];
-      for (let quote of rescue.attributes.quotes) {
-        // <span class="rdetail-quote-time">[${quote.createdAt}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.author}
-        quotes.push(`<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(quote.createdAt))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
-      }
+      let quotes = rescue.attributes.quotes.map(quote => `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
 
       detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes[0]}</td></tr>`;
 
