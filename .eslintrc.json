@@ -21,77 +21,77 @@
   ],
   "rules": {
     "indent": [
-      1,
+      "warn",
       2
     ],
     "linebreak-style": [
-      1,
+      "warn",
       "unix"
     ],
     "quotes": [
-      1,
+      "warn",
       "single",
       "avoid-escape"
     ],
     "semi": [
-      2,
+      "error",
       "always"
     ],
     "strict": [
-      2,
+      "error",
       "global"
     ],
     "curly": [
-      2
+      "error"
     ],
     "no-cond-assign": [
-      2,
+      "error",
       "always"
     ],
     "no-dupe-keys": [
-      2
+      "error"
     ],
     "no-duplicate-case": [
-      2
+      "error"
     ],
     "no-sparse-arrays": [
-      2
+      "error"
     ],
     "no-obj-calls": [
-      2
+      "error"
     ],
     "no-unexpected-multiline": [
-      2
+      "error"
     ],
     "valid-typeof": [
-      2
+      "error"
     ],
     "no-irregular-whitespace": [
-      2
+      "error"
     ],
     "vars-on-top": [
-      1
+      "warn"
     ],
     "space-before-function-paren": [
-      1,
+      "warn",
       "never"
     ],
     "space-before-blocks": [
-      1
+      "warn"
     ],
     "space-in-parens": [
-      1,
+      "warn",
       "never"
     ],
     "space-infix-ops": [
-      1
+      "warn"
     ],
     "spaced-comment": [
-      1,
+      "warn",
       "always"
     ],
     "guard-for-in": [
-      2
+      "error"
     ]
   }
 }
