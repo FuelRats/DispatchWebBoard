@@ -98,12 +98,11 @@ export default class UserControl {
       return;
     }
     $('body').on('click', 'button.logout', () => {
-        this.logoutUser();
+      this.logoutUser();
     });
-    $('#userMenu').attr("data-displaystate", "menu");
-    $('#userMenu .user-icon').on("error", (event) => {
-      $(event.currentTarget).attr('src', `//api.adorable.io/avatars/${this.ApiData.id}`);
-    }).attr('src', `img/prof/${this.ApiData.id}.jpg`);
+    $('#userMenu').attr('data-displaystate', 'menu');
+    
+    $('#userMenu .user-icon').attr('src', this.ApiData.attributes.image ? this.ApiData.attributes.image : `https://api.adorable.io/avatars/${this.ApiData.id}`);
     
     $('#userMenu .user-options .rat-name').text(`CMDR ${this.getUserDisplayName()}`);
 
@@ -128,7 +127,15 @@ export default class UserControl {
    * @return {String} name of the authenticated user.
    */
   getUserDisplayName() {
-    return this.ApiData.attributes.displayRatId ? this.ApiData.relationships.rats[this.ApiData.attributes.displayRatId].attributes.name : this.ApiData.relationships.rats[Object.keys(this.ApiData.relationships.rats)[0]].attributes.name;
+    return this.ApiData.attributes.displayRatId ? 
+      this.ApiData.relationships.rats[this.ApiData.attributes.displayRatId].attributes.name : 
+      this.ApiData.relationships.rats[Object.keys(this.ApiData.relationships.rats)[0]].attributes.name;
+  }
+
+  getDisplayRat() {
+    return this.ApiData.attributes.displayRatId ?
+      this.ApiData.relationships.rats[this.ApiData.attributes.displayRatId] :
+      this.ApiData.relationships.rats[Object.keys(this.ApiData.relationships.rats)[0]];
   }
 
   /**
