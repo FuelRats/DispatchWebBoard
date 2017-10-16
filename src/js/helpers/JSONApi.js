@@ -40,10 +40,10 @@ function mapRelationshipItems(relationships, included) {
 
   if(!isObject(relationships) || !Array.isArray(included)) { throw TypeError('Invalid Parameter Types.'); }
 
-  for(let relationship of relationships) {
+  for(let relationship of Object.values(relationships)) {
 
     if(Array.isArray(relationship.data) && relationship.data.length > 0) {
-      for (let relMember of relationship.data) {
+      for (let relMember of Object.values(relationship.data)) {
         if(relMember && relMember.id && relMember.type) {
           relationship[relMember.id] = findInclude(relMember, included);
           if (relationship[relMember.id].relationships) {
