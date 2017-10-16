@@ -24,7 +24,7 @@ export default class UserControl {
       if (token) {
         this.AuthHeader = token;
         if (CanSetCookies()) {
-          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milise
+          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
           localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
         }
         if (window.history.replaceState) {
