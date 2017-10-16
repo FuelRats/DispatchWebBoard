@@ -92,6 +92,82 @@
     ],
     "guard-for-in": [
       "error"
+    ],
+    "default-case": [
+      "error"
+    ],
+    "eqeqeq": [
+      "error"
+    ],
+    "no-eq-null": [
+      "error"
+    ],
+    "no-eval": [
+      "error"
+    ],
+    "no-empty-function": [
+      "warn"
+    ],
+    "no-extra-bind": [
+      "error"
+    ],
+    "no-implied-eval": [
+      "error"
+    ],
+    "complexity": [
+      "warn",
+      {
+        "max": 15
+      }
+    ],
+    "no-implicit-coercion": [
+      "error"
+    ],
+    "no-implicit-globals": [
+      "error"
+    ],
+    "no-invalid-this": [
+      "error"
+    ],
+    "no-lone-blocks": [
+      "error"
+    ],
+    "no-loop-func": [
+      "error"
+    ],
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignore": [0, 1],
+        "enforceConst": true
+      }
+    ],
+    "no-return-assign": [
+      "error"
+    ],
+    "no-self-compare": [
+      "error"
+    ],
+    "no-unused-expressions": [
+      "error"
+    ],
+    "no-useless-concat": [
+      "error"
+    ],
+    "no-useless-return": [
+      "warn"
+    ],
+    "no-with": [
+      "error"
+    ],
+    "yoda": [
+      "warn"
+    ],
+    "prefer-spread": [
+      "warn"
+    ],
+    "prefer-template": [
+      "warn"
     ]
   }
 }
