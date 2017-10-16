@@ -20,6 +20,10 @@
     "react"
   ],
   "rules": {
+    "no-restricted-syntax": [
+      "error",
+      "ForStatement"
+     ],
     "indent": [
       "warn",
       2
@@ -89,6 +93,12 @@
     "spaced-comment": [
       "warn",
       "always"
+    ],
+    "space-unary-ops": [
+      "warn"
+    ],
+    "keyword-spacing": [
+      "warn"
     ],
     "guard-for-in": [
       "error"
@@ -162,6 +172,9 @@
     ],
     "yoda": [
       "warn"
+    ],
+    "no-plusplus": [
+      "error"
     ],
     "prefer-spread": [
       "warn"
