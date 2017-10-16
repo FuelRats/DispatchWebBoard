@@ -172,7 +172,7 @@ export default class ClientControl {
       return;
     }
 
-    window.console.debug('fr.client.AddRescue: Rescue Added to board.');
+    window.console.debug('fr.client.AddRescue: Rescue Added to board. Rescue Data:', rescue);
 
     this.CachedRescues[sid] = rescue;
     this.appendHtml('#rescueRows', this.GetRescueTableRow(rescue));
