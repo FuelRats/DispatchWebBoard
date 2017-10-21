@@ -1,10 +1,19 @@
+// App Imports
 import AppConfig from '../config/config.js';
-import {http, isObject, htmlSanitizeObject} from '../helpers';
+import {
+  http, 
+  htmlSanitizeObject,
+  isObject
+} from '../helpers';
+
+
+// Module Imports
 import url from 'url';
+
 
 export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
 
-export const getSystem = (system) => {
+export function getSystem(system) {
   system = system.toUpperCase();
 
   if (sessionStorage.getItem(`${AppConfig.AppNamespace}.system.${system}`)) {
@@ -18,20 +27,16 @@ export const getSystem = (system) => {
     return Promise.resolve(sysData);
 
   } else {
-
     return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
       .then(response => {
         let sysData = htmlSanitizeObject(processNewStarSystemData(response.json()));
-
         sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
-        
         return sysData;
       });
-
   }
-};
+}
 
-const processNewStarSystemData = (data) => {
+function processNewStarSystemData(data) {
   if (!isObject(data) || data.meta.results.returned < 1) {
     return null;
   }
@@ -57,4 +62,4 @@ const processNewStarSystemData = (data) => {
   delete sysData.links;
 
   return sysData;
-};
+}

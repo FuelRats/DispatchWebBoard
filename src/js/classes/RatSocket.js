@@ -1,4 +1,20 @@
-import {makeID, isValidProperty} from '../helpers';
+// App Imports
+import {
+  isValidProperty,
+  makeID
+} from '../helpers';
+
+
+// Constants
+const
+  ACTION_ARRAY_LENGTH = 2,
+  RECONNECT_TIMEOUT = 5000,
+  REQUEST_ID_LENGTH = 32,
+  REQUEST_TIMEOUT = 60000,
+  REQUEST_TIMEOUT_SEC = 60,
+  MILLISECONDS_IN_SECOND = 1000;
+
+
 export default class RatSocket {
   /**
    * Websocket handler for the FuelRats API
@@ -6,7 +22,7 @@ export default class RatSocket {
    * @return {Object}     - Current instance of RatSocket
    */
   constructor(uri, token) {
-    if(typeof uri !== 'string') {
+    if (typeof uri !== 'string') {
       throw new TypeError('URI must be a string');
     }
     this.WSSUri = uri;
@@ -29,7 +45,7 @@ export default class RatSocket {
    * @return {Promise} - Promise to be resolved when the API's welcome message is received.
    */
   connect(token) {
-    if(typeof token !== 'string') {
+    if (typeof token !== 'string') {
       throw TypeError('Invalid token string');
     }
 
@@ -41,7 +57,7 @@ export default class RatSocket {
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
           'meta': {}
         }});
-      }, 60000);
+      }, REQUEST_TIMEOUT);
 
       this.once('connection', (context, data) => {
         window.clearTimeout(rejectTimeout);
@@ -65,7 +81,7 @@ export default class RatSocket {
   }
 
   _reconnect() {
-    if(this.currentToken !== null) {
+    if (this.currentToken !== null) {
       window.console.debug('RatSocket - Attempting reconnect with last known bearer token.... ', this);
       this.connect(this.currentToken);
     } else {
@@ -92,7 +108,7 @@ export default class RatSocket {
       setTimeout(() => {
         window.console.debug(this);
         this._reconnect();
-      }, 5000);
+      }, RECONNECT_TIMEOUT);
       this.reconnected = true;
     }
   }
@@ -107,11 +123,10 @@ export default class RatSocket {
     
     let _data = JSON.parse(data.data);
     // Handle request responses
-    if(typeof _data.meta.reqID === 'string' && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
+    if (typeof _data.meta.reqID === 'string' && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
       window.console.debug(`RatSocket - Detected request response. closing request: ${_data.meta.reqID}`);
       this.openRequests[_data.meta.reqID](_data);
       delete this.openRequests[_data.meta.reqID];
-      return;
     } else if (_data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
       this._emitEvent(_data.meta.event, _data);
     } else { // if neither of the above conditions are true, just spit it out as an error to the console. This shouldn't happen.
@@ -132,7 +147,7 @@ export default class RatSocket {
    */ 
   send(data) {
     if (this.socket.readyState !== 1) {
-      if(this.socket.readyState > 1) {
+      if (this.socket.readyState > 1) {
         this._reconnect();
       }
       setTimeout(() => {
@@ -140,8 +155,7 @@ export default class RatSocket {
       });
       return this;
     }
-    
-    if (!isValidProperty(data, 'action', 'array') || data.action.length > 2 || data.action.length < 1) {
+    if (!isValidProperty(data, 'action', 'array') || data.action.length > ACTION_ARRAY_LENGTH || data.action.length < 1) {
       throw TypeError('Action array must be defined.');
     }
     if (!isValidProperty(data, 'data', 'object')) {
@@ -171,11 +185,11 @@ export default class RatSocket {
       opts = {};
     }
 
-    if(!isValidProperty(data, 'meta', 'object')) {
+    if (!isValidProperty(data, 'meta', 'object')) {
       data.meta = {};
     }
     
-    let requestID = opts.reqID || makeID(32);
+    let requestID = opts.reqID || makeID(REQUEST_ID_LENGTH);
     data.meta.reqID = requestID;
 
     return new Promise((resolve, reject) => {
@@ -188,7 +202,7 @@ export default class RatSocket {
             'meta': data.meta
           }
         });
-      }, ((opts.timeout || 60) * 1000));
+      }, (opts.timeout || REQUEST_TIMEOUT_SEC) * MILLISECONDS_IN_SECOND);
       this.openRequests[requestID] = (data) => {
         window.clearTimeout(timeout);
         if (data.errors) {
@@ -227,11 +241,11 @@ export default class RatSocket {
    * @return {Object}        - Current instance of RatSocket.
    */
   on(evt, func) {
-    if(typeof evt !== 'string' || func === null) {
+    if (typeof evt !== 'string' || func === null) {
       throw new TypeError('Invalid argument(s)');
     }
 
-    if(!this.listeners.hasOwnProperty(evt)) {
+    if (!this.listeners.hasOwnProperty(evt)) {
       this.listeners[evt] = [];
     }
 
@@ -258,7 +272,7 @@ export default class RatSocket {
    * @return {Object}        - Current instance of RatSocket.
    */
   off(evt, func) {
-    if(typeof evt !== 'string' || typeof func !== 'function') {
+    if (typeof evt !== 'string' || typeof func !== 'function') {
       throw new TypeError('Invalid argument(s)');
     }
 
@@ -266,7 +280,7 @@ export default class RatSocket {
       return;
     }
 
-    let listenerIndex = this.listeners[evt].findIndex(x => x.func === func);
+    let listenerIndex = this.listeners[evt].findIndex(listener => listener.func === func);
     if (listenerIndex < 0) { return; }
 
     this.listeners[evt].splice(listenerIndex, 1);
@@ -286,7 +300,7 @@ export default class RatSocket {
       throw new TypeError('Event must be string');
     }
 
-    if(!this.listeners.hasOwnProperty(evt)) {
+    if (!this.listeners.hasOwnProperty(evt)) {
       window.console.debug(`RatSocket - Event: '${evt}' has no listener. Returning...`);
       return;
     }
@@ -302,14 +316,13 @@ export default class RatSocket {
     let evtListeners = this.listeners[evt];
 
     window.console.debug(`RatSocket - Executing listener functions for: ${evt} with args:`, args);
-    for(let i = 0; i < evtListeners.length; i++) {
-      let listener = evtListeners[i];
+    for (let listener of evtListeners) {
 
       // Execute function and get response from it.
       let res = listener.func.apply(this, evtargs);
 
       // If the listener was set to run once, or returned as 'true', remove it from the listener list.
-      if(listener.once === true || res === true) {
+      if (listener.once === true || res === true) {
         this.off(evt, listener.func);
       }
 

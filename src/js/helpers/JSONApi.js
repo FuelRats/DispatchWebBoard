@@ -1,4 +1,8 @@
-import {isObject, isValidProperty} from './Validation.js';
+import {
+  isObject, 
+  isValidProperty
+} from './Validation.js';
+
 
 /**
  * Maps included relationship data to the relationship of the main data model.
@@ -17,7 +21,7 @@ export function mapRelationships(data) {
     return data;
   }
 
-  if(Array.isArray(data.data)) {
+  if (Array.isArray(data.data)) {
     for (let dataItem of data.data) {
       dataItem.relationships = mapRelationshipItems(dataItem.relationships, data.included);
     }
@@ -36,15 +40,16 @@ function findInclude(member, included) {
   return includeMatches[0];
 }
 
+
 function mapRelationshipItems(relationships, included) {
 
-  if(!isObject(relationships) || !Array.isArray(included)) { throw TypeError('Invalid Parameter Types.'); }
+  if (!isObject(relationships) || !Array.isArray(included)) { throw TypeError('Invalid Parameter Types.'); }
 
-  for(let relationship of Object.values(relationships)) {
+  for (let relationship of Object.values(relationships)) {
 
-    if(Array.isArray(relationship.data) && relationship.data.length > 0) {
+    if (Array.isArray(relationship.data) && relationship.data.length > 0) {
       for (let relMember of Object.values(relationship.data)) {
-        if(relMember && relMember.id && relMember.type) {
+        if (relMember && relMember.id && relMember.type) {
           relationship[relMember.id] = findInclude(relMember, included);
           if (relationship[relMember.id].relationships) {
             relationship[relMember.id].relationships = mapRelationshipItems(relationship[relMember.id].relationships, included);
@@ -54,7 +59,7 @@ function mapRelationshipItems(relationships, included) {
     } else if (isObject(relationship.data)) {
 
       let relMember = relationship.data;
-      if(relMember && relMember.id && relMember.type) {
+      if (relMember && relMember.id && relMember.type) {
         relationship[relMember.id] = findInclude(relMember, included);
         if (relationship[relMember.id].relationships) {
           relationship[relMember.id].relationships = mapRelationshipItems(relationship[relMember.id].relationships, included);
