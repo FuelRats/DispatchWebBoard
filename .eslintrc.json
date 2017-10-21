@@ -67,6 +67,16 @@
     "no-unexpected-multiline": [
       "error"
     ],
+    "no-extra-parens": [
+      "warn",
+      "all",
+      {
+        "ignoreJSX": "all"
+      }
+    ],
+    "no-template-curly-in-string": [
+      "error"
+    ],
     "valid-typeof": [
       "error"
     ],
@@ -181,6 +191,16 @@
     ],
     "prefer-template": [
       "warn"
+    ],
+    "require-jsdoc": [
+      "warn"
+    ],
+    "id-length": [
+      "warn",
+      {
+        "min": 2,
+        "max": 35
+      }
     ]
   }
 }
