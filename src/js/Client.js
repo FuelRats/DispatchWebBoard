@@ -1,4 +1,4 @@
-import $ from 'jquery'; // I'm so sorry.
+import Jq from 'jquery'; // I'm so sorry.
 import AppConfig from './config/config.js';
 import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
@@ -6,14 +6,14 @@ import * as StarSystemAPI from './api/StarSystemAPI.js';
 import * as frConst from './util/frConstants.js';
 import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable, htmlSanitizeObject} from './helpers';
 
-let instance = null;
+const 
+  ANIMATE_OPACITY_DOWN_SPEED = 100,
+  ANIMATE_OPACITY_UP_SPEED = 500,
+  RESCUE_REMOVE_DELAY = 5000,
+  MILLISECONDS_IN_SECOND = 1000;
+
 export default class ClientControl {
   constructor(AuthHeader) {
-
-    if(!instance) {
-      instance = this;
-    }
-
     this.clipboard = null;
     this.CachedRescues = {};
     this.SelectedRescue = null;
@@ -22,7 +22,7 @@ export default class ClientControl {
     this.AuthHeader = AuthHeader;
     
     window.console.debug('fr.client.init - Client manager loaded.');
-    $('#navbar-brand-title').text(AppConfig.AppTitle);
+    Jq('#navbar-brand-title').text(AppConfig.AppTitle);
     
     window.onpopstate = this.HandlePopState.bind(this);
 
@@ -30,7 +30,7 @@ export default class ClientControl {
     let themever = 1;
     let saveTheme = function saveTheme() {
       window.localStorage.setItem(`${AppConfig.AppNamespace}.window.theme`, JSON.stringify({
-        'style': $('body').attr('style'),
+        'style': Jq('body').attr('style'),
         '_meta': {
           'version': themever
         }
@@ -39,20 +39,21 @@ export default class ClientControl {
     window.onbeforeunload = () => {
       saveTheme();
     };
-    if(window.localStorage.getItem(`${AppConfig.AppNamespace}.window.theme`)) {
+
+    if (window.localStorage.getItem(`${AppConfig.AppNamespace}.window.theme`)) {
       this.theme = JSON.parse(window.localStorage.getItem(`${AppConfig.AppNamespace}.window.theme`));
-      if(typeof this.theme !== 'string' && this.theme._meta.version === themever) {
-        $('body').attr('style', this.theme.style);
+      if (typeof this.theme !== 'string' && this.theme._meta.version === themever) {
+        Jq('body').attr('style', this.theme.style);
       } else {
         // TODO preserve old theme... somehow....
         saveTheme();
       }
     }
 
-    $('body').on('click', 'button.btn.btn-detail', (event) => {
+    Jq('body').on('click', 'button.btn.btn-detail', (event) => {
       this.SetSelectedRescue(event.currentTarget.dataset.rescueSid);
     }).on('click', '.class-toggle', (event) => {
-      $(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
+      Jq(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass);
     }).on('click', 'a.panel-settings-toggle', (event) => {
       window.alert("This doesn't do anything yet. lol!");
       event.preventDefault();
@@ -60,20 +61,21 @@ export default class ClientControl {
 
     if (Clipboard && Clipboard.isSupported()) {
       this.clipboard = new Clipboard('.btn-clipboard');
-      $('body').addClass('clipboard-enable');
+      Jq('body').addClass('clipboard-enable');
     }
 
     this.socket = new RatSocket(AppConfig.WssURI);
     this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx))
       .on('rescueCreated', (ctx, data) => {
-        if(data.included) { data = mapRelationships(data); }
+        if (data.included) { data = mapRelationships(data); }
         this.AddRescue(ctx, data.data);
       }).on('rescueUpdated', (ctx, data) => {
-        if(data.included) {
+        if (data.included) {
           data = mapRelationships(data);
         }
-        for(let i = 0; i < data.data.length; i += 1) {
-          this.UpdateRescue(ctx, data.data[i]);
+
+        for (let rescue of data.data) {
+          this.UpdateRescue(ctx, rescue);
         }
       }).connect(this.AuthHeader)
       .then(() => this.socket.subscribe('0xDEADBEEF'))
@@ -82,8 +84,6 @@ export default class ClientControl {
       .catch(error => window.console.error(error)); // TODO proper error handling, display shutter with error message.
                                             
     this.UpdateClocks();
-
-    return instance;
   }
 
   handleReconnect(ctx) {
@@ -94,7 +94,7 @@ export default class ClientControl {
         'updateList': 'true'
       }
     }).then((response) => {
-      this.ReloadBoard(response.context, response.data)
+      this.ReloadBoard(response.context, response.data);
     }).catch((error) => {
       window.console.error('fr.client.handleReconnect - reconnect data update failed!', error);
     });
@@ -113,13 +113,11 @@ export default class ClientControl {
 
   PopulateBoard(ctx, data) {
     let rescues = mapRelationships(data).data;
-    for (let i in rescues) {
-      if (rescues.hasOwnProperty(i)) {
-        this.AddRescue(ctx, rescues[i]);
-      }
+    for (let rescue of rescues) {
+      this.AddRescue(ctx, rescue);
     }
     this.ParseQueryString();
-    $('body').removeClass('loading');
+    Jq('body').removeClass('loading');
   }
 
   FetchRatInfo(ratId) {
@@ -167,7 +165,7 @@ export default class ClientControl {
     let sid = rescue.id.split('-')[0];
 
     // Ensure rescue doesn't already exist. If it does, pass to update function instead.
-    if ($(`tr.rescue[data-rescue-sid="${sid}"]`).length > 0) {
+    if (Jq(`tr.rescue[data-rescue-sid="${sid}"]`).length > 0) {
       this.UpdateRescue(rescue);
       return;
     }
@@ -177,7 +175,7 @@ export default class ClientControl {
     this.CachedRescues[sid] = rescue;
     this.appendHtml('#rescueRows', this.GetRescueTableRow(rescue));
 
-    if(typeof rescue.attributes.system === 'string') {
+    if (typeof rescue.attributes.system === 'string') {
       // Retrieve system information now to speed things up later on....
       StarSystemAPI.getSystem(rescue.attributes.system).then(() => {
         window.console.debug('fr.client.AddRescue - Additional info found! Caching...');
@@ -194,17 +192,18 @@ export default class ClientControl {
     let rescue = htmlSanitizeObject(data);
     let sid = rescue.id.split('-')[0];
 
-    let rescueRow = $(`tr.rescue[data-rescue-sid="${sid}"]`);
+    let rescueRow = Jq(`tr.rescue[data-rescue-sid="${sid}"]`);
     if (rescueRow.length < 1) {
       window.console.debug('fr.client.UpdateRescue: Attempted to update a non-existent rescue: ', rescue);
       this.AddRescue(ctx, rescue);
       return;
     }
     if (rescue.attributes.status === 'closed') {
-      setTimeout(function() {
-        rescueRow.hide('slow')
-          .remove();
-      }, 5000);
+
+      rescueRow
+        .delay(RESCUE_REMOVE_DELAY)
+        .hide('slow')
+        .remove();
 
       window.console.debug(`fr.client.UpdateRescue - Rescue Removed: ${rescue.id} : `, rescue);
 
@@ -255,15 +254,21 @@ export default class ClientControl {
 
     let platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown;
 
-    let row = $(`<tr class="rescue" data-rescue-sid="${shortid}">` +
-      `<td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?'}</td>` +
-      `<td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>` +
-      `<td class="rescue-row-language" title="${language.long}">${language.short}</td>` +
-      `<td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>` +
-      `<td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || 'Unknown'}">${rescue.attributes.system || 'Unknown'} <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span></td>` +
-      `<td class="rescue-row-rats">${ratHtml.join(', ')}</td>` +
-      `<td class="rescue-row-detail"><button type="button" class="btn btn-detail" data-rescue-sid="${shortid}" title="More details...">${frConst.iconSVG.more}</button></td>` +
-      '</tr>');
+    let row = Jq(
+      `<tr class="rescue" data-rescue-sid="${shortid}">
+         <td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?'}</td>
+         <td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>
+         <td class="rescue-row-language" title="${language.long}">${language.short}</td>
+         <td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>
+         <td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || 'Unknown'}">
+           ${rescue.attributes.system || 'Unknown'}
+           <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+         </td>
+         <td class="rescue-row-rats">${ratHtml.join(', ')}</td>
+         <td class="rescue-row-detail">
+           <button type="button" class="btn btn-detail" data-rescue-sid="${shortid}" title="More details...">${frConst.iconSVG.more}</button>
+         </td>
+       </tr>`);
 
     if (rescue.attributes.codeRed) {
       row.addClass('rescue-codered');
@@ -282,14 +287,14 @@ export default class ClientControl {
   UpdateClocks() {
     let nowTime = new Date();
 
-    $('.ed-clock').text(makeDateHumanReadable(nowTime));
+    Jq('.ed-clock').text(makeDateHumanReadable(nowTime));
 
     if (this.SelectedRescue !== null) {
-      $('.rdetail-timer').text(makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
-        .prop('title', 'Last Updated: ' + makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt)));
+      Jq('.rdetail-timer').text(makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
+        .prop('title', `Last Updated: ${makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt))}`);
     }
 
-    setTimeout(() => { this.UpdateClocks(); }, 1000 - nowTime.getMilliseconds());
+    setTimeout(() => { this.UpdateClocks(); }, MILLISECONDS_IN_SECOND - nowTime.getMilliseconds());
   }
 
   SetSelectedRescue(key, preventPush) {
@@ -308,15 +313,15 @@ export default class ClientControl {
     window.console.debug(`fr.client.SetSelectedRescue - New SelectedRescue: ${this.CachedRescues[key].id}`);
     this.SelectedRescue = this.CachedRescues[key];
     if (history.pushState && !preventPush) {
-      window.history.pushState({'a': key}, document.title, window.location.pathname + `?a=${encodeURIComponent(key)}`);
+      window.history.pushState({'a': key}, document.title, `${window.location.pathname}?a=${encodeURIComponent(key)}`);
     }
     this.UpdateRescueDetail();
   }
 
   UpdateRescueDetail() {
-    $('button.btn-detail.active').removeClass('active'); // clear active buttons.
+    Jq('button.btn-detail.active').removeClass('active'); // clear active buttons.
     if (!this.SelectedRescue) {
-      $('body').removeClass('rdetail-active');
+      Jq('body').removeClass('rdetail-active');
       return;
     }
     let rescue = this.SelectedRescue;
@@ -370,23 +375,24 @@ export default class ClientControl {
 
     let rats = rescue.relationships.rats.data === undefined ? rescue.relationships.rats : {};
     let ratHtml = [];
-    for (let ratID in rats) {
-      if(!rats.hasOwnProperty(ratID)) {continue;}
-      ratHtml.push(`<span class="rat" data-rat-uuid="${ratID}">${rats[ratID].attributes.name} ${rats[ratID].attributes.platform !== rescue.attributes.platform ? '<span class="badge badge-yellow">Wrong Platform!</span>' : ''}</span>`);
+
+    for (let rat of Object.values(rats)) {
+      ratHtml.push(`<span class="rat" data-rat-uuid="${rat.id}">${rat.attributes.name} ${rat.attributes.platform !== rescue.attributes.platform ? '<span class="badge badge-yellow">Wrong Platform!</span>' : ''}</span>`);
     }
+
     for (let rat of rescue.attributes.unidentifiedRats) {
       ratHtml.push(`<span class="rat-unidentified">${rat}</span> <span class="badge badge-yellow">unidentified</span>`);
     }
 
     if (ratHtml.length > 0) {
-      detailContent +=
-        '<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">' +
-        ratHtml[0] + '</td></tr>';
-      if (ratHtml.length > 1) {
-        for (let rh = 1; rh < ratHtml.length; rh++) {
-          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${ratHtml[rh]}</td></tr>`;
+      detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">${ratHtml.shift()}</td></tr>`;
+
+      if (ratHtml.length > 0) {
+        for (let rat of ratHtml) {
+          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${rat}</td></tr>`;
         }
       }
+
       detailContent += '<tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>'; // Separator
     }
 
@@ -395,14 +401,15 @@ export default class ClientControl {
 
       let quotes = rescue.attributes.quotes.map(quote => `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`);
 
-      detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes[0]}</td></tr>`;
+      detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes.shift()}</td></tr>`;
 
-      if (quotes.length > 1) {
-        for (let q = 1; q < quotes.length; q++) {
-          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${quotes[q]}</td></tr>`;
+      if (quotes.length > 0) {
+        for (let quote of quotes) {
+          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${quote}</td></tr>`;
         }
       }
     }
+
     detailContent += '</tbody></table>';
 
     // Update the detail section.
@@ -411,8 +418,8 @@ export default class ClientControl {
 
     this.setHtml('#rescueDetailContent', detailContent);
 
-    $(`button.btn.btn-detail[data-rescue-sid="${rescue.id.split('-')[0]}"]`).addClass('active'); // Set new active button.
-    $('body').addClass('rdetail-active');
+    Jq(`button.btn.btn-detail[data-rescue-sid="${rescue.id.split('-')[0]}"]`).addClass('active'); // Set new active button.
+    Jq('body').addClass('rdetail-active');
 
     if (!rescue.attributes.system) {
       return;
@@ -428,7 +435,7 @@ export default class ClientControl {
   }
 
   getSystemHtml(rescue) {
-    if(!rescue) {
+    if (!rescue) {
       return Promise.reject('');
     }
     return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
@@ -463,18 +470,18 @@ export default class ClientControl {
     });
   }
   setHtml(target, html) {
-    $(target)
-      .animate({ opacity: 0.2 }, 100)
+    Jq(target)
+      .animate({ opacity: 0.2 }, ANIMATE_OPACITY_DOWN_SPEED)
       .html(html)
-      .animate({ opacity: 1 }, 500);
+      .animate({ opacity: 1 }, ANIMATE_OPACITY_UP_SPEED);
   }
   replaceHtml(target, html) {
-    $(target).replaceWith(html);
-    $(target)
-      .animate({opacity: 0.2}, 100)
-      .animate({opacity: 1}, 500);
+    Jq(target).replaceWith(html);
+    Jq(target)
+      .animate({opacity: 0.2}, ANIMATE_OPACITY_DOWN_SPEED)
+      .animate({opacity: 1}, ANIMATE_OPACITY_UP_SPEED);
   }
   appendHtml(target, html) {
-    $(target).append(html);
+    Jq(target).append(html);
   }
 }

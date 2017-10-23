@@ -1,66 +1,69 @@
-import $ from 'jquery'; // I'm so sorry.
+import Jq from 'jquery'; // I'm so sorry.
 import AppConfig from './config/config.js';
 import Client from './Client.js';
-import {mapRelationships, GetCookie, SetCookie, CanSetCookies, DelCookie} from './helpers';
+import {GetCookie, SetCookie, CanSetCookies, DelCookie} from './helpers';
 import * as FuelRatsApi from './api/FuelRatsApi';
 
-let instance = null;
+
+const
+  DAYS_IN_YEAR = 365,
+  HOURS_IN_DAY = 24,
+  MINUTES_IN_HOUR = 60,
+  SECONDS_IN_MINUTES = 60,
+  MILLISECONDS_IN_SECOND = 1000,
+  MILLISECONDS_IN_YEAR = DAYS_IN_YEAR * HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTES * MILLISECONDS_IN_SECOND;
+
 export default class UserControl {
   constructor() {
-    if(!instance) {
-      instance = this;
-      
-      this.Client = null;
-      this.ApiData = null;
-      this.Settings = null;
-      this.AuthHeader = null;
+    this.Client = null;
+    this.ApiData = null;
+    this.Settings = null;
+    this.AuthHeader = null;
 
-      let authHeader = GetCookie(`${AppConfig.AppNamespace}.token`),
-        tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
-        token = !!tokenMatch && tokenMatch[1];
+    let authHeader = GetCookie(`${AppConfig.AppNamespace}.token`),
+      tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
+      token = Boolean(tokenMatch) && Boolean(tokenMatch[1]);
 
-      window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
+    window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
 
-      if (token) {
-        this.AuthHeader = token;
-        if (CanSetCookies()) {
-          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-          localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
-        }
-        if (window.history.replaceState) {
-          window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-        }
-      } else if (authHeader) {
-        this.AuthHeader = authHeader.replace('Bearer ', '');
-        if (CanSetCookies()) {
-          SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, 365 * 24 * 60 * 60 * 1000); // 1 year. days * hours * minutes * seconds * milisec
-          localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
-        }
-      } else {
-        this.displayLogin();
-        return;
+    if (token) {
+      this.AuthHeader = token;
+      if (CanSetCookies()) {
+        SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, MILLISECONDS_IN_YEAR); // 1 year
+        localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
       }
-
-      window.console.debug('fr.user.init - Auth token gathered, ensuring authentication and getting user data.');
-
-      // Check if user has authentication in the current session, otherwise confirm authentication with the API.
-      if (sessionStorage.getItem(`${AppConfig.AppNamespace}.user.ApiData`)) {
-        this.ApiData = JSON.parse(sessionStorage.getItem(`${AppConfig.AppNamespace}.user.ApiData`));
-        window.console.debug(this.ApiData);
-        this.handleLoginSuccess();
-      } else {
-        FuelRatsApi.getProfile().then(data => {
-          this.ApiData = data;
-          sessionStorage.setItem(`${AppConfig.AppNamespace}.user.ApiData`, JSON.stringify(this.ApiData));
-
-          this.handleLoginSuccess();
-
-        }).catch((error) => {
-          this.handleApiDataFailure(error);
-        });
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
       }
+    } else if (authHeader) {
+      this.AuthHeader = authHeader.replace('Bearer ', '');
+      if (CanSetCookies()) {
+        SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, MILLISECONDS_IN_YEAR); // 1 year
+        localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
+      }
+    } else {
+      this.displayLogin();
+      return;
     }
-    return instance;
+
+    window.console.debug('fr.user.init - Auth token gathered, ensuring authentication and getting user data.');
+
+    // Check if user has authentication in the current session, otherwise confirm authentication with the API.
+    if (sessionStorage.getItem(`${AppConfig.AppNamespace}.user.ApiData`)) {
+      this.ApiData = JSON.parse(sessionStorage.getItem(`${AppConfig.AppNamespace}.user.ApiData`));
+      window.console.debug(this.ApiData);
+      this.handleLoginSuccess();
+    } else {
+      FuelRatsApi.getProfile().then(data => {
+        this.ApiData = data;
+        sessionStorage.setItem(`${AppConfig.AppNamespace}.user.ApiData`, JSON.stringify(this.ApiData));
+
+        this.handleLoginSuccess();
+
+      }).catch((error) => {
+        this.handleApiDataFailure(error);
+      });
+    }
   }
 
   /**
@@ -84,7 +87,7 @@ export default class UserControl {
    * @return {Boolean} Value representing the permission status of the user.
    */
   hasPermission() {
-    return this.isAuthenticated() && (this.isAdministrator() || this.ApiData.relationships.groups.hasOwnProperty("rat"));
+    return this.isAuthenticated() && (this.isAdministrator() || this.ApiData.relationships.groups.hasOwnProperty('rat'));
   }
 
   /**
@@ -92,21 +95,21 @@ export default class UserControl {
    */
   handleLoginSuccess() {
     if (!this.hasPermission()) {
-      $('body')
+      Jq('body')
         .removeClass('loading')
         .addClass('shutter-force user-nopermission');
       return;
     }
-    $('body').on('click', 'button.logout', () => {
+    Jq('body').on('click', 'button.logout', () => {
       this.logoutUser();
     });
-    $('#userMenu').attr('data-displaystate', 'menu');
+    Jq('#userMenu').attr('data-displaystate', 'menu');
     
-    $('#userMenu .user-icon').attr('src', this.ApiData.attributes.image ? this.ApiData.attributes.image : `https://api.adorable.io/avatars/${this.ApiData.id}`);
+    Jq('#userMenu .user-icon').attr('src', this.ApiData.attributes.image ? this.ApiData.attributes.image : `https://api.adorable.io/avatars/${this.ApiData.id}`);
     
-    $('#userMenu .user-options .rat-name').text(`CMDR ${this.getUserDisplayName()}`);
+    Jq('#userMenu .user-options .rat-name').text(`CMDR ${this.getUserDisplayName()}`);
 
-    window.console.log('%cWelcome CMDR ' + this.getUserDisplayName() + '. All is well here. Fly safe!',
+    window.console.log(`%cWelcome CMDR ${this.getUserDisplayName()}. All is well here. Fly safe!`,
       'color: lightgreen; font-weight: bold; font-size: 1.25em;');
 
     this.Client = new Client(this.AuthHeader, this.ApiData);
@@ -154,12 +157,12 @@ export default class UserControl {
     window.console.debug('fr.user.displayLogin - Displaying login screen.');
 
     window.history.replaceState('', document.title, window.location.pathname);
-    $('button.login').on('click', () => {
+    Jq('button.login').on('click', () => {
       window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${window.location}&scope=${AppConfig.AppScope}&response_type=token&state=iwanttologinplease`);
     });
-    $('body')
+    Jq('body')
       .removeClass('loading')
       .addClass('shutter-force user-unauthenticated');
-    $('#userMenu').attr("data-displaystate", "login");
+    Jq('#userMenu').attr('data-displaystate', 'login');
   }
 }
