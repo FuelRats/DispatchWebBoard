@@ -23,16 +23,18 @@ export function mapRelationships(data) {
 
   if (Array.isArray(data.data)) {
     for (let dataItem of data.data) {
-      dataItem.relationships = mapRelationshipItems(dataItem.relationships, data.included);
+      dataItem.relationships = _mapRelationshipItems(dataItem.relationships, data.included);
     }
   } else if (isObject(data.data)) {
-    data.data.relationships = mapRelationshipItems(data.data.relationships, data.included);
+    data.data.relationships = _mapRelationshipItems(data.data.relationships, data.included);
   }
   
   return data;
 }
-
-function findInclude(member, included) {
+/**
+  * Private function
+  */
+function _findInclude(member, included) {
   let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === member.id && obj.type === member.type);
   if (includeMatches.length > 1) { 
     window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches);
@@ -40,8 +42,10 @@ function findInclude(member, included) {
   return includeMatches[0];
 }
 
-
-function mapRelationshipItems(relationships, included) {
+/**
+ * Private function
+ */
+function _mapRelationshipItems(relationships, included) {
 
   if (!isObject(relationships) || !Array.isArray(included)) { throw TypeError('Invalid Parameter Types.'); }
 
@@ -50,9 +54,9 @@ function mapRelationshipItems(relationships, included) {
     if (Array.isArray(relationship.data) && relationship.data.length > 0) {
       for (let relMember of Object.values(relationship.data)) {
         if (relMember && relMember.id && relMember.type) {
-          relationship[relMember.id] = findInclude(relMember, included);
+          relationship[relMember.id] = _findInclude(relMember, included);
           if (relationship[relMember.id].relationships) {
-            relationship[relMember.id].relationships = mapRelationshipItems(relationship[relMember.id].relationships, included);
+            relationship[relMember.id].relationships = _mapRelationshipItems(relationship[relMember.id].relationships, included);
           }
         }
       }
@@ -60,9 +64,9 @@ function mapRelationshipItems(relationships, included) {
 
       let relMember = relationship.data;
       if (relMember && relMember.id && relMember.type) {
-        relationship[relMember.id] = findInclude(relMember, included);
+        relationship[relMember.id] = _findInclude(relMember, included);
         if (relationship[relMember.id].relationships) {
-          relationship[relMember.id].relationships = mapRelationshipItems(relationship[relMember.id].relationships, included);
+          relationship[relMember.id].relationships = _mapRelationshipItems(relationship[relMember.id].relationships, included);
         }
       }
     }
