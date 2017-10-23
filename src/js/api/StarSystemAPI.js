@@ -13,6 +13,12 @@ import url from 'url';
 
 export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
 
+/**
+ * Gets system information for the given system name
+ *
+ * @param  {String} system System name to get info on.
+ * @return {Object}        Object containing information pertaining to the given starsystem name.
+ */
 export function getSystem(system) {
   system = system.toUpperCase();
 
@@ -36,14 +42,21 @@ export function getSystem(system) {
   }
 }
 
+/**
+ * Formats returned data into a single object for ease of use.
+ *
+ * @param  {Object} data System data to process.
+ * @return {Object}      Simplified system data.
+ */
 function processNewStarSystemData(data) {
-  if (!isObject(data) || data.meta.results.returned < 1) {
+  let system = JSON.parse(JSON.stringify(data)); // Deep clone copy.
+  if (!isObject(system) || system.meta.results.returned < 1) {
     return null;
   }
-  let sysData = data.data[0];
+  let sysData = system.data[0];
 
-  if (data.included && data.included[0]) {
-    sysData.bodies = data.included.filter(function(body) {
+  if (system.included && system.included[0]) {
+    sysData.bodies = system.included.filter(function(body) {
       return body.attributes.group_name === 'Star';
     });
     // cleanup body info
