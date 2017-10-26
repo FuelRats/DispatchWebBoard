@@ -1,20 +1,17 @@
 language: node_js
 node_js:
-  - 8
-
+- 8
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 env:
-  - ENV_NAME=$(./.travis/get_branch_env_name.sh)
-
+- ENV_NAME=$(./.travis/get_branch_env_name.sh)
 before_script:
-  - wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
-
+- wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
 script:
-  - npm run gulp --env=${ENV_NAME}
-
+- npm run gulp --env=${ENV_NAME}
+addons:
+  ssh_known_hosts: cheddar.fuelrats.com
 notifications:
   irc:
     on_success: always
@@ -23,5 +20,21 @@ notifications:
     - irc.us.fuelrats.com#rattech
     nick: TravisCI
     template:
-    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}'
+    - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}"
     - 'Change view : %{compare_url}  Build details : %{build_url}'
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_0b2fcf215327_key -iv $encrypted_0b2fcf215327_iv -in deploy_rsa.enc -out deploy_rsa -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/deploy_rsa
+- ssh-add /tmp/deploy_rsa
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/prod
+  on:
+    branch: master
+- provider: script
+  skip_cleanup: true
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/beta
+  on:
+    branch: beta
