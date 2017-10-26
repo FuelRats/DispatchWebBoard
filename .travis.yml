@@ -1,0 +1,25 @@
+language: node_js
+
+cache:
+  directories:
+    - node_modules
+
+env:
+  - ENV_NAME=$(./.travis/get_branch_env_name.sh)
+
+before_script:
+  - wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
+  
+script:
+  - npm run gulp --env=${ENV_NAME}
+
+notifications:
+  irc:
+    on_success: always
+    on_failure: always
+    channels:
+    - irc.us.fuelrats.com#rattech
+    nick: TravisCI
+    template:
+    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}'
+    - 'Change view : %{compare_url}  Build details : %{build_url}'
