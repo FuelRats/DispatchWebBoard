@@ -1,4 +1,6 @@
 language: node_js
+node_js:
+  - 8
 
 cache:
   directories:
@@ -9,7 +11,7 @@ env:
 
 before_script:
   - wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
-  
+
 script:
   - npm run gulp --env=${ENV_NAME}
 
