@@ -29,7 +29,7 @@ const
  * @param  {Number=} length Desired length of the ID
  * @return {String}         Generated base64 ID
  */
-export function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
+function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
   // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
   return Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
 }
