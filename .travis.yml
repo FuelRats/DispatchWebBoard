@@ -8,8 +8,9 @@ env:
 - ENV_NAME=$(./.travis/get_branch_env_name.sh)
 before_script:
 - wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
+- npm install -g gulp-cli
 script:
-- npm run gulp --env=${ENV_NAME}
+- gulp --env ${ENV_NAME}
 addons:
   ssh_known_hosts: cheddar.fuelrats.com
 notifications:
