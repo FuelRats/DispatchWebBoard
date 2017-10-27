@@ -10,7 +10,7 @@ before_script:
 - wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
 - npm install -g gulp-cli
 script:
-- gulp --env ${ENV_NAME}
+- gulp --env ${ENV_NAME} --buildid ${TRAVIS_COMMIT}
 addons:
   ssh_known_hosts: cheddar.fuelrats.com
 notifications:
