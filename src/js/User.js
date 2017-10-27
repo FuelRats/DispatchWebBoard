@@ -21,13 +21,12 @@ export default class UserControl {
     this.AuthHeader = null;
 
     let authHeader = GetCookie(`${AppConfig.AppNamespace}.token`),
-      tokenMatch = document.location.hash.match(/access_token=([\w-]+)/),
-      token = Boolean(tokenMatch) && Boolean(tokenMatch[1]);
+      tokenMatch = document.location.hash.match(/access_token=([\w-]+)/);
 
     window.console.debug('fr.user.init - User module loaded, Starting authentication process.');
 
-    if (token) {
-      this.AuthHeader = token;
+    if (Boolean(tokenMatch) && Boolean(tokenMatch[1])) {
+      this.AuthHeader = tokenMatch[1];
       if (CanSetCookies()) {
         SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, MILLISECONDS_IN_YEAR); // 1 year
         localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
