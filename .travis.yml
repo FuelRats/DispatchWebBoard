@@ -18,8 +18,10 @@ notifications:
     on_success: always
     on_failure: always
     channels:
-    - irc.us.fuelrats.com#rattech
-    nick: TravisCI
+    - ircs://sorlie.co.uk:4242/#rattech
+    nick: TravisCI,
+    password:
+      secure: sVgdMg0pozcuOvgnHB3RlDHC+fLaQQHkojOoOhgT8lBeupKT0nH1C6gs/jvznvqGVXO+OEYJiZ1KxpMteVUvQkNKuNL/snxnR4zecpB5DuweI8w64vwlMNfMWbnrBB+dTOCvlgHOAdpqLQOgg+0yJ2q8/Do7/RVHFCPWpNCcsElE0u78bA+pdKJReXQC6+bHLAPUJdasxyCPm0WdeXL2KTsguvo0aZimDUab1EWxVrw0YgcWtrlsVAHUmPl5tzQowcwKeApPB8+w1gQgYF7J/kGd0LKtAsjQnXuIojJvnsGhQZUSTIjFgYpaKjr5k7qexmm3+V6xa665dfK79O+dPwHC3shjlXt/fUVQRyzHbAUcwM4VVC3S4r6DAqyB1D8OQVfG/wywaYBloLm0vICqLR7NpL61R3f8g//AW+cnLeS9qPPTvMgkrWDro7wftm0sFhJxPuAN2apCNQaVtz3X2l/q10T1rAwR1CVYxDnKQwQtsdv1DJ4UvDCSvvwTJjaxEmDoeaqcwJ7Zq8WTuEUIIOhGm78Ol9P5dbfzfSQB97juo/2bu4b+s0165ZKyk7x5vjjQ49ryQiwbyBJ+JN7FIeDEFt0LL5BMOzXAF1KCzs38YOIchkCzdbKmOfg0fRbipQ59urFHceusEXBMfySjzie8VmW0xwrQziYugWmt8Bg=
     template:
     - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}"
     - 'Change view : %{compare_url}  Build details : %{build_url}'
