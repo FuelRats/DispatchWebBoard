@@ -31,7 +31,6 @@ export function getProfile() {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
-    },
-    withCredentials: true
+    }
   }).then(response => { return htmlSanitizeObject(mapRelationships(response.json()).data); });
 }
