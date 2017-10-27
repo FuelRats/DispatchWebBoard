@@ -31,11 +31,11 @@ before_deploy:
 deploy:
 - provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/prod
+  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/prod
   on:
     branch: master
 - provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/beta
+  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/beta
   on:
     branch: beta
