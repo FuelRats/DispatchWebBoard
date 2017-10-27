@@ -1,4 +1,6 @@
 # DispatchWebBoard
+[![Build Status](https://travis-ci.org/FuelRats/DispatchWebBoard.svg?branch=master)](https://travis-ci.org/FuelRats/DispatchWebBoard) [![GitHub version](https://badge.fury.io/gh/FuelRats%2FDispatchWebBoard.svg)](https://badge.fury.io/gh/FuelRats%2FDispatchWebBoard) 
+
 The Official FuelRats rescue info tracking application.
 
 ## Deployment (How do I use this thing again?)

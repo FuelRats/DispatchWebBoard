@@ -1,10 +1,25 @@
+// App Imports
 import AppConfig from '../config/config.js';
-import {http, isObject, htmlSanitizeObject} from '../helpers';
+import {
+  http, 
+  htmlSanitizeObject,
+  isObject
+} from '../helpers';
+
+
+// Module Imports
 import url from 'url';
+
 
 export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
 
-export const getSystem = (system) => {
+/**
+ * Gets system information for the given system name
+ *
+ * @param  {String} system System name to get info on.
+ * @return {Object}        Object containing information pertaining to the given starsystem name.
+ */
+export function getSystem(system) {
   system = system.toUpperCase();
 
   if (sessionStorage.getItem(`${AppConfig.AppNamespace}.system.${system}`)) {
@@ -18,27 +33,30 @@ export const getSystem = (system) => {
     return Promise.resolve(sysData);
 
   } else {
-
     return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
       .then(response => {
         let sysData = htmlSanitizeObject(processNewStarSystemData(response.json()));
-
         sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
-        
         return sysData;
       });
-
   }
-};
+}
 
-const processNewStarSystemData = (data) => {
-  if (!isObject(data) || data.meta.results.returned < 1) {
+/**
+ * Formats returned data into a single object for ease of use.
+ *
+ * @param  {Object} data System data to process.
+ * @return {Object}      Simplified system data.
+ */
+function processNewStarSystemData(data) {
+  let system = JSON.parse(JSON.stringify(data)); // Deep clone copy.
+  if (!isObject(system) || system.meta.results.returned < 1) {
     return null;
   }
-  let sysData = data.data[0];
+  let sysData = system.data[0];
 
-  if (data.included && data.included[0]) {
-    sysData.bodies = data.included.filter(function(body) {
+  if (system.included && system.included[0]) {
+    sysData.bodies = system.included.filter(function(body) {
       return body.attributes.group_name === 'Star';
     });
     // cleanup body info
@@ -57,4 +75,4 @@ const processNewStarSystemData = (data) => {
   delete sysData.links;
 
   return sysData;
-};
+}

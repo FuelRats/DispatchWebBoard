@@ -1,8 +1,15 @@
+/**
+ * Confirms that the object is a generic object and not a specific type.
+ *
+ * @param  {Any}     object Object to validate.
+ * @return {Boolean}        Boolean representing if the given object is a generic object.
+ */
 export function isObject(object) {
   return object !== null &&
          typeof object === 'object' &&
          Object.prototype.toString.call(object) === '[object Object]';
 }
+
 
 /**
  * Checks that the given key is a proper member of the given object, and is of the correct given type.
@@ -13,8 +20,8 @@ export function isObject(object) {
  * @return {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
  */
 export function isValidProperty(obj, key, ktype) {
-  let isValidType = function(item, type) {
-    switch(type) {
+  let isValidType = (item, type) => {
+    switch (type) {
     case 'array':
       return Array.isArray(item);
     case 'object':
@@ -27,9 +34,18 @@ export function isValidProperty(obj, key, ktype) {
       return typeof item === type;
     }
   };
-  return Array.isArray(ktype) ? ktype.some(i => isValidType(obj[key],i)) : isValidType(obj[key],ktype);
+  return Array.isArray(ktype) ? ktype.some(item => isValidType(obj[key],item)) : isValidType(obj[key],ktype);
 }
 
+
+/**
+ * Checks if the given number is within the given range.
+ *
+ * @param  {Number}  num Number to validate.
+ * @param  {Number}  min Minimum value of the range.
+ * @param  {Number}  max Maximum value of the range.
+ * @return {Boolean}     Boolean representing whether or not the given number is within the given range.
+ */
 export function isInRange(num, min, max) {
   return typeof num === 'number' && //
          typeof min === 'number' && // Ensure all args are numbers

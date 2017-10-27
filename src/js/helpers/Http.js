@@ -1,48 +1,48 @@
-import {isObject, isValidProperty, isInRange} from './Validation.js';
+// App Imports
+import {
+  isObject, 
+  isInRange,
+  isValidProperty 
+} from './Validation.js';
 
-/* 
- * Example
- * 
- * All options are optional.
- * 
- * http.get('api.somedomain.tld/resource/endpoint?query=value', {
- *   headers: {
- *     'Accept': 'application/json'
- *   },
- *   responseType: 'text'
- *   mimeType: 'application/json', //mimeTypeOverride
- *   withCredentials: false,
- *   username: 'some user',
- *   password: 'a password',
- *   timeout: 5000,
- *   body: null // This is mainly for posts.
- * });
- */
+
+const
+  SUCCESSFUL_RESPONSE_RANGE_START = 200,
+  SUCCESSFUL_RESPONSE_RANGE_END = 206;
+
 
 /**
  * Promise wrapper and custom handler for XHR Requests
  *
- * @param  {String}  method HTTP Method
- * @param  {String}  dest   URI of the resource to request.
- * @param  {Object}  opts   XHR options
- * @return {Promise}        Promise which resolves when the request resolves with a successful response.
+ * @param  {String}  method               HTTP Method
+ * @param  {String}  dest                 URI of the resource to request.
+ * @param  {Object}  opts                 
+ * @param  {Object}  opts.headers         Headers to be sent to the server in format of {'key':'value'}
+ * @param  {String}  opts.responseType    Sets the Response Type. All XHR responseTypes are supported.
+ * @param  {String}  opts.mimeType        Override MimeType returned by the server.
+ * @param  {Boolean} opts.withCredentials Boolean whether or not CORS requests should be made using credentials.
+ * @param  {String}  opts.username        Optional username to use for authentication.
+ * @param  {String}  opts.password        Optional password to use for authentication.
+ * @param  {Number}  opts.timeout         time (in milliseconds) before automatically terminating the request.
+ * @param  {String}  opts.body            Body to send with the request.
+ * @return {Promise}                      Promise which resolves when the request resolves with a successful response.
  */
-let makeXHR = function makeXHR(method, dest, opts) {
+function makeXHR(method, dest, opts) {
   return new Promise((resolve, reject) => {
 
-    if(!opts) { opts = {}; }
+    if (!opts) { opts = {}; }
 
     let xhr = new XMLHttpRequest();
 
     xhr.onload = () => {
-      if(isInRange(xhr.status, 200, 206)) {
+      if (isInRange(xhr.status, SUCCESSFUL_RESPONSE_RANGE_START, SUCCESSFUL_RESPONSE_RANGE_END)) {
         resolve(getXHRResponse(xhr));
       } else {
         reject(getXHRResponse(xhr));
       }
     };
 
-    xhr.onerror = (err) => {
+    xhr.onerror = () => {
       reject(getXHRResponse(xhr));
     };
 
@@ -56,25 +56,25 @@ let makeXHR = function makeXHR(method, dest, opts) {
     );
 
     // Post-Open settings.
-    if(isValidProperty(opts, 'responseType', 'boolean')) {
+    if (isValidProperty(opts, 'responseType', 'boolean')) {
       xhr.responseType = opts.responseType;
     }
 
-    if(isValidProperty(opts, 'withCredentials', 'boolean')) {
+    if (isValidProperty(opts, 'withCredentials', 'boolean')) {
       xhr.withCredentials = opts.withCredentials;
     }
 
-    if(isValidProperty(opts, 'timeout', 'number')) {
+    if (isValidProperty(opts, 'timeout', 'number')) {
       xhr.timeout = opts.timeout;
     }
 
-    if(isValidProperty(opts, 'mimeType', 'string')) {
+    if (isValidProperty(opts, 'mimeType', 'string')) {
       xhr.overrideMimeType(opts.mimeType);
     }
 
-    if(isObject(opts.headers)) {
+    if (isObject(opts.headers)) {
       for (let header in opts.headers) {
-        if(!opts.headers.hasOwnProperty(header)) { continue; }
+        if (!opts.headers.hasOwnProperty(header)) { continue; }
         xhr.setRequestHeader(header, opts.headers[header]);
       }
     }
@@ -82,11 +82,17 @@ let makeXHR = function makeXHR(method, dest, opts) {
     // Send Request
     xhr.send(isValidProperty(opts, 'body', 'string') ? opts.body : null);
   });
-};
+}
 
-let getXHRResponse = function getXHRResponse(xhr) {
+/**
+ * Returns a XHRResponse class from the given XMLHttpRequest.
+ *
+ * @param  {Object} xhr Base XMLHttpRequest class instance.
+ * @return {Object}     XHRResponse class containing the response information from the XHR.
+ */
+function getXHRResponse(xhr) {
   return new XHRResponse(xhr.status, xhr.statusText, xhr.responseText, xhr.responseType, xhr.responseUrl, xhr.getAllResponseHeaders());
-};
+}
 
 export const http = {
   del: (dest, opts) => makeXHR('DELETE', dest, opts),
@@ -95,6 +101,7 @@ export const http = {
   put: (dest, opts) => makeXHR('PUT', dest, opts),
   xhr: (method, dest, opts) => makeXHR(method, dest, opts)
 };
+
 
 export class XHRResponse {
   constructor(status, statusText, responseText, responseUrl, headers) {

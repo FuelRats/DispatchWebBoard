@@ -30,6 +30,7 @@ const
   deploy = gulpUtil.env['deploy'],                 // Enables automatic deployment to remote server
   fingerprint = makeID();                          // Randomized fingerprint for the build.
 
+gulpUtil.log(`Building with env: ${buildEnvironment}`);
 
 // Build Configs
 
