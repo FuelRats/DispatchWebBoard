@@ -21,7 +21,7 @@ notifications:
     - ircs://sorlie.co.uk:4242/#rattech
     nick: TravisCI,
     password:
-      secure: pwKSssEvM9GkuDtmsETjcy5RM515I7azR3YHGLokUHK/+J6kLekfFrxKtCcnMysW4TtTP7+mlT5D8/5MmxwQleFutbWV2gfnpSgALU5qU2tkdpCgFR2P7FdYl/tsxGSqldzANMULjhKgdxI1ghSJBKEvnTnmlDyFgeZS9v7LjMDn7r5NDkBE05DFNEZCel1zxSU6VsSLqAylOWxYmswtivz2/G2taA0BJU0R3XqaizHN7i/zH3RSIW+/1X5s9H/bfmc5B2nBmRVFogtwbM//kzfKmFosG6WKxcAx8r6T+fYYXpvg/qmk9rn3CcVLjYiZaQIsK2NmxC2djJFY2kZRm7BnVZvRW/owZO91vI8j0dQL6sAFg6Af8nDjK8N0LbFE8/PNd0I12IZB+JwfNZi6GoyuM8YRv8ag7AY4lsNf/S5ZrJRq61MKVpStCIT7UulXOuvsWLHy8Il6e5+63F9ez3mIJfTVbJ+znwgwDoT86PJqKFc9eqUQkxpBceaW/hWHK8APPY/kxyGOoow4Vgx8rvw/c1WXkn64sOw9AWhJVNwadqoXCW+4ESojbgv/PJMrfOnEYGaZ6x2nE/Seh3/SFLAEo19T5uNCDEqO2tS0PzYCBfhfEoRY+dnzGo57RvmeMHmuQdlvsn+Dgf6+UgGh06xvPjwhNV6L0pXuERVNul8=
+      secure: bySHCljRF1EC1jzCAoY/AOAcVzF+Edm4sFYTMo54KHOfvt6H5uSLmBN70UxRSLxL1i/iwXE9qNhqveiYIe+fylYQls8ai2UNC7YQ/TdrRlaCOx8VuhmGAMwb+MUdhLmBY4AzVi783UemJIFash0MM19k49R03I+wJxVRJh7DGhuCEk2S2Rd3tYfGAvKjxYGBcoMiMoSLcEpJhrg7xalg0oGopPWzkb/X8RE1aMxGw6v+VzPYrSwzSfYyXEoWxeDaZFcbRSfIFt21NE1Oi/tDg8MqBJCrX2/uJBAlBhdLtHruOVqrYwYKp5j0rtTM1pW+bPQKT9nkZ4Wdr6JxCXVKKcuHK1l94VubrBpuBITDIM3gOD4Q0IGaUdMtP9KzQHbX243jOCtYJm89lmbAynfZf0NOanl1RDcL2J5ECA4aZf746vUxbZ290iVIKRZoVlRdi1kGjmz8v4tblEnRlPiODdgGqo34hw3s8VCZDs3kn4AFRLV659lwzNFDqpO2fxqTaEIR8DriYRWa9D/NmZT2Tyq5eTX8dBXQoffv9M3mjQ5xsTZ3V2ssfS7F2OQtaBpcQMwCflqDzyEETbpM47znj5oc9afBacnOU/SbHkdG0ymc624sldXIzUVkqys4mLMlUvdEG7nxnQr+WJV0nL9ajmcTV4qACwc9Uq0a0f5b7iI=
     template:
     - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}"
     - 'Change view : %{compare_url}  Build details : %{build_url}'
