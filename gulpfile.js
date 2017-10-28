@@ -14,23 +14,37 @@ const
   webpack = require('webpack'),
   webpackStream = require('webpack-stream');
 
+// Consts
+
+const
+  DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+  DEFAULT_ID_LENGTH = 24;
+
+
 // Utility Functions
 
-function makeID(length = 24) {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', text = [];
-  for (let i = 0; i < length; i += 1) { text.push(chars.charAt(Math.floor(Math.random() * chars.length))); }
-  return text.join('');
+/**
+ * Generates a random base64 ID of a given char length
+ * 
+ * @param  {Number=} length Desired length of the ID
+ * @return {String}         Generated base64 ID
+ */
+function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
+  // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
+  return Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
 }
 
 // Variables
 
 const 
-  buildEnvironment = gulpUtil.env['env'] || 'dev', // Sets which app config to use
-  indexSuffix = gulpUtil.env['index'] || 'main',   // Sets which index file to use
-  deploy = gulpUtil.env['deploy'],                 // Enables automatic deployment to remote server
-  fingerprint = makeID();                          // Randomized fingerprint for the build.
+  buildEnvironment = gulpUtil.env['env'] || 'dev',   // Sets which app config to use
+  indexSuffix = gulpUtil.env['index'] || 'main',     // Sets which index file to use
+  deploy = gulpUtil.env['deploy'],                   // Enables automatic deployment to remote server
+  fingerprint = gulpUtil.env['buildid'] || makeID(); // Randomized fingerprint for the build.
 
-gulpUtil.log(`Building with env: ${buildEnvironment}`);
+gulpUtil.log(`Using Config file: ./app.${buildEnvironment}.config.js`);
+gulpUtil.log(`Using Index file: ./src/index.${indexSuffix}.html`);
+gulpUtil.log(`Using Build ID: ${fingerprint}`);
 
 // Build Configs
 
@@ -59,7 +73,7 @@ gulp.task('postBuild', function(next) {
   cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir);
 
   // Deployment
-  if(!deploy) { next(); return; }
+  if (!deploy) { next(); return; }
 
   const rsync = require('gulp-rsync');
   const rsconf = Object.assign({
@@ -68,7 +82,7 @@ gulp.task('postBuild', function(next) {
     clean: true
   }, gulpConf.rsync);
   
-  if(!rsconf.hostname || !rsconf.destination) {
+  if (!rsconf.hostname || !rsconf.destination) {
     gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
     next();
     return;
@@ -123,7 +137,7 @@ gulp.task('webpack', function() {
     }
   }));
 
-  if(gulpConf.gulp.production) {
+  if (gulpConf.gulp.production) {
     // Minify
     const ujs = require('uglifyjs-webpack-plugin');
     conf.plugins.push(new ujs({
