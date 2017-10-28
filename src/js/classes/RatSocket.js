@@ -122,13 +122,18 @@ export default class RatSocket {
     window.console.debug('RatSocket - Received message: ', data);
     
     let _data = JSON.parse(data.data);
-    // Handle request responses
+
     if (typeof _data.meta.reqID === 'string' && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
-      window.console.debug(`RatSocket - Detected request response. closing request: ${_data.meta.reqID}`);
+      window.console.debug(`RatSocket - Closing request '${_data.meta.reqID}' with data:`, _data);
+
       this.openRequests[_data.meta.reqID](_data);
       delete this.openRequests[_data.meta.reqID];
+
     } else if (_data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
+      window.console.log(`RatSocket - Emitting event '${_data.meta.event}' with data:`, _data);
+
       this._emitEvent(_data.meta.event, _data);
+
     } else { // if neither of the above conditions are true, just spit it out as an error to the console. This shouldn't happen.
       window.console.error('RatSocket - Received an unknown message from the attached websocket: ', data);
     }
