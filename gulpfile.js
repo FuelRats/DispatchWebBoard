@@ -42,10 +42,6 @@ const
   deploy = gulpUtil.env['deploy'],                   // Enables automatic deployment to remote server
   fingerprint = gulpUtil.env['buildid'] || makeID(); // Randomized fingerprint for the build.
 
-gulpUtil.log(`Using Config file: ./app.${buildEnvironment}.config.js`);
-gulpUtil.log(`Using Index file: ./src/index.${indexSuffix}.html`);
-gulpUtil.log(`Using Build ID: ${fingerprint}`);
-
 // Build Configs
 
 const 
@@ -56,6 +52,10 @@ const
     buildDir: 'deploy',
     distDir: path.resolve(__dirname, 'deploy', 'dist')
   };
+
+if (gulpUtil.env['production']) {
+  gulpConf.gulp.production = true;
+}
 
 // Tasks
 
@@ -198,9 +198,15 @@ gulp.task('html', function() {
     .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
     .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
     .pipe(rename('index.html'))
-    .pipe(gulp.dest(paths.buildDir))
+    .pipe(gulp.dest(paths.buildDir));
 });
 
+// Output for debugging purposes
+gulpUtil.log('Using environment file', gulpUtil.colors.magenta(`${__dirname}/app.${buildEnvironment}.config.js`));
+gulpUtil.log('Using index file', gulpUtil.colors.magenta(`${__dirname}/src/index.${indexSuffix}.html`));
+gulpUtil.log('Using buildID', gulpUtil.colors.magenta(`${fingerprint}`));
+gulpUtil.log('Using production build', gulpConf.gulp.production ? gulpUtil.colors.green.bold('true') : gulpUtil.colors.magenta('false'));
+if (deploy) { gulpUtil.log('Using deployment destination', gulpUtil.colors.magenta(`${gulpConf.rsync.hostname}:${gulpConf.rsync.destination}`)); }
 
 // Task Defaults and Shortcuts
 gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss', 'html'), 'postBuild'));
