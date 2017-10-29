@@ -25,7 +25,7 @@ const
  * @param  {String}  opts.password        Optional password to use for authentication.
  * @param  {Number}  opts.timeout         time (in milliseconds) before automatically terminating the request.
  * @param  {String}  opts.body            Body to send with the request.
- * @return {Promise}                      Promise which resolves when the request resolves with a successful response.
+ * @return {Promise}                      Resolves when the request returns with a successful response.
  */
 function makeXHR(method, dest, opts) {
   return new Promise((resolve, reject) => {
@@ -94,6 +94,9 @@ function getXHRResponse(xhr) {
   return new XHRResponse(xhr.status, xhr.statusText, xhr.responseText, xhr.responseType, xhr.responseUrl, xhr.getAllResponseHeaders());
 }
 
+/**
+ * Provides simplified interface to use the makeXHR function.
+ */
 export const http = {
   del: (dest, opts) => makeXHR('DELETE', dest, opts),
   get: (dest, opts) => makeXHR('GET', dest, opts),
@@ -102,8 +105,20 @@ export const http = {
   xhr: (method, dest, opts) => makeXHR(method, dest, opts)
 };
 
-
+/**
+ * Object to hold XHR response information.
+ */
 export class XHRResponse {
+
+  /**
+   * Constructs XHRResponse.
+   *
+   * @param  {Number} status       Status code of the response.
+   * @param  {String} statusText   Status text of the response.
+   * @param  {String} responseText Body of the response.
+   * @param  {String} responseUrl  Final URL the response originated from.
+   * @param  {Object} headers      Object containing response headers.
+   */
   constructor(status, statusText, responseText, responseUrl, headers) {
     this.text = responseText;
     this.status = status;
@@ -126,6 +141,11 @@ export class XHRResponse {
     this.isXHRResponse = {};
   }
 
+  /**
+   * Parses the response text as JSON
+   *
+   * @return {Object} Object crated from JSON text.
+   */
   json() {
     return JSON.parse(this.text);
   }

@@ -31,6 +31,7 @@ export function mapRelationships(data) {
   
   return data;
 }
+
 /**
   * Private function
   */
