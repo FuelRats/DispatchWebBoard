@@ -192,7 +192,16 @@
       "warn"
     ],
     "require-jsdoc": [
-      "warn"
+      "warn",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": true,
+          "ClassDeclaration": true,
+          "ArrowFunctionExpression": false,
+          "FunctionExpression": true
+        }
+      }
     ],
     "id-length": [
       "warn",
