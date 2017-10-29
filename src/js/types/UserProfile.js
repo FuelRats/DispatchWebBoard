@@ -5,7 +5,6 @@ export default PropTypes.shape({
   'type': PropTypes.oneOf(['profiles']),
   'attributes': PropTypes.shape({
     'data': PropTypes.object,
-    'email': PropTypes.string.isRequired,
     'createdAt': PropTypes.string.isRequired,
     'updatedAt': PropTypes.string.isRequired,
     'displayRatId': PropTypes.string,
