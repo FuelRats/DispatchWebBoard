@@ -1,6 +1,8 @@
 import User from './User.js';
 
 /* DEVBLOCK:START */
+import DebugHelper from './util/DebugHelper.js';
+
 window.console.debug = window.console.log.bind(window.console);
 /* DEVBLOCK:END */
 
@@ -8,5 +10,5 @@ window.console.debug = window.console.log.bind(window.console);
 let dwbApp = new User();
 
 /* DEVBLOCK:START */
-window._dwbDebug = dwbApp;
+window._dwbug = new DebugHelper(dwbApp);
 /* DEVBLOCK:END */
