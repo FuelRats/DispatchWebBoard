@@ -196,12 +196,15 @@
       {
         "require": {
           "FunctionDeclaration": true,
-          "MethodDefinition": true,
+          "MethodDefinition": false,
           "ClassDeclaration": true,
           "ArrowFunctionExpression": false,
           "FunctionExpression": true
         }
       }
+    ],
+    "valid-jsdoc": [
+      "warn"
     ],
     "id-length": [
       "warn",
