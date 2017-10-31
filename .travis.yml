@@ -14,7 +14,7 @@ script:
 addons:
   ssh_known_hosts: cheddar.fuelrats.com
 notifications:
-  webhook:
+  webhooks:
     urls:
       - http://orthanc.localecho.net/cgi-bin/webhook.py
     on_success: always
