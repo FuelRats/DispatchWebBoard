@@ -99,7 +99,20 @@ gulp.task('webpack', function() {
   let conf = {
     bail: true,
     module: {
-      rules: []
+      rules: [
+        {
+          test: /\.jsx$/,
+          exclude: /(node_modules)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              'presets' : [
+                '@babel/react'
+              ]
+            }
+          }
+        }
+      ]
     },
     output: {
       filename: `app.${fingerprint}.js`
@@ -121,6 +134,9 @@ gulp.task('webpack', function() {
   };
 
   conf.plugins.push(new webpack.DefinePlugin({
+    'process.env': {
+      NODE_ENV: JSON.stringify(gulpConf.gulp.production ? 'production' : 'development')
+    },
     ENV: {
       FR: {
         'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),

@@ -24,6 +24,9 @@
   },
   "homepage": "https://github.com/FuelRats/DispatchWebBoard#readme",
   "dependencies": {
+    "@babel/core": "^7.0.0-beta.5",
+    "@babel/preset-react": "^7.0.0-beta.5",
+    "babel-loader": "^8.0.0-beta.0",
     "clipboard": "^1.7.1",
     "cpx": "^1.5.0",
     "del": "^3.0.0",
