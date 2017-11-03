@@ -1,8 +1,8 @@
 /**
  * Confirms that the object is a generic object and not a specific type.
  *
- * @param  {Any}     object Object to validate.
- * @return {Boolean}        Boolean representing if the given object is a generic object.
+ * @param   {Any}     object Object to validate.
+ * @returns {Boolean}        Boolean representing if the given object is a generic object.
  */
 export function isObject(object) {
   return object !== null &&
@@ -14,10 +14,10 @@ export function isObject(object) {
 /**
  * Checks that the given key is a proper member of the given object, and is of the correct given type.
  * 
- * @param  {Object}            obj   - object containing the given property.
- * @param  {String}            key   - Name of the property to check for.
- * @param  {(String|String[])} ktype - Expected type of the property object.
- * @return {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
+ * @param   {Object}            obj   - object containing the given property.
+ * @param   {String}            key   - Name of the property to check for.
+ * @param   {(String|String[])} ktype - Expected type of the property object.
+ * @returns {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
  */
 export function isValidProperty(obj, key, ktype) {
   let isValidType = (item, type) => {
@@ -41,10 +41,10 @@ export function isValidProperty(obj, key, ktype) {
 /**
  * Checks if the given number is within the given range.
  *
- * @param  {Number}  num Number to validate.
- * @param  {Number}  min Minimum value of the range.
- * @param  {Number}  max Maximum value of the range.
- * @return {Boolean}     Boolean representing whether or not the given number is within the given range.
+ * @param   {Number}  num Number to validate.
+ * @param   {Number}  min Minimum value of the range.
+ * @param   {Number}  max Maximum value of the range.
+ * @returns {Boolean}     Boolean representing whether or not the given number is within the given range.
  */
 export function isInRange(num, min, max) {
   return typeof num === 'number' && //

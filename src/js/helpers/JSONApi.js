@@ -7,8 +7,8 @@ import {
 /**
  * Maps included relationship data to the relationship of the main data model.
  *
- * @param  {[type]} data [description]
- * @return {[type]}      [description]
+ * @param   {Object} data Object containing the main data object and included related items.
+ * @returns {Object}      Object with data mapped to the data's relationships.
  */
 export function mapRelationships(data) {
   // Ensure some level of integrity, just to be safe.
@@ -33,10 +33,14 @@ export function mapRelationships(data) {
 }
 
 /**
-  * Private function
-  */
-function _findInclude(member, included) {
-  let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === member.id && obj.type === member.type);
+ * Finds included data object.
+ *
+ * @param   {Object}   relRef   relationship reference containing relationship id and type.
+ * @param   {Object[]} included Array of included data objects.
+ * @returns {Object}            Object matching the relationship reference. 
+ */
+function _findInclude(relRef, included) {
+  let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type);
   if (includeMatches.length > 1) { 
     window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches);
   }
@@ -44,7 +48,11 @@ function _findInclude(member, included) {
 }
 
 /**
- * Private function
+ * Recursively maps included data to the given relationship data.
+ *
+ * @param   {Object} relationships Relationship object.
+ * @param   {Object} included      Data included with the main data.
+ * @returns {Object}               Relationship object with mapped included data.
  */
 function _mapRelationshipItems(relationships, included) {
 

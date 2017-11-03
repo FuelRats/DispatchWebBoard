@@ -1,8 +1,8 @@
 /**
  * Gets the value of the cookie matching the given name.
  *
- * @param  {String} name Name of the cookie
- * @return {String}      Value of the cookie, null if not found.
+ * @param   {String} name Name of the cookie
+ * @returns {String}      Value of the cookie, null if not found.
  */
 export function GetCookie(name) {
   try {
@@ -25,9 +25,10 @@ export function GetCookie(name) {
 /**
  * Sets the value of the given cookie name
  *
- * @param {string} name   Name of the cookie
- * @param {string} value  Value of the cookie
- * @param {Number} expire Time (in milliseconds) until cookie expiration.
+ * @param   {string} name   Name of the cookie
+ * @param   {string} value  Value of the cookie
+ * @param   {Number} expire Time (in milliseconds) until cookie expiration.
+ * @returns {void}
  */
 export function SetCookie(name, value, expire) {
   let temp = `${name}=${encodeURIComponent(value)}${(expire !== 0 ? `; path=/; expires=${(new Date((new Date()).getTime() + expire)).toUTCString()};` : '; path=/;')}`;
@@ -37,7 +38,8 @@ export function SetCookie(name, value, expire) {
 /**
  * Deletes the cookie matching the  given name.
  *
- * @param {String} name Name of the cookie
+ * @param   {String} name Name of the cookie
+ * @returns {void}
  */
 export function DelCookie(name) {
   document.cookie = `${name}=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
@@ -46,7 +48,7 @@ export function DelCookie(name) {
 /**
  * Creates and deletes a test cookie to check if cookies can be set
  * 
- * @return {Boolean} Representing the ability to set cookies.
+ * @returns {Boolean} Representing the ability to set cookies.
  */
 export function CanSetCookies() {
   SetCookie('CookieTest', 'true', 0);

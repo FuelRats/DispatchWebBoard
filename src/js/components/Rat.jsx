@@ -1,6 +1,6 @@
 // Module imports
 import React from 'react';
-import PropTypes from 'prop-types';
+
 
 // App imports
 import Component from './Component.jsx';
@@ -11,6 +11,13 @@ import AssignedRatPropType from '../types/AssignedRat.js';
  * Component to display assigned rat information and status buttons.
  */
 export default class Rat extends Component {
+
+  /**
+   * Creates a Rat
+   *
+   * @param   {Object} props React props.
+   * @returns {void}
+   */
   constructor(props) {
     super(props);
 
@@ -49,21 +56,21 @@ export default class Rat extends Component {
           value: false
         },
         disconnect: {
-          text: 'DC', 
-          title: 'Rat has been disconnected from game.', 
+          text: 'DELAY', 
+          title: 'Rat has been delayed or disconnected.', 
           color:'red', 
-          value: false
-        },
-        interdict: {
-          text: 'INT', 
-          title: 'Rat has been interdicted.', 
-          color: 'red', 
           value: false
         },
       }
     };
   }
 
+  /**
+   * Toggles the boolean value of status buttons when they are pressed.
+   *
+   * @param   {String} buttonName Name of the button.
+   * @returns {void}
+   */
   handleButtonToggle(buttonName) {
     let buttons = Object.assign({}, this.state.statusButtons);
 
@@ -72,6 +79,11 @@ export default class Rat extends Component {
     this.setState({statusButtons: buttons});
   }
 
+  /**
+   * React render.
+   *
+   * @returns {Object} React element.
+   */
   render() {
     const 
       ratData = this.props.rat,

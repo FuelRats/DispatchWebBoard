@@ -4,8 +4,8 @@ import {isObject} from './Validation.js';
 /**
  * Sanitize a given string to make it DOM safe.
  *
- * @param  {String} string String to sanitized
- * @return {String}        String clean of HTML-specific characters.
+ * @param   {String} string String to sanitized
+ * @returns {String}        String clean of HTML-specific characters.
  */
 export function htmlSanitize(string) {
   return string.replace(/&/g, '&amp;')
@@ -19,8 +19,8 @@ export function htmlSanitize(string) {
 /**
  * Deep HTML sanitation of all string values of an object.
  *
- * @param  {Object} obj Object to sanitize
- * @return {Object}     Sanitized object.
+ * @param   {Object} obj Object to sanitize
+ * @returns {Object}     Sanitized object.
  */
 export function htmlSanitizeObject(obj) {
   for (let [key, value] of Object.entries(obj)) {
@@ -38,8 +38,8 @@ export function htmlSanitizeObject(obj) {
 /**
  * Deep HTML sanitation of all string values within an array.
  *
- * @param  {Object[]} array Array to sanitize
- * @return {Object}         Sanitized object.
+ * @param   {Object[]} array Array to sanitize
+ * @returns {Object}         Sanitized object.
  */
 export function htmlSanitizeArray(array) {
   let newArray = [];

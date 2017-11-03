@@ -4,10 +4,12 @@ import {makeID} from '../helpers/index.js';
  * Assists in debugging by providing a local test case to manipulate.
  */
 export default class DebugHelper {
+
   /**
    * Constructs instance of DebugHelper
    *
-   * @param  {Object} app Instance of UserControl class.
+   * @param {Object} app Instance of UserControl class.
+   * @returns {void}
    */
   constructor(app) {
     this.app = app;
@@ -16,10 +18,10 @@ export default class DebugHelper {
   /**
    * Simulates a rescue creation event.
    *
-   * @param  {String} name     UserName
-   * @param  {String} system   System Name
-   * @param  {String} platform pc,xb, or ps
-   * @return {Object}          Instance of class for chaining.
+   * @param   {String} name     UserName
+   * @param   {String} system   System Name
+   * @param   {String} platform pc,xb, or ps
+   * @returns {Object}          Instance of class for chaining.
    */
   createTestRescue(name, system, platform) {
     if (
@@ -109,8 +111,8 @@ export default class DebugHelper {
   /**
    * Simulates a rescue update event. No case details of the test rescue will change unless updated beforehand.
    *
-   * @param  {Date} date Date to set the updatedAt field to.
-   * @return {Object}    Instance of class for chaining.
+   * @param   {Date} date Date to set the updatedAt field to.
+   * @returns {Object}    Instance of class for chaining.
    */
   UpdateTestRescue(date) {
     if (!this._TestRescueData) {

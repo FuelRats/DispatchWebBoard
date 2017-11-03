@@ -27,14 +27,6 @@
 					"@todo"
 				]
 			},
-      "eslint": {
-          "@disable": false,
-          "args": [],
-          "excludes":[
-              "deploy/*",
-              "node_modules/*"
-          ]
-      },
 			"csstree":
 			{
 				"@disable": false,
@@ -43,6 +35,18 @@
 				],
 				"excludes":
 				[
+				]
+			},
+			"eslint":
+			{
+				"@disable": false,
+				"args":
+				[
+				],
+				"excludes":
+				[
+					"deploy/*",
+					"node_modules/*"
 				]
 			}
 		}

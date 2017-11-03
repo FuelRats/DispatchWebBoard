@@ -17,10 +17,11 @@ const
 
 
 /**
- * Generates a random base64 ID of a given char length
+ * Generates a random ID of a given char length, which has been created from the string of allowed characters.
  * 
- * @param  {Number=} length Desired length of the ID
- * @return {String}         Generated base64 ID
+ * @param   {Number=} length Desired length of the ID. Default: 48
+ * @param   {String=} chars  Chars used in generating the id. Default: Base64
+ * @returns {String}         Generated ID.
  */
 export function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
   // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
@@ -30,8 +31,8 @@ export function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS
 /**
  * Formats a date object to the galactic standard date-time format. (yyyy MMM dd HH:mm:ss)
  *
- * @param  {Object} date Date object to convert
- * @return {String}      Formatted date string
+ * @param   {Object} date Date object to convert.
+ * @returns {String}      Formatted date string.
  */
 export function makeDateHumanReadable(date) {
 
@@ -51,9 +52,9 @@ export function makeDateHumanReadable(date) {
 /**
  * Takes the difference between the provided start and end time, then formats it into a string. (HH:mm:ss)
  *
- * @param  {Object} startTime starting time 
- * @param  {Object} endTime   ending time 
- * @return {String}           Formatted time string
+ * @param   {Object} startTime starting time
+ * @param   {Object} endTime   ending time
+ * @returns {String}           Formatted time string
  */
 export function makeTimeSpanString(startTime, endTime) {
   

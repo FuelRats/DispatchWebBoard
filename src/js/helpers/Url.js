@@ -1,8 +1,8 @@
 /**
  * Gets parameter from the page querystring
  *
- * @param  {String} key Param key to find.
- * @return {Object}     The value of the specified key, returns null if not found.
+ * @param   {String} key Param key to find.
+ * @returns {Object}     The value of the specified key, returns null if not found.
  */
 export function getUrlParam(key) {
   let param = window.location.href.slice(window.location.href.indexOf('?') + 1)

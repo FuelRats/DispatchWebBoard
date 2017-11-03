@@ -14,18 +14,18 @@ const
 /**
  * Promise wrapper and custom handler for XHR Requests
  *
- * @param  {String}  method               HTTP Method
- * @param  {String}  dest                 URI of the resource to request.
- * @param  {Object}  opts                 
- * @param  {Object}  opts.headers         Headers to be sent to the server in format of {'key':'value'}
- * @param  {String}  opts.responseType    Sets the Response Type. All XHR responseTypes are supported.
- * @param  {String}  opts.mimeType        Override MimeType returned by the server.
- * @param  {Boolean} opts.withCredentials Boolean whether or not CORS requests should be made using credentials.
- * @param  {String}  opts.username        Optional username to use for authentication.
- * @param  {String}  opts.password        Optional password to use for authentication.
- * @param  {Number}  opts.timeout         time (in milliseconds) before automatically terminating the request.
- * @param  {String}  opts.body            Body to send with the request.
- * @return {Promise}                      Resolves when the request returns with a successful response.
+ * @param   {String}  method               HTTP Method
+ * @param   {String}  dest                 URI of the resource to request.
+ * @param   {Object}  opts                 Object containing options for the XHR.
+ * @param   {Object}  opts.headers         Headers to be sent to the server in format of {'key':'value'}
+ * @param   {String}  opts.responseType    Sets the Response Type. All XHR responseTypes are supported.
+ * @param   {String}  opts.mimeType        Override MimeType returned by the server.
+ * @param   {Boolean} opts.withCredentials Boolean whether or not CORS requests should be made using credentials.
+ * @param   {String}  opts.username        Optional username to use for authentication.
+ * @param   {String}  opts.password        Optional password to use for authentication.
+ * @param   {Number}  opts.timeout         time (in milliseconds) before automatically terminating the request.
+ * @param   {String}  opts.body            Body to send with the request.
+ * @returns {Promise}                      Resolves when the request returns with a successful response.
  */
 function makeXHR(method, dest, opts) {
   return new Promise((resolve, reject) => {
@@ -87,8 +87,8 @@ function makeXHR(method, dest, opts) {
 /**
  * Returns a XHRResponse class from the given XMLHttpRequest.
  *
- * @param  {Object} xhr Base XMLHttpRequest class instance.
- * @return {Object}     XHRResponse class containing the response information from the XHR.
+ * @param   {Object} xhr Base XMLHttpRequest class instance.
+ * @returns {Object}     XHRResponse class containing the response information from the XHR.
  */
 function getXHRResponse(xhr) {
   return new XHRResponse(xhr.status, xhr.statusText, xhr.responseText, xhr.responseType, xhr.responseUrl, xhr.getAllResponseHeaders());
@@ -113,11 +113,12 @@ export class XHRResponse {
   /**
    * Constructs XHRResponse.
    *
-   * @param  {Number} status       Status code of the response.
-   * @param  {String} statusText   Status text of the response.
-   * @param  {String} responseText Body of the response.
-   * @param  {String} responseUrl  Final URL the response originated from.
-   * @param  {Object} headers      Object containing response headers.
+   * @param   {Number} status       Status code of the response.
+   * @param   {String} statusText   Status text of the response.
+   * @param   {String} responseText Body of the response.
+   * @param   {String} responseUrl  Final URL the response originated from.
+   * @param   {Object} headers      Object containing response headers.
+   * @returns {void}
    */
   constructor(status, statusText, responseText, responseUrl, headers) {
     this.text = responseText;
@@ -144,7 +145,7 @@ export class XHRResponse {
   /**
    * Parses the response text as JSON
    *
-   * @return {Object} Object crated from JSON text.
+   * @returns {Object} Object crated from JSON text.
    */
   json() {
     return JSON.parse(this.text);

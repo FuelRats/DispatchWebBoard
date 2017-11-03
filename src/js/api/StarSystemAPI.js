@@ -16,8 +16,8 @@ export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.
 /**
  * Gets system information for the given system name
  *
- * @param  {String} system System name to get info on.
- * @return {Object}        Object containing information pertaining to the given starsystem name.
+ * @param   {String} system System name to get info on.
+ * @returns {Object}        Object containing information pertaining to the given starsystem name.
  */
 export function getSystem(system) {
   system = system.toUpperCase();
@@ -45,8 +45,8 @@ export function getSystem(system) {
 /**
  * Formats returned data into a single object for ease of use.
  *
- * @param  {Object} data System data to process.
- * @return {Object}      Simplified system data.
+ * @param   {Object} data System data to process.
+ * @returns {Object}      Simplified system data.
  */
 function processNewStarSystemData(data) {
   let system = JSON.parse(JSON.stringify(data)); // Deep clone copy.
