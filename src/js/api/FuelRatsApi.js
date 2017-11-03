@@ -13,24 +13,28 @@ import url from 'url';
 /**
  * Perform a GET XHR on the API
  *
- * @param  {String} endpoint API endpoint path.
- * @param  {Object} opts     Options to pass to underlaying http XHR handler.
- * @return {Object}          Response data from the XHR handler.
+ * @param   {String} endpoint API endpoint path.
+ * @param   {Object} opts     Options to pass to underlaying http XHR handler.
+ * @returns {Object}          Response data from the XHR handler.
  */
 export const get = (endpoint, opts) => http.get(url.resolve(AppConfig.ApiURI, endpoint), opts);
 
 /**
  * Gets the current user profile
  *
- * @return {Object} Object containing API user profile data.
+ * @returns {Object} Object containing API user profile data.
  */
 export function getProfile() {
   let token = localStorage.getItem(`${AppConfig.AppNamespace}.token`);
+
+  if (!token) {
+    return Promise.reject(null);
+  }
 
   return get('/profile', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
     }
-  }).then(response => { return htmlSanitizeObject(mapRelationships(response.json()).data); });
+  }).then(response => htmlSanitizeObject(mapRelationships(response.json()).data));
 }
