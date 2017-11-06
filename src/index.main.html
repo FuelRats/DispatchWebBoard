@@ -47,7 +47,7 @@
   --textAccentYellow: #F0AD4E;
   background-image: url(static/bg.jpg);
 -->
-<body class="loading" style="
+<body style="
   --headerBgColor:         #1A1A1A;
   --headerFgColor:         #FFFFFF;
   --headerFgColorDark:     #9D9D9D;
@@ -74,63 +74,6 @@
   --textAccentYellow:      #F0AD4E;
   background-image:        url(static/bgdark.jpg);
 ">
-  <header class="navhead">
-    <span class="branding" style="padding: 5px;"><img src="static/fuelrats.png" style="height: 40px; display: inline-block;" />  <span id="navbar-brand-title">title</span></span>
-    <div id="navbar" class="navbar navbar-right navbar-collapse">
-      <ul class="navbar-content">
-        <li><span class="ed-clock"></span></li>
-      </ul>
-    </div>
-  </header>
-  <div id="pageContent" class="container">
-    <div class="row">
-      <div id="columnSpacer"></div>
-      <div id="columnBoard">
-        <table id="rescueTable" class="table table-striped table-bordered">
-          <thead>
-            <th>#</th>
-            <th>CMDR</th>
-            <th width="50px">Lang</th>
-            <th width="50px">Plat</th>
-            <th>System</th>
-            <th>Rats</th>
-            <th width="45px">Info</th>
-          </thead>
-          <tbody id="rescueRows"></tbody>
-        </table>
-      </div>
-      <div id="columnDetail">
-        <div id="rescueDetail">
-          <div id='rescueDetailContent'></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="shutter loading-circle">
-    <div id="ShutterLoginWelcome" class="shutter-text login msgtext">Welcome to The Fuel Rats Rescue Web Board!<br>A drilled rat account is required to access this resource.</div>
-    <div id="ShutterLoginNeedPermission" class="shutter-text permission msgtext">Sorry, You need a drilled rat account to access the web board.</div>
-    <div id="ShutterLoginSubtext" class="shutter-text login subtext">Login to begin...</div>
-    <!--<button href="#" id="shutterLogoutButton" class="button logout">Logout</button>-->
-  </div>
-  <div id="userMenu" class="user-menu" data-displayState="none">
-    <button class="button login">Login</button>
-    <div class="user-options">
-      <div class="rat-name">PLACEHOLDER</div>
-      <ul class="option-list">
-        <li><a href="https://confluence.fuelrats.com/display/FRKB" rel="noopener" target="_blank" title="Fuel Rats Knowledgebase - Fue Rats Confluence">FuelRats News -</a></li>
-        <li><a href="https://github.com/FuelRats/DispatchWebBoard/releases" rel="noopener" target="_blank" title="Releases - FuelRats/DispatchWebBoard">DWB Changelog -</a></li>
-        <li><a href="https://jira.fuelrats.com/servicedesk/customer/portal/2/group/45" rel="noopener" target="_blank" title="Website and API Helpdesk - Service Desk">Send Feedback -</a></li>
-        <li><a href="#" class="panel-settings-toggle">Settings -</a></li>
-      </ul>
-      <button class="button logout">Logout</button>
-    </div>
-    <div class="user-icon-container class-toggle" data-target="#userMenu" data-target-class="open">
-      <img class="user-icon" src="static/prof.png"></img>
-      <div class="user-icon-overlay-container">
-        <i class="fa fa-bars  fa-2x user-icon-overlay overlay-open" aria-hidden="true"></i>
-        <i class="fa fa-times fa-2x user-icon-overlay overlay-close" aria-hidden="true"></i>
-      </div>
-    </div>
-  </div>
+<div id="reactApp"></div>
 </body>
 </html>
