@@ -58,14 +58,31 @@ export default class Rescue extends Component {
   render() {
     let 
       rescue = this.props.rescueData,
-      classes = `rescue ${rescue.attributes.status !== 'open' ? 'rescue-inactive' : ''}`;
+      classes = `rescue ${rescue.attributes.status !== 'open' ? 'rescue-inactive' : ''} rescue-platform-${rescue.attributes.platform || 'unknown'}`,
+      clientName = rescue.attributes.client || 'unknown_client',
+      systemName = rescue.attributes.system || 'unknown_system';
+
+    // Resolve data
+
+    let
+      boardIndex = null,
+      clientIRCName = null;
+
+    if (rescue.attributes.data) {
+      boardIndex = rescue.attributes.data.boardIndex || '?';
+      clientIRCName = rescue.attributes.data.IRCNick || clientName;
+    } else {
+      boardIndex = '?';
+      clientIRCName = clientName;
+    }
+
 
 
     return (
       <div className={classes} id={`rescue-${rescue.id}`}>
         <div className={'rescue-info'}>
           <span className={'rescue-info-main'}>
-            <span className={'rescue-info-caseid'}>#{rescue.attributes.data.boardIndex}</span>: <span className={'rescue-info-client'}>{rescue.attributes.client}</span> in <span className={'rescue-info-system'}>{rescue.attributes.system}</span>
+            <span className={'rescue-info-caseid'}>#{boardIndex}</span>: <span className={'rescue-info-client'} title={clientIRCName}>{clientName}</span> in <span className={'rescue-info-system'}>{systemName}</span>
           </span>
         </div>
         <RatList rats={this.getAssignedRats()} />
