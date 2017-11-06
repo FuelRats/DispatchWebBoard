@@ -1,8 +1,9 @@
+// Module imports
 import PropTypes from 'prop-types';
 
 export default PropTypes.shape({
   'id': PropTypes.string.isRequired,
-  'type': PropTypes.oneOf(['rats']),
+  'type': PropTypes.oneOf(['rats']).isRequired,
   'attributes': PropTypes.shape({
     'name': PropTypes.string.isRequired,
     'data': PropTypes.object,
