@@ -16,8 +16,11 @@ header.navhead .branding {
   transition: color .05s ease;
   text-decoration: none;
   font-family: "Raleway", Arial, sans-serif;
+  padding: 5px;
 }
 header.navhead .branding img {
+  display: inline-block;
+  height: 40px; 
   vertical-align: middle;
 }
 header.navhead #navToggleBtn {
