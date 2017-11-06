@@ -1,5 +1,5 @@
 // App Imports
-import AppConfig from '../config/config.js';
+import AppConfig from '../config/Config.js';
 import {
   http, 
   htmlSanitizeObject,

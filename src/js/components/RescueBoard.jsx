@@ -1,5 +1,5 @@
 // App imports
-import AppConfig from '../config/config.js';
+import AppConfig from '../config/Config.js';
 import Component from './Component.jsx';
 import RatSocket from '../classes/RatSocket.js';
 import Rescue from './Rescue.jsx';

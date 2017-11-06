@@ -1,4 +1,4 @@
-import {monthString} from '../config/strings.js';
+import {monthString} from '../config/Strings.js';
 
 
 const 
