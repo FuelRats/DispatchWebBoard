@@ -23,9 +23,7 @@ import _user from './classes/User.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-let 
-  User = new _user(),
-  Page = React.createElement(RescueBoard, {}, null);
+let User = new _user();
 
 
 // Begin user authentication process.
@@ -33,11 +31,15 @@ if (User.hasToken()) {
   User.authenticate().then(() =>{
     if (User.hasPermission()) {
       // Begin Client
+      
+      let page = (<RescueBoard />);
+
       ReactDOM.render(Page, document.getElementById('reactApp'));
       window.console.log(`%cWelcome CMDR ${User.getUserDisplayName()}. We're now on v1.0! Fly safe!`,
         'color: lightgreen; font-weight: bold; font-size: 1.25em;');
       window._dwbug = {
-        'UserCon': User
+        'UserCon': User,
+        'page': page
       };
     } else {
       // Show "user must be drilled" page

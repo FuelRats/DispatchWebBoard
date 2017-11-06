@@ -48,7 +48,7 @@ const
 const 
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
-    jsEntry: 'src/js/app.js',
+    jsEntry: 'src/js/app.jsx',
     cssEntry: 'src/css/app.css',
     buildDir: 'deploy',
     distDir: path.resolve(__dirname, 'deploy', 'dist')
