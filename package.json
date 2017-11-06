@@ -36,7 +36,6 @@
     "gulp-rename": "^1.2.2",
     "gulp-rsync": "0.0.8",
     "gulp-util": "^3.0.8",
-    "jquery": "^3.2.1",
     "mkdirp": "^0.5.1",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",

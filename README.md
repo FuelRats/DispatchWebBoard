@@ -71,4 +71,3 @@ Below you will find some tips to help you along your way.
 ### Libraries
 * [React.js](https://github.com/facebook/react) - UI Manager
 * [clipboard.js](https://github.com/zenorocha/clipboard.js) - click-to-copy library.
-* [jQuery](https://github.com/jquery/jquery) - "The oversized swiss army knife".
