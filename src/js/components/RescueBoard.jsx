@@ -115,7 +115,7 @@ export default class RescueBoard extends Component {
     if (data.included) {
       data = mapRelationships(data);
     }
-    data.data.forEach(rescue => { this.UpdateRescue(ctx, rescue); });
+    data.data.forEach(rescue => { this.updateRescue(ctx, rescue); });
   }
 
   /**
@@ -131,6 +131,8 @@ export default class RescueBoard extends Component {
       return;
     }
     let curRescues = Object.assign({}, this.state.rescues);
+
+    curRescues[data.id] = data;
 
     this.setState({'rescues': curRescues});
   }
@@ -149,6 +151,12 @@ export default class RescueBoard extends Component {
     }
     let curRescues = Object.assign({}, this.state.rescues);
 
+    if (data.attributes.status === 'closed') {
+      delete curRescues[data.id];
+    } else {
+      curRescues[data.id] = data;
+    }
+    
     this.setState({'rescues': curRescues});
   }
 
