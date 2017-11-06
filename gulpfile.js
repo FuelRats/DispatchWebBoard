@@ -24,10 +24,11 @@ const
 // Utility Functions
 
 /**
- * Generates a random base64 ID of a given char length
+ * Generates a random ID of a given char length, which has been created from the string of allowed characters.
  * 
- * @param  {Number=} length Desired length of the ID
- * @return {String}         Generated base64 ID
+ * @param   {Number=} length Desired length of the ID. Default: 48
+ * @param   {String=} chars  Chars used in generating the id. Default: Base64
+ * @returns {String}         Generated ID.
  */
 function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
   // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
