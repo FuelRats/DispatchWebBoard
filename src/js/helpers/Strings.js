@@ -1,4 +1,4 @@
-import {monthString} from '../util/frConstants.js';
+import {monthString} from '../config/strings.js';
 
 
 const 

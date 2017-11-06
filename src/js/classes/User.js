@@ -7,7 +7,7 @@ import {
   GetCookie, 
   SetCookie 
 } from '../helpers';
-import { funny } from '../util/frConstants.js';
+import { funny } from '../config/strings.js';
 
 // Constants
 const
