@@ -2,8 +2,6 @@
 import React from 'react';
 
 
-
-
 /**
  * Component base class
  */
