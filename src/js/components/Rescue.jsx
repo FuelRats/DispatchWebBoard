@@ -58,16 +58,14 @@ export default class Rescue extends Component {
   render() {
     let 
       rescue = this.props.rescueData,
-      classes = `rescue ${this.attributes.status !== 'open' ? 'rescue-inactive' : ''}`;
+      classes = `rescue ${rescue.attributes.status !== 'open' ? 'rescue-inactive' : ''}`;
 
 
     return (
       <div className={classes} id={`rescue-${rescue.id}`}>
         <div className={'rescue-info'}>
           <span className={'rescue-info-main'}>
-            <span className={'rescue-info-caseid'}>#{rescue.attributes.data.boardIndex}</span>: 
-            <span className={'rescue-info-client'}>{rescue.attributes.client}</span> in 
-            <span className={'rescue-info-system'}>{rescue.attributes.system}</span>
+            <span className={'rescue-info-caseid'}>#{rescue.attributes.data.boardIndex}</span>: <span className={'rescue-info-client'}>{rescue.attributes.client}</span> in <span className={'rescue-info-system'}>{rescue.attributes.system}</span>
           </span>
         </div>
         <RatList rats={this.getAssignedRats()} />
