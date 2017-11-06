@@ -1,5 +1,5 @@
 // App Imports
-import RescueBoard from './components/RescueBoard.jsx';
+import IndexPage from './pages/index.jsx';
 import User from './classes/User.js';
 
 // Module Imports
@@ -20,7 +20,7 @@ function init() {
       if (user.hasPermission()) {
         // Begin Client
         
-        let page = (<RescueBoard />);
+        let page = (<IndexPage user={user} />);
         ReactDOM.render(page, document.getElementById('reactApp'));
   
   
