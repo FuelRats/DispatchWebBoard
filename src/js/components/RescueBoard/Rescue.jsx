@@ -1,8 +1,8 @@
 // App imports
-import Component from './Component.jsx';
+import Component from '../Component.jsx';
 import RatList from './RatList.jsx';
-import RescuePropType from '../types/Rescue.js';
-import { makeID } from '../helpers';
+import RescuePropType from '../../types/Rescue.js';
+import { makeID } from '../../helpers';
 
 // Module imports
 import React from 'react';
