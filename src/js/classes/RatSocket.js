@@ -1,4 +1,5 @@
 // App Imports
+import EventEmitter from './EventEmitter.js';
 import {
   isValidProperty,
   makeID
@@ -17,13 +18,21 @@ const
 /**
  * Websocket handler for the FuelRats API
  */
-export default class RatSocket {
+export default class RatSocket extends EventEmitter {
+
   /**
    * 
    * @param   {String} uri Address of the API to connect to.
    * @returns {Object}     Current instance of RatSocket
    */
   constructor(uri) {
+    super(true, [
+      'rescueCreated',
+      'rescueUpdated',
+      'rescueDeleted',
+      'connection'
+    ]);
+
     if (typeof uri !== 'string') {
       throw new TypeError('URI must be a string');
     }
@@ -276,111 +285,5 @@ export default class RatSocket {
     }, opts || {
       'timeout': 15
     });
-  }
-
-  /* ====== Event Handling ====== */
-  
-  /**
-   * Adds listener for the given event name.
-   * 
-   * @param  {String}   evt  Name of the event to listen to.
-   * @param  {Function} func Function to be called on event.
-   * @return {Object}        Current instance of RatSocket.
-   */
-  on(evt, func) {
-    if (typeof evt !== 'string' || func === null) {
-      throw new TypeError('Invalid argument(s)');
-    }
-
-    if (!this.listeners.hasOwnProperty(evt)) {
-      this.listeners[evt] = [];
-    }
-
-    this.listeners[evt].push(typeof func === 'object' ? func : { 
-      'func': func, 
-      'once': false 
-    });
-
-    return this;
-  }
-
-  /**
-   * Adds a single use listener for the given event name. Removes the listener after the first time the event is emitted.
-   *
-   * @param   {String}   evt  Name of the event to listen to.
-   * @param   {Function} func Function to be called on event.
-   * @returns {Object}        Current instance of RatSocket.
-   */
-  once(evt, func) {
-    return this.on(evt, {
-      'func': func,
-      'once': true
-    });
-  }
-
-  /**
-   * Removes a listener from the given event name.
-   * 
-   * @param  {String}   evt  Name of the event.
-   * @param  {Function} func Function to remove.
-   * @return {Object}        Current instance of RatSocket.
-   */
-  off(evt, func) {
-    if (typeof evt !== 'string' || typeof func !== 'function') {
-      throw new TypeError('Invalid argument(s)');
-    }
-
-    if (!this.listeners.hasOwnProperty(evt)) {
-      return;
-    }
-
-    let listenerIndex = this.listeners[evt].findIndex(listener => listener.func === func);
-    if (listenerIndex < 0) { return; }
-
-    this.listeners[evt].splice(listenerIndex, 1);
-
-    return this;
-  }
-
-  /**
-   * Executes all listeners of a given event name.
-   * 
-   * @param  {String}  evt    Name of the event to emit.
-   * @param  {(*|*[])} [args] Argument(s) to send with the event.
-   * @return {Object}         Current instance of RatSocket.
-   */
-  _emitEvent(evt, args) {
-    if (typeof evt !== 'string') {
-      throw new TypeError('Event must be string');
-    }
-
-    if (!this.listeners.hasOwnProperty(evt)) {
-      window.console.debug(`RatSocket - Event: '${evt}' has no listener. Returning...`);
-      return;
-    }
-
-    let evtargs = [this];
-
-    if (Array.isArray(args)) {
-      evtargs.concat(args);
-    } else {
-      evtargs.push(args);
-    }
-
-    let evtListeners = this.listeners[evt];
-
-    window.console.debug(`RatSocket - Executing listener functions for: ${evt} with args:`, args);
-    for (let listener of evtListeners) {
-
-      // Execute function and get response from it.
-      let res = listener.func.apply(this, evtargs);
-
-      // If the listener was set to run once, or returned as 'true', remove it from the listener list.
-      if (listener.once === true || res === true) {
-        this.off(evt, listener.func);
-      }
-
-    }
-    return this;
   }
 }
