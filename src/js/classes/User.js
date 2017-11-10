@@ -20,7 +20,7 @@ const
 
 
 /**
- * Manages user authentication with the Fuel Rats API.
+ * Manages user authentication with the Fuel Rats API, and handles board options.
  */
 export default class User {
 
@@ -32,6 +32,9 @@ export default class User {
   constructor() {
     this.AuthHeader = null;
     this.UserData = null;
+    this.Store = new UserStorage();
+
+    window.console.debug(this.Store);
 
     let 
       newToken = document.location.hash.match(/access_token=([\w-]+)/),
