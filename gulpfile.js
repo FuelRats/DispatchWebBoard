@@ -49,6 +49,7 @@ const
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
     jsEntry: 'src/js/app.jsx',
+    jsRoot: path.resolve(__dirname, 'src', 'js'),
     cssEntry: 'src/css/app.css',
     buildDir: 'deploy',
     distDir: path.resolve(__dirname, 'deploy', 'dist')
@@ -119,6 +120,12 @@ gulp.task('webpack', function() {
       filename: `app.${fingerprint}.js`
     },
     plugins: [],
+    resolve: {
+      modules: [
+        paths.jsRoot, 
+        path.resolve(__dirname, 'node_modules')
+      ]
+    },
     stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
       entrypoints: true,
       modules: false,
