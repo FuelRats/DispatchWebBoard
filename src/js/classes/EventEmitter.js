@@ -99,7 +99,7 @@ export default class EventEmitter {
    * @param  {(*|*[])} [args] Argument(s) to send with the event.
    * @return {Object}         Current instance.
    */
-  _emitEvent(evt, args) {
+  _emitEvent(evt, ...args) {
     if (typeof evt !== 'string') {
       throw new TypeError('Event must be string');
     }
@@ -109,12 +109,7 @@ export default class EventEmitter {
     }
 
     let evtargs = [this];
-
-    if (Array.isArray(args)) {
-      evtargs.concat(args);
-    } else {
-      evtargs.push(args);
-    }
+    evtargs.concat(args);
 
     let evtListeners = this.__listeners[evt];
 
