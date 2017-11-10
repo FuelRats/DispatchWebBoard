@@ -1,6 +1,6 @@
 // App Imports
-import IndexPage from './pages/index.jsx';
-import User from './classes/User.js';
+import IndexPage from 'Pages/index.jsx';
+import User from 'Classes/User.js';
 
 // Module Imports
 import React from 'react';

@@ -1,6 +1,6 @@
 // App Imports
-import Component from './Component.jsx';
-import {makeDateHumanReadable} from '../helpers';
+import Component from 'Components/Component.jsx';
+import {makeDateHumanReadable} from 'Helpers';
 
 // Module imports
 import React from 'react';

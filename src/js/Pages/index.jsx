@@ -1,8 +1,8 @@
 // App Imports
-import Clock from '../components/Clock.jsx';
-import RescueBoard from '../components/RescueBoard.jsx';
-import User from '../classes/User.js';
-import AppConfig from '../config/Config.js';
+import Clock from 'Components/Clock.jsx';
+import RescueBoard from 'Components/RescueBoard';
+import User from 'Classes/User.js';
+import AppConfig from 'Config/Config.js';
 
 // Module imports
 import React from 'react';

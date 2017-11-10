@@ -1,11 +1,11 @@
 // App imports
-import AppConfig from '../../config/Config.js';
-import Component from '../Component.jsx';
-import RatSocket from '../../classes/RatSocket.js';
+import AppConfig from 'Config/Config.js';
+import Component from 'Components/Component.jsx';
+import RatSocket from 'Classes/RatSocket.js';
 import Rescue from './Rescue.jsx';
 import {
   mapRelationships
-} from '../../helpers';
+} from 'Helpers';
 
 // Module imports
 import React from 'react';

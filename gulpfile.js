@@ -121,6 +121,7 @@ gulp.task('webpack', function() {
     },
     plugins: [],
     resolve: {
+      extensions: ['.js', '.jsx', '.json'],
       modules: [
         paths.jsRoot, 
         path.resolve(__dirname, 'node_modules')

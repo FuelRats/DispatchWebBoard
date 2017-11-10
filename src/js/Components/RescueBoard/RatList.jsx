@@ -1,7 +1,7 @@
 // App imports
-import Component from '../Component.jsx';
+import Component from 'Components/Component.jsx';
 import Rat from './Rat.jsx';
-import AssignedRatPropType from '../../types/AssignedRat.js';
+import AssignedRatPropType from 'Types/AssignedRat.js';
 
 // Module imports
 import React from 'react';

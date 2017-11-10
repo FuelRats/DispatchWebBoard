@@ -1,4 +1,4 @@
-import AppConfig from '../config/Config.js';
+import AppConfig from 'Config/Config.js';
 
 export const lStore = {
   get: (key) => localStorage.getItem(`${AppConfig.AppNamespace}.${key}`),

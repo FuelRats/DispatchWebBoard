@@ -1,10 +1,10 @@
 // App Imports
-import AppConfig from '../config/Config.js';
+import AppConfig from 'Config/Config.js';
 import { 
   http, 
   htmlSanitizeObject, 
   mapRelationships
-} from '../helpers';
+} from 'Helpers';
 
 
 // Module Imports

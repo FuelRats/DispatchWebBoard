@@ -1,13 +1,13 @@
 // App Imports
-import AppConfig from '../config/Config.js';
-import * as FuelRatsApi from '../api/FuelRatsApi.js';
+import AppConfig from 'Config/Config.js';
+import { funny } from 'Config/Strings.js';
+import * as FuelRatsApi from 'Api/FuelRatsApi.js';
 import {
   CanSetCookies, 
   DelCookie,
   GetCookie, 
   SetCookie 
-} from '../helpers';
-import { funny } from '../config/Strings.js';
+} from 'Helpers';
 
 // Constants
 const

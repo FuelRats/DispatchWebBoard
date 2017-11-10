@@ -1,5 +1,5 @@
 // App imports
-import quotePropType from './Quote.js';
+import quotePropType from 'Types/Quote.js';
 
 // Module imports
 import PropTypes from 'prop-types';

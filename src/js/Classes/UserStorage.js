@@ -1,7 +1,7 @@
 // App Imports
-import DefaultSettings from 'config/DefaultSettings.js';
-import EventEmitter from 'classes/EventEmitter.js';
-import { lStore } from 'helpers';
+import DefaultSettings from 'Config/DefaultSettings.js';
+import EventEmitter from 'Classes/EventEmitter.js';
+import { lStore } from 'Helpers';
 
 
 /**

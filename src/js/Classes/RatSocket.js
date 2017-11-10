@@ -1,9 +1,9 @@
 // App Imports
-import EventEmitter from './EventEmitter.js';
+import EventEmitter from 'Classes/EventEmitter.js';
 import {
   isValidProperty,
   makeID
-} from '../helpers';
+} from 'Helpers';
 
 
 // Constants
