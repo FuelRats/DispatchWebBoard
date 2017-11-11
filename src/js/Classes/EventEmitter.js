@@ -41,7 +41,8 @@ export default class EventEmitter {
     }
 
     if (this.limited && !this.__listeners.hasOwnProperty(evt)) {
-      throw new Error('Invalid event name.');
+      window.console.error('WARN: Attempted registration of listener for invalid event name. Event: ', evt);
+      return;
     } else if (!this.__listeners.hasOwnProperty(evt)) {
       this.__listeners[evt] = [];
     }
