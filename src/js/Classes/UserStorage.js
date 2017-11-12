@@ -15,8 +15,13 @@ export default class UserStorage extends EventEmitter {
    */
   constructor() {
     let curSettings = loadSettings() || Object.assign({}, DefaultSettings); // Get settings object. If none exist, copy the default.
-
-    super(true, Object.keys(curSettings));
+    let events = Object.keys(curSettings);
+    events.concat([
+      'storage:load',
+      'storage:save',
+      'storage:set'
+    ]);
+    super(true, events);
 
     Object.entries(curSettings).forEach(([ key, value ]) => {
       this[key] = value;
@@ -31,10 +36,11 @@ export default class UserStorage extends EventEmitter {
    * @returns {Boolean}       Boolean representing if the value was changed.
    */
   set(key, value) {
-    if (this[key] && this[key] !== value) {
+    if (DefaultSettings[key] !== undefined && this[key] !== value) {
       let oldValue = this[key];
       this[key] = value;
       this._emitEvent(key, value, oldValue);
+      this._emitEvent('storage:set', key, value, oldValue);
       return true;
     }
     return false;
@@ -51,6 +57,7 @@ export default class UserStorage extends EventEmitter {
       settings[key] = this[key];
     });
     saveSettings(settings);
+    this._emitEvent('storage:save');
   }
 
   /**
