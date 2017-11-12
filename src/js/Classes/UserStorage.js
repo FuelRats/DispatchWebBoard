@@ -47,6 +47,19 @@ export default class UserStorage extends EventEmitter {
   }
 
   /**
+   * Manually forces a load settings from storage.
+   *
+   * @returns {[type]} [description]
+   */
+  forceLoad() {
+    let curSettings = loadSettings() || Object.assign({}, DefaultSettings); // Get settings object. If none exist, copy the default.
+    Object.entries(curSettings).forEach(([ key, value ]) => {
+      this.set(key, value);
+    });
+    this._emitEvent('storage:load');
+  }
+
+  /**
    * Saves settings to localStorage.
    *
    * @returns {void}
