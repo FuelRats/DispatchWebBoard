@@ -7,7 +7,8 @@ import {
   CanSetCookies, 
   DelCookie,
   GetCookie, 
-  SetCookie 
+  SetCookie,
+  clearUrlHash
 } from 'Helpers';
 
 // Constants
@@ -43,9 +44,7 @@ export default class User {
 
     if (newToken && newToken[1]) {
       this.AuthHeader = newToken[1];
-      if (window.history.replaceState) {
-        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-      }
+      clearUrlHash();
     } else if (tokenCookie) {
       this.AuthHeader = tokenCookie;
     } else {
