@@ -36,11 +36,9 @@ function init() {
       }
     }).catch(() => {
       // Display login.
-      user.login();
     });
   } else {
     // Display login. (or in this case just head to the login page for ease.)
-    user.login();
   }
 }
 init();
