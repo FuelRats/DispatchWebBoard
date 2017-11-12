@@ -30,7 +30,11 @@ export default class RatSocket extends EventEmitter {
       'rescueCreated',
       'rescueUpdated',
       'rescueDeleted',
-      'connection'
+      'connection',
+      'ratsocket:connect',
+      'ratsocket:disconnect',
+      'ratsocket:error',
+      'ratsocket:reconnect',
     ]);
 
     if (typeof uri !== 'string') {
