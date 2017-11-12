@@ -100,7 +100,7 @@ export default class EventEmitter {
    * @param  {(*|*[])} [args] Argument(s) to send with the event.
    * @return {Object}         Current instance.
    */
-  _emitEvent(evt, ...args) {
+  async _emitEvent(evt, ...args) {
     if (typeof evt !== 'string') {
       throw new TypeError('Event must be string');
     }
