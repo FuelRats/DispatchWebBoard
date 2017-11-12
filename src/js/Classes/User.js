@@ -1,7 +1,8 @@
 // App Imports
+import * as FuelRatsApi from 'Api/FuelRatsApi.js';
+import UserStorage from 'Classes/UserStorage.js';
 import AppConfig from 'Config/Config.js';
 import { funny } from 'Config/Strings.js';
-import * as FuelRatsApi from 'Api/FuelRatsApi.js';
 import {
   CanSetCookies, 
   DelCookie,
