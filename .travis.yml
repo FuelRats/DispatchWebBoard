@@ -8,7 +8,7 @@ cache:
 env:
 - ENV_NAME=$(./.travis/get_branch_env_name.sh)
 before_script:
-- wget "https://dispatch.fuelrats.com/static/app.${ENV_NAME}.config.js"
+- wget "https://dispatch.fuelrats.com/buildfiles/app.${ENV_NAME}.config.js"
 - yarn global add gulp-cli
 script:
 - gulp --env ${ENV_NAME} --buildid ${TRAVIS_COMMIT}
