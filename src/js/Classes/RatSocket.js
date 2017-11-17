@@ -40,6 +40,7 @@ export default class RatSocket extends EventEmitter {
     if (typeof uri !== 'string') {
       throw new TypeError('URI must be a string');
     }
+    
     this.WSSUri = uri;
     this.socket = null;
     this.currentToken = null;
@@ -61,7 +62,7 @@ export default class RatSocket extends EventEmitter {
    * @param   {String}  token oAuth token to authenticate with.
    * @returns {Promise}       Resolved upon receiving the API's welcome message.
    */
-  connect(token) {
+  async connect(token) {
     if (typeof token !== 'string') {
       throw TypeError('Invalid token string');
     }
@@ -80,12 +81,23 @@ export default class RatSocket extends EventEmitter {
         onConnection = (context, data) => {
           window.clearTimeout(rejectTimeout);
           this.off('ratsocket:error', onSocketError);
-          window.console.debug('RatSocket - Connection successful!');
+
+          if (this.reconnected) {
+            window.console.debug('RatSocket - Reconnected and ready! ');
+            this._emitEvent('ratsocket:reconnect', data);
+            this.reconnected = false;
+          } else {
+            window.console.debug('RatSocket - Socket ready!');
+            this._emitEvent('ratsocket:connect', data);
+          }
+
           resolve({context, data});
         },
+
         onSocketError = (context, data) => {
           window.clearTimeout(rejectTimeout);
           this.off('connection', onConnection);
+
           reject({'context': context, 'data': {
             'errors': [ {'code': 500, 'detail': data, 'status': 'Error.', 'title': 'Error.'} ],
             'meta': {}
@@ -96,7 +108,7 @@ export default class RatSocket extends EventEmitter {
         .once('ratsocket:error', onSocketError);
 
       this.socket = new WebSocket(`${this.WSSUri}?bearer=${token}`);
-      this.socket.onopen    = (data) => {  this._onSocketOpen(data);   };
+      this.socket.onopen    = () => {  this._onSocketOpen();   };
       this.socket.onclose   = (data) => {  this._onSocketClose(data);  };
       this.socket.onerror   = (data) => {  this._onSocketError(data);  };
       this.socket.onmessage = (data) => { this._onSocketMessage(data); };
@@ -109,7 +121,7 @@ export default class RatSocket extends EventEmitter {
    *
    * @returns {void}
    */
-  _reconnect() {
+  _tryReconnect() {
     if (this.currentToken !== null) {
       window.console.debug('RatSocket - Attempting reconnect with last known bearer token....');
       this.connect(this.currentToken);
@@ -124,15 +136,8 @@ export default class RatSocket extends EventEmitter {
    * @param   {Object} data Data from WebSocket
    * @returns {void}
    */
-  _onSocketOpen(data) {
-    if (this.reconnected) {
-      window.console.debug('RatSocket - Socket reconnected! ', data);
-      this._emitEvent('ratsocket:reconnect', data);
-      this.reconnected = false;
-      return;
-    }
-    this._emitEvent('ratsocket:connect', data);
-    window.console.debug('RatSocket - Socket Connected!', data);
+  _onSocketOpen() {
+    window.console.debug('RatSocket - Socket Connected. Awaiting welcome...');
   }
 
   /**
@@ -145,10 +150,9 @@ export default class RatSocket extends EventEmitter {
     if (data.wasClean === false) {
       window.console.debug('RatSocket - Disconnected from API! Attempting to reconnect... ', data);
       this._emitEvent('ratsocket:disconnect', data);
-      this.initComp = false;
       setTimeout(() => {
         window.console.debug(this);
-        this._reconnect();
+        this._tryReconnect();
       }, RECONNECT_TIMEOUT);
       this.reconnected = true;
     }
