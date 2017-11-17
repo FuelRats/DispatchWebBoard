@@ -83,7 +83,6 @@ export default class UserMenu extends Component {
    * @returns {Object} React element.
    */
   render() {
-    if()
 
     let view = (<div clasName='something-went-wrong'></div>);
 
@@ -100,6 +99,8 @@ export default class UserMenu extends Component {
     case 'logout':
       view = (<LogoutView logoutHandler={this.handleLogoutClick} />);
       break;
+    case 'none': 
+      return null;
     default:
       break;
     }
