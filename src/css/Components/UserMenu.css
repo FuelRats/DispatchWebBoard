@@ -1,0 +1,95 @@
+.user-controls {
+  position: absolute;
+  right: 2rem;
+  top: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  z-index: 1618;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  text-overflow: ellipsis;
+}
+.user-controls[data-activeview="login"] {
+  display: flex;
+}
+
+.user-menu-view {
+  display: block;
+  min-width: 52px;
+  min-height: 52px;
+  max-width: 52px;
+  max-height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: .2s ease;
+  background: var(--headerBgColor);
+  border: .4rem solid var(--accentColor);
+}
+.user-menu-view.open {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 0;
+  border-width: .2rem;
+}
+.user-menu-view .user-options {
+  padding: 6px;
+  opacity: 0;
+  text-align: right;
+  color: var(--headerFgColorDark);
+  transition: .2s ease;
+}
+.user-menu-view.open .user-options {
+  opacity: 1;
+  transition: .2s ease .15s;
+}
+.user-menu-view .user-options .rat-name {
+  padding-right: 38px;
+  line-height: 32px;
+  vertical-align: middle;
+  font-family: Raleway, sans-serif;
+  font-size: 1.1em;
+}
+.user-menu-view .user-options .option-list {
+  list-style: none;
+  padding: 0;
+}
+.user-menu-view .user-options .option-list li:not(:first-child) {
+  padding-top: 5px;
+}
+.user-menu-view .user-options .option-list li a,
+.user-menu-view .user-options .option-list li span {
+  color: var(--headerFgColorDark);
+  text-decoration: none;
+  transition: .2s ease, padding .075s linear;
+}
+.user-menu-view .user-options .option-list li a:hover,
+.user-menu-view .user-options .option-list li span:hover {
+  color: var(--headerFgColor);
+  padding-right: 5px;
+}
+
+.user-menu-view .user-icon {
+  position: absolute;
+  border-radius: 50%;
+  margin: .4rem;
+  display: block;
+  width: 44px;
+  height: 44px;
+  top: 0;
+  right: 0;
+  transition: .1s ease .15s;
+  overflow: hidden;
+}
+
+.user-menu-view.open .user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  top: 6px;
+  right: 6px;
+  transition: .1s ease;
+}

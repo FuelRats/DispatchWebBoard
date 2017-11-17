@@ -1,12 +1,3 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700|Raleway');
-@import url('components/utility.css');
-@import url('components/header.css');
-@import url('components/userMenu.css');
-@import url('components/buttons.css');
-@import url('components/badge.css');
-@import url('components/pageOverlay.css');
-@import url('app/page.css');
-@import url('app/layout.css');
-@import url('app/table.css');
-@import url('app/rescueDetail.css');
-@import url('app/clipboard.css');
+@import url('Components/__include.css');
+@import url('App/__include.css');
