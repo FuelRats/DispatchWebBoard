@@ -47,6 +47,15 @@ export default class UserStorage extends EventEmitter {
   }
 
   /**
+   * Gets the name of all valid keys
+   *
+   * @returns {string[]} All known setting keys
+   */
+  keys() {
+    return Object.Keys(DefaultSettings);
+  }
+
+  /**
    * Manually forces a load settings from storage.
    *
    * @returns {[type]} [description]
