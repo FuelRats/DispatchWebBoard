@@ -1,35 +1,3 @@
-.btn {
-  background-color: var(--accentColor);
-  border-color: var(--accentColor);
-  border-style: solid;
-  border-width: 0.2rem;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  flex-shrink: 0;
-  font-family: Raleway, sans-serif;
-  margin: 0;
-  outline: none;
-  overflow: hidden;
-  text-decoration: none;
-  transition: all 0.2s;
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  text-overflow: ellipsis;
-}
-.btn:hover {
-  background: transparent;
-  color: var(--accentColor);
-}
-.btn.active {
-  background: transparent;
-  color: var(--accentColorDark);
-  border-color: var(--accentColorDark);
-}
-.btn:focus {
-  outline: 0;
-}
-
 .button {
   background-color: var(--accentColor);
   border-color: var(--accentColor);
@@ -50,7 +18,23 @@
   -webkit-font-smoothing: antialiased;
   text-overflow: ellipsis;
 }
+
 .button:hover {
   background: transparent;
   color: var(--accentColor);
+}
+.button.button-small {
+  padding: 0;
+}
+.button.button-small:hover {
+  background: transparent;
+  color: var(--accentColor);
+}
+.button.button-small.active {
+  background: transparent;
+  color: var(--accentColorDark);
+  border-color: var(--accentColorDark);
+}
+.button.button-small:focus {
+  outline: 0;
 }

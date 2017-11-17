@@ -1,49 +1,37 @@
-.shutter {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 0;
-  height: 0;
-  background: rgba(26, 26, 26, .95);
-  opacity: 0;
-  transition: opacity .2s ease,
-  width 0s ease .2s,
-  height 0s ease .2s;
-}
-.loading .shutter,
-.shutter-force .shutter {
   width: 100%;
   height: 100%;
   opacity: 1;
   z-index: 1200;
+  background: rgba(26, 26, 26, .95);
   transition: opacity .2s ease,
-  width 0s ease,
-  height 0s ease;
+  width 0s ease .2s,
+  height 0s ease .2s;
 }
 
-.shutter-text {
+.overlay-text {
   color: #fff;
   font-family: Raleway, sans-serif;
-  display: none;
 }
-.shutter-text.subtext {
+.overlay-text.text {
   position: absolute;
-  font-size: 1.75rem;
-  top: 2.5rem;
-  right: 11.5rem;
-}
-.shutter-text.msgtext {
-  position: absolute;
-  bottom: 6.5rem;
+  bottom: 10.5rem;
   right: 6.5rem;
-  font-size: 2.5rem;
+  font-size: 3rem;
   text-align: right;
 }
+.overlay-text.subtext {
+  position: absolute;
+  font-size: 1.75rem;
+  bottom: 6.5rem;
+  right: 6.5rem;
+}
 
-.loading .loading-circle:before,
-.loading .loading-circle:after,
-.loading.loading-circle:before,
-.loading.loading-circle:after {
+.overlay.loading:before,
+.overlay.loading:after {
   align-content: center;
   align-items: center;
   border-radius: 100%;
@@ -60,16 +48,12 @@
   top: 50%;
   width: 10rem;
 }
-
-.loading .loading-circle:before,
-.loading.loading-circle:before {
+.overlay.loading:before {
   border-color: transparent;
   content: 'Loading';
   font-family: "Raleway", "Open Sans", Arial, sans-serif;
 }
-
-.loading .loading-circle:after,
-.loading.loading-circle:after {
+.overlay.loading:after {
   animation-delay: 0s, 1s;
   animation-duration: 1s, 4s;
   animation-fill-mode: forwards;
@@ -77,10 +61,6 @@
   animation-name: loading-start, loading;
   border-color: #ffffff;
   content: '';
-}
-
-body.user-unauthenticated .shutter-text.login, body.user-nopermission .shutter-text.permission {
-  display: block;
 }
 
 @keyframes loading-start {
