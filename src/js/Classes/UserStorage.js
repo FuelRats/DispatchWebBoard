@@ -14,8 +14,7 @@ export default class UserStorage extends EventEmitter {
    * @returns {[type]} [description]
    */
   constructor() {
-    let curSettings = loadSettings() || Object.assign({}, DefaultSettings); // Get settings object. If none exist, copy the default.
-    let events = Object.keys(curSettings);
+    let events = Object.keys(DefaultSettings);
     events.concat([
       'storage:load',
       'storage:save',
@@ -23,9 +22,17 @@ export default class UserStorage extends EventEmitter {
     ]);
     super(true, events);
 
-    Object.entries(curSettings).forEach(([ key, value ]) => {
-      this[key] = value;
-    });
+    let curSettings = loadSettings();
+    if (curSettings) {
+      Object.entries(curSettings).forEach(([ key, value ]) => {
+        this[key] = value;
+      });
+    } else {
+      Object.entries(DefaultSettings).forEach(([ key, value ]) => {
+        this[key] = value.value;
+      });
+      this.save();
+    }
   }
 
   /**
@@ -37,11 +44,16 @@ export default class UserStorage extends EventEmitter {
    */
   set(key, value) {
     if (DefaultSettings[key] !== undefined && this[key] !== value) {
+      if (DefaultSettings[key].options && !DefaultSettings[key].options.includes(value)) {
+        return false;
+      } 
+
       let oldValue = this[key];
       this[key] = value;
       this._emitEvent(key, value, oldValue);
       this._emitEvent('storage:set', key, value, oldValue);
       return true;
+      
     }
     return false;
   }
@@ -51,14 +63,28 @@ export default class UserStorage extends EventEmitter {
    *
    * @returns {string[]} All known setting keys
    */
-  keys() {
+  getKeys() {
     return Object.Keys(DefaultSettings);
+  }
+
+  /**
+   * Gets valid options for the given keys.
+   *
+   * @param   {String} key Store item to get valid options for
+   * @returns {*[]}        Valid options for the item.
+   */
+  getOptions(key) {
+    if (DefaultSettings[key].options) {
+      return DefaultSettings[key].options;
+    } else {
+      return null;
+    }
   }
 
   /**
    * Manually forces a load settings from storage.
    *
-   * @returns {[type]} [description]
+   * @returns {void}
    */
   forceLoad() {
     let curSettings = loadSettings() || Object.assign({}, DefaultSettings); // Get settings object. If none exist, copy the default.
