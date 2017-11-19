@@ -35,19 +35,25 @@ export default class Rescue extends Component {
    */
   getAssignedRats() {
     let
-      rescuePlatform = this.props.rescueData.attributes.platform,
-      identifiedRats = this.props.rescueData.relationships.rats,
-      unidentifiedRats = this.props.rescueData.attributes.unidentifiedRats;
+      rescuePlatform = this.props.rescueData.attributes.platform || 'pc',
+      identifiedRats = this.props.rescueData.relationships.rats.data ? {} : this.props.rescueData.relationships.rats, // If ...rats.data exists, use empty object, otherwise get the rats object.
+      unidentifiedRats = this.props.rescueData.attributes.unidentifiedRats || [];
 
     let getRatObj = (id, name, platform, identified) => {
       return { 'id': id, 'type': 'assignedRats', 'attributes': { 'name': name, 'platform': platform, 'identified': identified } };
     };
 
-    return Object.values(identifiedRats).map(rat => 
-      getRatObj(rat.id, rat.attributes.name, rat.attributes.platform, true)
-    ).concat(unidentifiedRats.map(rat => 
-      getRatObj(`UNIDENTIFIED_${makeID(RATID_LENGTH, RATID_CHARS)}`, rat, rescuePlatform, false)
-    ));
+    let rats = [];
+
+    Object.values(identifiedRats).forEach(rat => {
+      rats.push(getRatObj(rat.id, rat.attributes.name, rat.attributes.platform, true));
+    });
+
+    unidentifiedRats.forEach(rat => {
+      rats.push(getRatObj(`UNIDENTIFIED_${makeID(RATID_LENGTH, RATID_CHARS)}`, rat, rescuePlatform, false));
+    });
+
+    return rats;
   }
 
   /**
