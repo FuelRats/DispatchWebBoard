@@ -171,7 +171,7 @@ export default class RescueBoard extends Component {
     ));
 
     return (
-      <div className={'rescues'}>{rescues}</div>
+      <div className='rescues'>{rescues}</div>
     );
   }
 }
