@@ -1,10 +1,10 @@
 // App Imports
 import Component from 'Components/Component.jsx';
-import User from 'Classes/User.js';
 import LoginView from './Views/LoginView.jsx';
 import LogoutView from './Views/LogoutView.jsx';
 import MenuView from './Views/MenuView.jsx';
 import SettingsView from './Views/SettingsView.jsx';
+import { CurrentUser } from 'app.jsx';
 
 // Module Imports
 import React from 'react';
@@ -65,7 +65,7 @@ export default class UserMenu extends Component {
    * @returns {void}
    */
   handleLoginClick() {
-    this.props.user.login();
+    CurrentUser.login();
   }
 
   /**
@@ -74,7 +74,7 @@ export default class UserMenu extends Component {
    * @returns {void}
    */
   handleLogoutClick() {
-    this.props.user.logout();
+    CurrentUser.logout();
   }
 
   /**
@@ -88,10 +88,10 @@ export default class UserMenu extends Component {
 
     switch (this.state.activeView) {
     case 'menu':
-      view = (<MenuView user={this.props.user} viewChangeHandler={this.viewChangeHandler} />);
+      view = (<MenuView viewChangeHandler={this.viewChangeHandler} />);
       break;
     case 'settings':
-      view = (<SettingsView user={this.props.user} viewChangeHandler={this.viewChangeHandler} />);
+      view = (<SettingsView viewChangeHandler={this.viewChangeHandler} />);
       break;
     case 'login':
       view = (<LoginView loginHandler={this.handleLoginClick} />);
@@ -126,6 +126,5 @@ export default class UserMenu extends Component {
 
 }
 UserMenu.propTypes = {
-  user: PropTypes.instanceOf(User).isRequired,
   view: PropTypes.string
 };

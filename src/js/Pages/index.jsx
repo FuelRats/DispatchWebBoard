@@ -1,10 +1,10 @@
 // App Imports
-import User from 'Classes/User.js';
 import Clock from 'Components/Clock.jsx';
 import RescueBoard from 'Components/RescueBoard';
 import PageOverlay from 'Components/PageOverlay.jsx';
 import UserMenu from 'Components/UserMenu';
 import AppConfig from 'Config/Config.js';
+import { CurrentUser } from 'app.jsx';
 
 // Module imports
 import React from 'react';
@@ -23,7 +23,11 @@ export default class index extends React.Component {
   constructor(props) {
     super(props);
 
-    this.User = new User();
+    if (CurrentUser) {
+      this.User = CurrentUser;
+    } else {
+      throw new Error('Page was initialized before User object');
+    }
 
     this.state = {
       pageIsLoading: true
@@ -82,7 +86,8 @@ export default class index extends React.Component {
     }
     
     return (
-      <div className="page">
+      <div className='page'>
+        <div className='background'></div>
         <header className='navhead'>
           <span className='branding'><img src="static/fuelrats.png" />  <span id="navbar-brand-title">{AppConfig.AppTitle}</span></span>
           <div id="navbar" className="navbar navbar-right navbar-collapse">
@@ -92,7 +97,7 @@ export default class index extends React.Component {
           </div>
         </header>
         {body}
-        <UserMenu user={this.User} view={userMenuStartingView} />
+        <UserMenu view={userMenuStartingView} />
       </div>
     );
   }

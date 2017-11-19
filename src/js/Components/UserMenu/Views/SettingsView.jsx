@@ -1,6 +1,5 @@
 // App Imports
 import Component from 'Components/Component.jsx';
-import User from 'Classes/User.js';
 
 // Module Imports
 import React from 'react';
@@ -35,6 +34,5 @@ export default class SettingsView extends Component {
   }
 }
 SettingsView.propTypes = {
-  user: PropTypes.instanceOf(User).isRequired,
   viewChangeHandler: PropTypes.func.isRequired
 };

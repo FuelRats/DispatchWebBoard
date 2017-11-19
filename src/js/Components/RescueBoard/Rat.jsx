@@ -1,6 +1,7 @@
 // App imports
 import Component from 'Components/Component.jsx';
 import AssignedRatPropType from 'Types/AssignedRat.js';
+import { CurrentUser } from 'app.jsx';
 
 // Module imports
 import React from 'react';
@@ -33,17 +34,17 @@ export default class Rat extends Component {
           suffix: true,
           value: false
         },
+        wing: {
+          text: 'WR', 
+          title: 'Rat is winged with client.', 
+          color: 'yellow',
+          suffix: true,
+          value: false
+        },
         system: {
           text: 'SYS', 
           title: 'Rat is in reported system', 
           color: 'cyan', 
-          suffix: true,
-          value: false
-        },
-        wing: {
-          text: 'WG', 
-          title: 'Rat is winged with client.', 
-          color: 'yellow',
           suffix: true,
           value: false
         },
@@ -57,7 +58,7 @@ export default class Rat extends Component {
         disconnect: {
           text: 'DELAY', 
           title: 'Rat has been delayed or disconnected.', 
-          color:'red', 
+          color: 'red', 
           value: false
         },
       }
@@ -89,21 +90,19 @@ export default class Rat extends Component {
       classes = `rat${ratData.attributes.identified ? '' : ' rat-unidentified'}`;
 
     let statusButtons = Object.entries(this.state.statusButtons).map(([button, bState]) => (
-      <div 
+      <span 
         className={`statusbutton statusbutton-${button}${bState.value ? ' active' : ''}`} 
         title={bState.title}
         onClick={() => this.handleButtonToggle(button)}
         key={button}>
         {`${bState.text}${bState.suffix && bState.value ? '+' : ''}`}
-      </div>
+      </span>
     ));
 
     return (
       <div className={classes}>
-        <span className={'assignedrat-name'}>{ratData.attributes.name}</span>
-        <div className={'rat-statusbuttons'}>
-          {statusButtons}
-        </div>
+        <span className={'rat-name'}>{ratData.attributes.name}</span>
+        {statusButtons}
       </div>
     );
   }
