@@ -1,0 +1,65 @@
+.rescues {
+  --grid-width: 4;
+
+  margin-top: calc(60px + .4rem);
+  margin-left: 2rem;
+  width: calc(100vw - 4rem);
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.rescue {
+  width: 500px;
+  background: var(--pageBgColor);
+  border: 1px solid var(--accentColorDark);
+  margin: 0 3px 6px 3px;
+  padding: 5px;
+}
+.rescue .rescue-info {
+  padding-bottom: 5px;
+}
+
+.rescue .rescue-rats {
+  margin-left: 25px;
+}
+
+.rescue .rescue-rats .rat .rat-name {
+  width: 100px;
+  display: inline-block;
+}
+
+.rescue .rescue-rats .rat .statusbutton {
+  display: inline-block;
+  width: 35px;
+  margin-right: 3px;
+  text-align: center;
+  width: 40px;
+  border: 2px solid transparent;
+  color: #aaa;
+}
+.rescue .rescue-rats .rat .statusbutton:hover {
+  border-color: var(--statusbutton-color);
+}
+
+@media (max-width: 1863px) {
+  .rescues {
+    --grid-width: 3;
+  }
+}
+@media (max-width: 1407px) {
+  .rescues {
+    --grid-width: 2;
+  }
+}
+@media (max-width: 951px) {
+  .rescues {
+    --grid-width: 1;
+  }
+}
