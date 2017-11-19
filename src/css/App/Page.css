@@ -17,8 +17,20 @@ body {
   font-size: 14px;
   font-family: "Open Sans", Arial, sans-serif;
   overflow: auto;
-  background: var(--pageBgColorDark) url(../static/bg.jpg) no-repeat center fixed;
-  background-size: cover;
+  background-color: var(--pageBgColorDark, #000);
+}
+
+div.background {
+  z-index: -1;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: var(--pageBackgroundOpacity);
+  background: var(--pageBgColorDark) var(--pageBackgroundImage) no-repeat center fixed;
+  background-size: contain;
 }
 
 a, a:hover, a:active, a:focus {
