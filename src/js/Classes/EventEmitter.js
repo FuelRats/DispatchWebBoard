@@ -109,15 +109,12 @@ export default class EventEmitter {
       return;
     }
 
-    let evtargs = [this];
-    evtargs.concat(args);
-
     let evtListeners = this.__listeners[evt];
 
     for (let listener of evtListeners) {
 
       // Execute function and get response from it.
-      let res = listener.func.apply(this, evtargs);
+      let res = listener.func.apply(this, [this].concat(args));
 
       // If the listener was set to run once, or returned as 'true', remove it from the listener list.
       if (listener.once === true || res === true) {
