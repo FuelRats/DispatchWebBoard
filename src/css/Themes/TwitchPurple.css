@@ -23,5 +23,5 @@ body.theme-twitchPurple {
   --textAccentWhite: #FFFFFF;
   --textAccentYellow: #F0AD4E;
   --pageBackgroundImage: url('../../static/ratdecal_grey_nosaturn.png');
-  --pageBackgroundOpacity: .5;
+  --pageBackgroundOpacity: .1;
 }

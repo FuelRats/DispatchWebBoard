@@ -23,7 +23,7 @@ body.theme-wireframe {
   --textAccentWhite: #FFFFFF;
   --textAccentYellow: #F0AD4E;
   --pageBackgroundImage: url('../../static/ratdecal_grey_nosaturn.png');
-  --pageBackgroundOpacity: .5;
+  --pageBackgroundOpacity: .1;
 }
 body.theme-wireframe * {
   outline: solid 1px #50D650 !important;
