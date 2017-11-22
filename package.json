@@ -40,7 +40,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-tooltip": "^3.4.0",
+    "timsort": "^0.3.0",
     "uglify-es": "^3.1.5",
     "uglifyjs-webpack-plugin": "^1.0.1",
     "url": "^0.11.0",
