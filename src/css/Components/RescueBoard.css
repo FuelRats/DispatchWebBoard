@@ -1,6 +1,4 @@
 .rescues {
-  --grid-width: 4;
-
   margin-top: calc(60px + .4rem);
   margin-left: 2rem;
   width: calc(100vw - 4rem);
@@ -16,50 +14,132 @@
 }
 
 .rescue {
-  width: 500px;
+  width: 550px;
   background: var(--pageBgColor);
-  border: 1px solid var(--accentColorDark);
   margin: 0 3px 6px 3px;
   padding: 5px;
+  border-radius: 2px;
 }
+
+.rescue .clipboard {
+  background: rgba(127,127,127,.35);
+  transition: background .2s ease,
+              color      .2s ease;
+}
+.rescue .clipboard:hover {
+  background: rgba(127,127,127,.5);
+}
+.rescue .clipboard:active {
+  background: rgba(127,127,127,.25);
+  color: var(--pageBgColor);
+}
+
+
+/*==================*/
+/*== Rescue Info ==*/
+/*================*/
+
 .rescue .rescue-info {
   padding-bottom: 5px;
 }
+
+.rescue .rescue-info-main {
+  font-size: 1.1em;
+}
+
+.rescue .rescue-info-main span {
+  padding: 1px 6px;
+  vertical-align: middle;
+}
+
+
+
+/*===========*/
+/*== Rats ==*/
+/*=========*/
 
 .rescue .rescue-rats {
   margin-left: 25px;
 }
 
+.rescue .rescue-rats .rat {
+  padding: 1.5px 1px;
+}
+
+.rescue .rescue-rats .rat span {
+  vertical-align: middle;
+}
+
 .rescue .rescue-rats .rat .rat-name {
-  width: 100px;
+  width: 110px;
+  padding: 1px 6px;
   display: inline-block;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  white-space: nowrap;
+  margin-right: 6px;
 }
 
 .rescue .rescue-rats .rat .statusbutton {
   display: inline-block;
-  width: 35px;
   margin-right: 3px;
   text-align: center;
-  width: 40px;
-  border: 2px solid transparent;
+  min-width: 45px;
+  padding: 0 2px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: border     .2s ease,
+              background .2s ease,
+              color      .2s ease;
   color: #aaa;
+  cursor: pointer;
 }
+
 .rescue .rescue-rats .rat .statusbutton:hover {
   border-color: var(--statusbutton-color);
 }
+.rescue .rescue-rats .rat .statusbutton.active {
+  background-color: var(--statusbutton-color);
+  border-color: var(--statusbutton-color);
+  color: var(--pageBgColor);
+}
 
-@media (max-width: 1863px) {
-  .rescues {
-    --grid-width: 3;
-  }
+.rescue .rescue-rats .rat .statusbutton.statusbutton-friend {
+  --statusbutton-color: #D65050;
 }
-@media (max-width: 1407px) {
-  .rescues {
-    --grid-width: 2;
-  }
+.rescue .rescue-rats .rat .statusbutton.statusbutton-wing {
+  --statusbutton-color: #D6D650;
 }
-@media (max-width: 951px) {
-  .rescues {
-    --grid-width: 1;
-  }
+.rescue .rescue-rats .rat .statusbutton.statusbutton-system {
+  --statusbutton-color: #5050D6;
+}
+.rescue .rescue-rats .rat .statusbutton.statusbutton-beacon {
+  --statusbutton-color: #50D6D6;
+}
+.rescue .rescue-rats .rat .statusbutton.statusbutton-delay {
+  --statusbutton-color: #D65050;
+}
+
+/*==================*/
+/*== Rescue Misc ==*/
+/*================*/
+.rescue input {
+    background: rgba(0,0,0,.5);
+    border-style: none;
+    border: none;
+    outline: none !important;
+    color: #DDD;
+    padding: 4px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+/* Disable select */
+.rescue .rescue-info .badges .badge,
+.rescue .rescue-rats .rat .statusbutton {
+  -webkit-user-select: none;
+  -khtml-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none;
+  user-select: none;
 }

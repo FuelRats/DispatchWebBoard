@@ -13,6 +13,9 @@ body.theme-twitchPurple {
   --badgeOkColor: 59, 184,  59;
   --badgeWarningColor: 184, 184,  59;
   --badgeErrorColor: 194,  60,  60;
+  --rescuePCBgColor: #d74f4f;
+  --rescueXBBgColor: #31af31;
+  --rescuePSBgColor: #5959e1;
   --rescueInactiveColor: rgba(240, 230, 140, 0.25);
   --rescueCoderedColor: rgba(255, 87, 69, 0.25);
   --textAccentRed: #D65050;
@@ -24,4 +27,17 @@ body.theme-twitchPurple {
   --textAccentYellow: #F0AD4E;
   --pageBackgroundImage: url('../../static/ratdecal_grey_nosaturn.png');
   --pageBackgroundOpacity: .1;
+}
+
+body.theme-twitchPurple .rescue {
+  border: 1px solid var(--accentColorDark);
+}
+body.theme-twitchPurple .rescue.rescue-platform-pc {
+  border: 1px solid var(--rescuePCBgColor);
+}
+body.theme-twitchPurple .rescue.rescue-platform-xb {
+  border: 1px solid var(--rescueXBBgColor);
+}
+body.theme-twitchPurple .rescue.rescue-platform-ps {
+  border: 1px solid var(--rescuePSBgColor);
 }
