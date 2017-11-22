@@ -3,7 +3,8 @@ import AppConfig from 'Config/Config.js';
 import {
   http, 
   htmlSanitizeObject,
-  isObject
+  isObject,
+  WebStore
 } from 'Helpers';
 
 
@@ -22,9 +23,9 @@ export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.
 export function getSystem(system) {
   system = system.toUpperCase();
 
-  if (sessionStorage.getItem(`${AppConfig.AppNamespace}.system.${system}`)) {
+  if (WebStore.session.get(`system.${system}`)) {
 
-    let sysData = JSON.parse(sessionStorage.getItem(`${AppConfig.AppNamespace}.system.${system}`));
+    let sysData = JSON.parse(WebStore.session.get(`system.${system}`));
 
     if (sysData === null) { 
       return Promise.reject('System not found.');
@@ -36,7 +37,7 @@ export function getSystem(system) {
     return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
       .then(response => {
         let sysData = htmlSanitizeObject(processNewStarSystemData(response.json()));
-        sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
+        WebStore.session.set(`system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
         return sysData;
       });
   }

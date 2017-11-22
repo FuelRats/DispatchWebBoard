@@ -4,7 +4,8 @@ import Component from 'Components/Component.jsx';
 import RatSocket from 'Classes/RatSocket.js';
 import Rescue from './Rescue.jsx';
 import {
-  mapRelationships
+  mapRelationships,
+  WebStore
 } from 'Helpers';
 
 // Module imports
@@ -36,7 +37,7 @@ export default class RescueBoard extends Component {
       rescues: {}
     };
 
-    let authToken = localStorage.getItem(`${AppConfig.AppNamespace}.token`);
+    let authToken = WebStore.local.get('token');
     if (authToken) {
       this.socket = new RatSocket(AppConfig.WssURI);
       this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx))

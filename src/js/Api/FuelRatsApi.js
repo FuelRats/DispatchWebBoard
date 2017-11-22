@@ -3,7 +3,8 @@ import AppConfig from 'Config/Config.js';
 import { 
   http, 
   htmlSanitizeObject, 
-  mapRelationships
+  mapRelationships,
+  WebStore
 } from 'Helpers';
 
 
@@ -33,7 +34,7 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
  * @returns {Object} Object containing API user profile data.
  */
 export function getProfile() {
-  let token = localStorage.getItem(`${AppConfig.AppNamespace}.token`);
+  let token = WebStore.local.get('token');
 
   if (!token) {
     return Promise.reject(null);

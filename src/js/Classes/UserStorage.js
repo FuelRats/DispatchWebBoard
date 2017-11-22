@@ -1,7 +1,7 @@
 // App Imports
 import DefaultSettings from 'Config/DefaultSettings.js';
 import EventEmitter from 'Classes/EventEmitter.js';
-import { lStore } from 'Helpers';
+import { WebStore, isObject } from 'Helpers';
 
 
 /**
@@ -122,10 +122,10 @@ export default class UserStorage extends EventEmitter {
 }
 
 const loadSettings = () => {
-  let settings = lStore.get('user.settings');
+  let settings = WebStore.local.get('user.settings');
   return settings ? JSON.parse(settings) : null;
 };
 
 const saveSettings = value => { 
-  lStore.set('user.settings', JSON.stringify(value));
-}; 
+  WebStore.local.set('user.settings', JSON.stringify(value));
+};
