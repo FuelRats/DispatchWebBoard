@@ -17,7 +17,15 @@ import url from 'url';
  * @param   {Object} opts     Options to pass to underlaying http XHR handler.
  * @returns {Object}          Response data from the XHR handler.
  */
-export const get = (endpoint, opts) => http.get(url.resolve(AppConfig.ApiURI, endpoint), opts);
+export const get = (endpoint, opts) => http.get(resolve(endpoint), opts);
+
+/**
+ * Resolves an endpoint path to the current attached API.
+ *
+ * @param   {...String} args  API endpoint path.
+ * @returns {String}          Full API URL with the given path.          
+ */
+export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
 
 /**
  * Gets the current user profile
