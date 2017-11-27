@@ -35,7 +35,7 @@ export default class Rat extends Component {
           value: false
         },
         wing: {
-          text: 'WR', 
+          text: CurrentUser.store.useWG ? 'WG' : 'WR', 
           title: 'Rat is winged with client.', 
           color: 'yellow',
           suffix: true,
@@ -63,6 +63,12 @@ export default class Rat extends Component {
         },
       }
     };
+
+    CurrentUser.store.observe('useWG', (ctx, newValue) => {
+      let statusButtons = this.state.statusButtons;
+      statusButtons.wing.text = newValue ? 'WG' : 'WR';
+      this.setState({ statusButtons });
+    });
   }
 
   /**
