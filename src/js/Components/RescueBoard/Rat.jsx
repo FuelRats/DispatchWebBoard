@@ -131,7 +131,7 @@ export default class Rat extends Component {
 
     return (
       <div className={classes}>
-        <span className={'rat-name'}>{ratData.attributes.name}</span>
+        <span className='rat-name clipboard' data-clipboard-text={ratData.attributes.name}>{ratData.attributes.name}</span>
         {statusButtons}
       </div>
     );
