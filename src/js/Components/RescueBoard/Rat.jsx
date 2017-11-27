@@ -55,7 +55,7 @@ export default class Rat extends Component {
           suffix: true, 
           value: false
         },
-        disconnect: {
+        delay: {
           text: 'DELAY', 
           title: 'Rat has been delayed or disconnected.', 
           color: 'red', 
