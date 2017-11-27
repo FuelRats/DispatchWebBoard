@@ -4,21 +4,9 @@ import UserStorage from 'Classes/UserStorage.js';
 import AppConfig from 'Config/Config.js';
 import { funny } from 'Config/Strings.js';
 import {
-  CanSetCookies, 
-  DelCookie,
-  GetCookie, 
-  SetCookie,
+  WebStore,
   clearUrlHash
 } from 'Helpers';
-
-// Constants
-const
-  DAYS_IN_YEAR = 365,
-  HOURS_IN_DAY = 24,
-  MINUTES_IN_HOUR = 60,
-  SECONDS_IN_MINUTES = 60,
-  MILLISECONDS_IN_SECOND = 1000,
-  MILLISECONDS_IN_YEAR = DAYS_IN_YEAR * HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTES * MILLISECONDS_IN_SECOND;
 
 
 /**
@@ -32,29 +20,24 @@ export default class User {
    * @returns {void}
    */
   constructor() {
-    this.AuthHeader = null;
-    this.UserData = null;
-    this.Store = new UserStorage();
+    this.accessToken = null;
+    this.userData = null;
+    this.store = new UserStorage();
 
-    window.console.debug(this.Store);
+    window.console.debug(this.store);
 
     let 
       newToken = document.location.hash.match(/access_token=([\w-]+)/),
-      tokenCookie = GetCookie(`${AppConfig.AppNamespace}.token`);
+      curToken = WebStore.local.get('token');
 
     if (newToken && newToken[1]) {
-      this.AuthHeader = newToken[1];
+      this.accessToken = newToken[1];
+      WebStore.local.set('token', this.accessToken);
       clearUrlHash();
-    } else if (tokenCookie) {
-      this.AuthHeader = tokenCookie;
+    } else if (curToken) {
+      this.accessToken = curToken;
     } else {
-      localStorage.removeItem(`${AppConfig.AppNamespace}.token`);
-      return;
-    }
-
-    if (CanSetCookies()) {
-      SetCookie(`${AppConfig.AppNamespace}.token`, this.AuthHeader, MILLISECONDS_IN_YEAR); // 1 year
-      localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader);
+      WebStore.local.remove('token');
     }
   }
 
@@ -64,7 +47,7 @@ export default class User {
    * @returns {Boolean} Value representing rather or not the user has a token.
    */
   hasToken() {
-    return Boolean(this.AuthHeader !== null);
+    return Boolean(this.accessToken !== null);
   }
 
   /**
@@ -73,7 +56,7 @@ export default class User {
    * @returns {Boolean} Value representing the authentication status of the user.
    */
   isAuthenticated() {
-    return this.hasToken() && this.UserData !== null;
+    return this.hasToken() && this.userData !== null;
   }
 
   /**
@@ -82,7 +65,7 @@ export default class User {
    * @returns {Boolean} Value representing the administrator status of the user.
    */
   isAdministrator() {
-    return Object.keys(this.UserData.relationships.groups).filter(obj => this.UserData.relationships.groups[obj].isAdministrator).length > 0;
+    return Object.keys(this.userData.relationships.groups).filter(obj => this.userData.relationships.groups[obj].isAdministrator).length > 0;
   }
 
   /**
@@ -91,7 +74,17 @@ export default class User {
    * @returns {Boolean} Value representing the permission status of the user.
    */
   hasPermission() {
-    return this.isAuthenticated() && (this.isAdministrator() || this.UserData.relationships.groups.hasOwnProperty('rat'));
+    return this.isAuthenticated() && (this.isAdministrator() || this.hasGroup('rat'));
+  }
+
+  /**
+   * Checks if user has a specific group
+   *
+   * @param   {String}  group Name of the group.     
+   * @returns {Boolean}       Value representing whether the user has the specified group
+   */
+  hasGroup(group) {
+    return this.userData.relationships.groups.hasOwnProperty(group);
   }
 
   /**
@@ -100,9 +93,9 @@ export default class User {
    * @returns {String} Name of the authenticated user.
    */
   getUserDisplayName() {
-    return this.UserData.attributes.displayRatId ? 
-      this.UserData.relationships.rats[this.UserData.attributes.displayRatId].attributes.name : 
-      this.UserData.relationships.rats[Object.keys(this.UserData.relationships.rats)[0]].attributes.name;
+    return this.userData.attributes.displayRatId ? 
+      this.userData.relationships.rats[this.userData.attributes.displayRatId].attributes.name : 
+      this.userData.relationships.rats[Object.keys(this.userData.relationships.rats)[0]].attributes.name;
   }
 
   /**
@@ -111,9 +104,9 @@ export default class User {
    * @returns {Object} Users main rat data.
    */
   getDisplayRat() {
-    return this.UserData.attributes.displayRatId ?
-      this.UserData.relationships.rats[this.UserData.attributes.displayRatId] :
-      this.UserData.relationships.rats[Object.keys(this.UserData.relationships.rats)[0]];
+    return this.userData.attributes.displayRatId ?
+      this.userData.relationships.rats[this.userData.attributes.displayRatId] :
+      this.userData.relationships.rats[Object.keys(this.userData.relationships.rats)[0]];
   }
 
 
@@ -125,18 +118,19 @@ export default class User {
   authenticate() {
     return new Promise((resolve, reject) => {
       if (this.isAuthenticated()) {
-        resolve(this.UserData);
+        resolve(this.userData);
       }
 
-      if (sessionStorage.getItem(`${AppConfig.AppNamespace}.user.UserData`)) {
-        this.UserData = JSON.parse(sessionStorage.getItem(`${AppConfig.AppNamespace}.user.UserData`));
-        resolve(this.UserData);
-      } else if (this.AuthHeader !== null) {
+      if (WebStore.session.set('user.userData')) {
+        this.userData = JSON.parse(WebStore.session.get('user.userData'));
+        resolve(this.userData);
+      } else if (this.accessToken !== null) {
         FuelRatsApi.getProfile().then(data => {
-          this.UserData = data;
-          sessionStorage.setItem(`${AppConfig.AppNamespace}.user.UserData`, JSON.stringify(this.UserData));
-          resolve(this.UserData);
+          this.userData = data;
+          WebStore.session.set('user.userData', JSON.stringify(this.userData));
+          resolve(this.userData);
         }).catch((error) => {
+          WebStore.local.remove('token');
           reject(error);
         });
       } else {
@@ -152,6 +146,8 @@ export default class User {
    */
   login() {
     if (this.isAuthenticated()) { return; }
+
+    WebStore.local.set('DUCKS', 'Thisisjustatest');
     window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${AppConfig.AppURI}&scope=${AppConfig.AppScope}&response_type=token&state=${funny[Math.floor(Math.random() * (funny.length - 1))]}`);
   }
 
@@ -161,10 +157,8 @@ export default class User {
    * @returns {void}
    */
   logout() {
-    if (GetCookie(`${AppConfig.AppNamespace}.token`) !== undefined) {
-      DelCookie(`${AppConfig.AppNamespace}.token`);
-      localStorage.removeItem(`${AppConfig.AppNamespace}.token`);
-    }
+    WebStore.local.remove('token');
+    WebStore.session.remove('user.userData');
     window.location.reload();
   }
 }
