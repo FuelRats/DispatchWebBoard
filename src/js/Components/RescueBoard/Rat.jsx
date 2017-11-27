@@ -71,12 +71,36 @@ export default class Rat extends Component {
    * @param   {String} buttonName Name of the button.
    * @returns {void}
    */
-  handleButtonToggle(buttonName) {
-    let buttons = Object.assign({}, this.state.statusButtons);
+  handleStatusToggle(buttonName) {
+    let statusButtons = Object.assign({}, this.state.statusButtons);
+    let newValue = !statusButtons[buttonName].value;
 
-    buttons[buttonName].value = !buttons[buttonName].value;
 
-    this.setState({statusButtons: buttons});
+    switch (buttonName) {
+    case 'wing':
+      if (newValue === false) {
+        statusButtons.beacon.value = false;
+      }
+      break;
+    case 'system':
+      if (newValue === false) {
+        statusButtons.beacon.value = false;
+      }
+      break;
+    case 'beacon':
+      if (newValue === true) {
+        statusButtons.wing.value = true;
+        statusButtons.system.value = true;
+      }
+      break;
+    default:
+      // Do nothing
+      break;
+    }
+
+    statusButtons[buttonName].value = newValue;
+
+    this.setState({statusButtons});
   }
 
   /**
@@ -93,7 +117,7 @@ export default class Rat extends Component {
       <span 
         className={`statusbutton statusbutton-${button}${bState.value ? ' active' : ''}`} 
         title={bState.title}
-        onClick={() => this.handleButtonToggle(button)}
+        onClick={() => this.handleStatusToggle(button)}
         key={button}>
         {`${bState.text}${bState.suffix && bState.value ? '+' : ''}`}
       </span>
