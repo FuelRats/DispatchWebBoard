@@ -44,7 +44,8 @@ export default class UserStorage extends EventEmitter {
    */
   set(key, value) {
     if (DefaultSettings[key] !== undefined && this[key] !== value) {
-      if (DefaultSettings[key].options && !DefaultSettings[key].options.includes(value)) {
+      let opts = this.getOptions(key);
+      if (opts && !opts.includes(value)) {
         return false;
       } 
 
@@ -68,17 +69,39 @@ export default class UserStorage extends EventEmitter {
   }
 
   /**
-   * Gets valid options for the given keys.
+   * Gets valid options for the given key.
    *
    * @param   {String} key Store item to get valid options for
    * @returns {*[]}        Valid options for the item.
    */
   getOptions(key) {
-    if (DefaultSettings[key].options) {
-      return DefaultSettings[key].options;
-    } else {
-      return null;
+    let opts = DefaultSettings[key].options;
+    if (opts) {
+      if (isObject(opts)) {
+        return Object.keys(opts);
+      }
+      return opts;
     }
+    return null;
+  }
+
+  /**
+   * Creates an array containing valid options of the given key, and includes human readable text if available.
+   *
+   * @param   {String} key Store item to get valid options for
+   * @returns {*[]}        Valid options for the item.
+   */
+  getOptionsWithHumanReadable(key) {
+    let opts = DefaultSettings[key].options;
+    if (opts) {
+      if (isObject(opts)) {
+        return Object.entries(opts);
+      } else if (Array.isArray(opts)) {
+        return opts.map(option => [option, option]);
+      }
+      return opts;
+    }
+    return null;
   }
 
   /**
