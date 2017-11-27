@@ -1,5 +1,6 @@
 // App Imports
 import Component from 'Components/Component.jsx';
+import FuelRatsApi from 'Api/FuelRatsApi.js';
 import { CurrentUser } from 'app.jsx';
 
 // Module Imports
@@ -53,7 +54,7 @@ export default class MenuView extends Component {
    * @returns {Object} React element.
    */
   render() {
-    let iconSrc = CurrentUser.UserData.attributes.image || `https://api.adorable.io/avatars/${CurrentUser.UserData.id}`;
+    let iconSrc = CurrentUser.userData.attributes.image ? FuelRatsApi.resolve(`/users/image/${CurrentUser.userData.id}`) : `https://api.adorable.io/avatars/${CurrentUser.userData.id}`;
     return (
       <div className={`user-menu-view ${this.state.menuOpen ? 'open' : ''}`}>
         <div className="user-options">
