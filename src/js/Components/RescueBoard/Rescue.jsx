@@ -88,10 +88,11 @@ export default class Rescue extends Component {
       <div className={classes} id={`rescue-${rescue.id}`}>
         <div className={'rescue-info'}>
           <span className={'rescue-info-main'}>
-            <span className={'rescue-info-caseid'}>#{boardIndex}</span>: <span className={'rescue-info-client'} title={clientIRCName}>{clientName}</span> in <span className={'rescue-info-system'}>{systemName}</span>
+            <span className={'rescue-info-caseid clipboard'} data-clipboard-text={boardIndex}>#{boardIndex}</span>: <span className={'rescue-info-client clipboard'} data-clipboard-text={clientIRCName} title={clientIRCName}>{clientName}</span> in <span className={'rescue-info-system clipboard'} data-clipboard-text={systemName}>{systemName}</span>
           </span>
         </div>
         <RatList rats={this.getAssignedRats()} />
+        <input name='notes' placeholder='Notes...' size={64} />
       </div>
     );
   }
