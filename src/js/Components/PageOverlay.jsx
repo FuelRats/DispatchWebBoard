@@ -1,5 +1,7 @@
 // App Imports
 import Component from 'Components/Component.jsx';
+import { classNames } from 'Helpers';
+
 // Module Imports
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -46,7 +48,7 @@ export default class PageOverlay extends Component {
 
     if (!this.state.isDismissed) {
       return (
-        <div className={`overlay ${this.props.isLoader ? 'loading' : ''}`}>
+        <div className={classNames('overlay', {'loading': this.props.isLoader})}>
           <span className='overlay-text text'>{this.props.text || ''}</span>      
           <span className='overlay-text subtext'>{this.props.subtext || ''}</span>
           {this.props.isDismissable ? dismissButton : null}

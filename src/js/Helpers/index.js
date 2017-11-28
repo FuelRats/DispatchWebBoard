@@ -1,4 +1,5 @@
 export * from './Array.js';
+export * from './ClassName.js';
 export * from './Html.js';
 export * from './Http.js';
 export * from './JSONApi.js';

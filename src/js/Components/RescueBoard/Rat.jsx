@@ -1,6 +1,7 @@
 // App imports
 import Component from 'Components/Component.jsx';
 import AssignedRatPropType from 'Types/AssignedRat.js';
+import { classNames } from 'Helpers';
 import { CurrentUser } from 'app.jsx';
 
 // Module imports
@@ -115,13 +116,11 @@ export default class Rat extends Component {
    * @returns {Object} React element.
    */
   render() {
-    const 
-      ratData = this.props.rat,
-      classes = `rat${ratData.attributes.identified ? '' : ' rat-unidentified'}`;
+    const ratData = this.props.rat;
 
     let statusButtons = Object.entries(this.state.statusButtons).map(([button, bState]) => (
       <span 
-        className={`statusbutton statusbutton-${button}${bState.value ? ' active' : ''}`} 
+        className={classNames('statusbutton', `statusbutton-${button}`, {'active' : bState.value})} 
         title={bState.title}
         onClick={() => this.handleStatusToggle(button)}
         key={button}>
@@ -130,7 +129,7 @@ export default class Rat extends Component {
     ));
 
     return (
-      <div className={classes}>
+      <div className={classNames('rat', {'rat-unidentified': ratData.attributes.identified})}>
         <span className='rat-name clipboard' data-clipboard-text={ratData.attributes.name}>{ratData.attributes.name}</span>
         {statusButtons}
       </div>

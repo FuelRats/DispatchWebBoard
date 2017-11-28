@@ -2,7 +2,7 @@
 import Component from 'Components/Component.jsx';
 import RatList from './RatList.jsx';
 import RescuePropType from 'Types/Rescue.js';
-import { makeID } from 'Helpers';
+import { classNames, makeID } from 'Helpers';
 
 // Module imports
 import React from 'react';
@@ -64,9 +64,13 @@ export default class Rescue extends Component {
   render() {
     let 
       rescue = this.props.rescueData,
-      classes = `rescue ${rescue.attributes.status !== 'open' ? 'rescue-inactive' : ''} rescue-platform-${rescue.attributes.platform || 'unknown'}`,
       clientName = rescue.attributes.client || 'unknown_client',
-      systemName = rescue.attributes.system || 'unknown_system';
+      systemName = rescue.attributes.system || 'unknown_system',
+      classes = {
+        'rescue': true,
+        [`rescue-platform-${rescue.attributes.platform || 'unknown'}`]: true,
+        'rescue-inactive': rescue.attributes.status !== 'open'
+      };
 
     // Resolve data
 
@@ -85,10 +89,10 @@ export default class Rescue extends Component {
 
 
     return (
-      <div className={classes} id={`rescue-${rescue.id}`}>
-        <div className={'rescue-info'}>
-          <span className={'rescue-info-main'}>
-            <span className={'rescue-info-caseid clipboard'} data-clipboard-text={boardIndex}>#{boardIndex}</span>: <span className={'rescue-info-client clipboard'} data-clipboard-text={clientIRCName} title={clientIRCName}>{clientName}</span> in <span className={'rescue-info-system clipboard'} data-clipboard-text={systemName}>{systemName}</span>
+      <div className={classNames(classes)} id={`rescue-${rescue.id}`}>
+        <div className='rescue-info'>
+          <span className='rescue-info-main'>
+            <span className='rescue-info-caseid clipboard' data-clipboard-text={boardIndex}>#{boardIndex}</span>: <span className='rescue-info-client clipboard' data-clipboard-text={clientIRCName} title={clientIRCName}>{clientName}</span> in <span className='rescue-info-system clipboard' data-clipboard-text={systemName}>{systemName}</span>
           </span>
         </div>
         <RatList rats={this.getAssignedRats()} />
