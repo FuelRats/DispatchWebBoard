@@ -47,7 +47,7 @@ export default class Clock extends Component {
    * @returns {void}
    */
   render() {
-    return (<span className="ed-clock">{this.state.time}</span>);
+    return (<span className='ed-clock'>{this.state.time}</span>);
   }
 
   /**

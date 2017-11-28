@@ -33,7 +33,7 @@ export default class RatList extends Component {
       <Rat rat={rat} key={rat.id} />
     ));
     
-    return (<div className={'rescue-rats'}>{listItems}</div>);
+    return (<div className='rescue-rats'>{listItems}</div>);
   }
 }
 RatList.propTypes = {
