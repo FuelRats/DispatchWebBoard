@@ -2,29 +2,24 @@ language: node_js
 node_js:
 - 8
 cache:
+  yarn: true
   directories:
   - node_modules
 env:
 - ENV_NAME=$(./.travis/get_branch_env_name.sh)
 before_script:
-- wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
-- npm install -g gulp-cli
+- wget "https://dispatch.fuelrats.com/buildfiles/app.${ENV_NAME}.config.js"
+- yarn global add gulp-cli
 script:
 - gulp --env ${ENV_NAME} --buildid ${TRAVIS_COMMIT}
 addons:
   ssh_known_hosts: cheddar.fuelrats.com
 notifications:
-  irc:
+  webhooks:
+    urls:
+      - http://orthanc.localecho.net/cgi-bin/webhook.py
     on_success: always
     on_failure: always
-    channels:
-    - ircs://sorlie.co.uk:4242/#rattech
-    nick: TravisCI,
-    password:
-      secure: bySHCljRF1EC1jzCAoY/AOAcVzF+Edm4sFYTMo54KHOfvt6H5uSLmBN70UxRSLxL1i/iwXE9qNhqveiYIe+fylYQls8ai2UNC7YQ/TdrRlaCOx8VuhmGAMwb+MUdhLmBY4AzVi783UemJIFash0MM19k49R03I+wJxVRJh7DGhuCEk2S2Rd3tYfGAvKjxYGBcoMiMoSLcEpJhrg7xalg0oGopPWzkb/X8RE1aMxGw6v+VzPYrSwzSfYyXEoWxeDaZFcbRSfIFt21NE1Oi/tDg8MqBJCrX2/uJBAlBhdLtHruOVqrYwYKp5j0rtTM1pW+bPQKT9nkZ4Wdr6JxCXVKKcuHK1l94VubrBpuBITDIM3gOD4Q0IGaUdMtP9KzQHbX243jOCtYJm89lmbAynfZf0NOanl1RDcL2J5ECA4aZf746vUxbZ290iVIKRZoVlRdi1kGjmz8v4tblEnRlPiODdgGqo34hw3s8VCZDs3kn4AFRLV659lwzNFDqpO2fxqTaEIR8DriYRWa9D/NmZT2Tyq5eTX8dBXQoffv9M3mjQ5xsTZ3V2ssfS7F2OQtaBpcQMwCflqDzyEETbpM47znj5oc9afBacnOU/SbHkdG0ymc624sldXIzUVkqys4mLMlUvdEG7nxnQr+WJV0nL9ajmcTV4qACwc9Uq0a0f5b7iI=
-    template:
-    - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{result}"
-    - 'Change view : %{compare_url}  Build details : %{build_url}'
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_0b2fcf215327_key -iv $encrypted_0b2fcf215327_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
 - eval "$(ssh-agent -s)"
