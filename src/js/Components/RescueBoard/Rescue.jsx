@@ -1,5 +1,5 @@
 // App imports
-import Component from 'Components/Component.jsx';
+import { PureComponent } from 'Components/Component.jsx';
 import RatList from './RatList.jsx';
 import RescuePropType from 'Types/Rescue.js';
 import { classNames, makeID } from 'Helpers';
@@ -14,7 +14,7 @@ const
 /**
  * Component to display the given rescue data as a rescue card.
  */
-export default class Rescue extends Component {
+export default class Rescue extends PureComponent {
   
   /**
    * Creates a Rescue
