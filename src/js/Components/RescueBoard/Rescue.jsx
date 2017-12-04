@@ -41,6 +41,7 @@ export default class Rescue extends PureComponent {
   /**
    * Saves note field when it's changed.
    *
+   * @param   {Object} event DOM Event for input onChange
    * @returns {void}
    */
   handleNoteChange(event) {

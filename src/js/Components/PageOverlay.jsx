@@ -79,4 +79,4 @@ PageOverlay.propTypes = {
   isLoader: PropTypes.bool,
   isDismissable: PropTypes.bool,
   isDismissed: PropTypes.bool
-}
+};

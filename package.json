@@ -1,6 +1,6 @@
 {
   "name": "dispatch-web-board",
-  "version": "0.5.0",
+  "version": "1.0.0-alpha",
   "description": "The official FuelRats rescue info tracking application.",
   "main": "js/app.js",
   "scripts": {
