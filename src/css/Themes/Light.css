@@ -13,6 +13,9 @@ body.theme-light {
   --badgeOkColor: 79, 204,  79;
   --badgeWarningColor: 204, 204,  79;
   --badgeErrorColor: 214,  80,  80;
+  --rescuePlatformColorPC: #d74f4f;
+  --rescuePlatformColorXB: #31af31;
+  --rescuePlatformColorPS: #5959e1;
   --rescueInactiveColor: khaki;
   --rescueCoderedColor: mistyrose;
   --textAccentRed: #D65050;
