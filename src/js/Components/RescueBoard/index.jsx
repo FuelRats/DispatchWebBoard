@@ -1,10 +1,12 @@
 // App imports
 import AppConfig from 'Config/Config.js';
 import Component from 'Components/Component.jsx';
+import PageOverlay from 'Components/PageOverlay.jsx';
 import RatSocket from 'Classes/RatSocket.js';
 import Rescue from './Rescue.jsx';
 import {
   mapRelationships,
+  enumRescueStatus,
   WebStore
 } from 'Helpers';
 
@@ -34,7 +36,8 @@ export default class RescueBoard extends Component {
     ]);
 
     this.state = {
-      rescues: {}
+      rescues: {},
+      loading: true
     };
 
     let authToken = WebStore.local.get('token');
@@ -45,7 +48,7 @@ export default class RescueBoard extends Component {
         .on('rescueUpdated', (ctx, data) => { this.handleRescueUpdated(ctx, data); })
         .connect(authToken)
         .then(() => this.socket.subscribe('0xDEADBEEF'))
-        .then(() => this.socket.request({action:['rescues', 'read'], status: { $not: 'closed' }}))
+        .then(() => this.socket.request({action:['rescues', 'read'], status: { $not: enumRescueStatus.CLOSED }}))
         .then(res => this.handleRescuesRead(res.context, res.data))
         .catch(error => window.console.error(error));
     } else {
@@ -62,7 +65,7 @@ export default class RescueBoard extends Component {
   handleReconnect(ctx) {
     ctx.request({
       action: ['rescues', 'read'],
-      status: { $not: 'closed' }
+      status: { $not: enumRescueStatus.CLOSED }
     }).then((response) => {
       this.handleRescuesRead(response.context, response.data);
     }).catch((error) => {
@@ -88,7 +91,7 @@ export default class RescueBoard extends Component {
       rescues[rescue.id] = rescue;
     });
 
-    this.setState({'rescues' : rescues});
+    this.setState({rescues, 'loading': false});
   }
 
   /**
@@ -131,11 +134,11 @@ export default class RescueBoard extends Component {
       this.updateRescue(ctx, data);
       return;
     }
-    let curRescues = Object.assign({}, this.state.rescues);
+    let rescues = Object.assign({}, this.state.rescues);
 
-    curRescues[data.id] = data;
+    rescues[data.id] = data;
 
-    this.setState({'rescues': curRescues});
+    this.setState({rescues});
   }
 
   /**
@@ -150,15 +153,15 @@ export default class RescueBoard extends Component {
       this.addRescue(ctx, data);
       return;
     }
-    let curRescues = Object.assign({}, this.state.rescues);
+    let rescues = Object.assign({}, this.state.rescues);
 
-    if (data.attributes.status === 'closed') {
-      delete curRescues[data.id];
+    if (data.attributes.status === enumRescueStatus.CLOSED) {
+      delete rescues[data.id];
     } else {
-      curRescues[data.id] = data;
+      rescues[data.id] = data;
     }
     
-    this.setState({'rescues': curRescues});
+    this.setState({rescues});
   }
 
   /**
@@ -171,8 +174,15 @@ export default class RescueBoard extends Component {
       <Rescue rescueData={rescue} key={rescue.id} />
     ));
 
+    let loader = this.state.isLoading ? (
+      <PageOverlay isLoader={true} />
+    ) : null;
+
     return (
-      <div className='rescues'>{rescues}</div>
+      <React.Fragment>
+        <div className='rescues'>{rescues}</div>
+        {loader}
+      </React.Fragment>
     );
   }
 }
