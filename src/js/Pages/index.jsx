@@ -86,7 +86,7 @@ export default class index extends React.Component {
     }
     
     return (
-      <div className='page'>
+      <React.Fragment>
         <div className='background'></div>
         <header className='navhead'>
           <span className='branding'><img src="static/fuelrats.png" />  <span id="navbar-brand-title">{AppConfig.AppTitle}</span></span>
@@ -98,7 +98,8 @@ export default class index extends React.Component {
         </header>
         {body}
         <UserMenu view={userMenuStartingView} />
-      </div>
+        <div className='dev-warn'>EARLY TEST VERSION</div>
+      </React.Fragment>
     );
   }
 }
