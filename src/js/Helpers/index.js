@@ -1,5 +1,6 @@
 export * from './Array.js';
 export * from './ClassName.js';
+export * from './Enums.js';
 export * from './Html.js';
 export * from './Http.js';
 export * from './JSONApi.js';
