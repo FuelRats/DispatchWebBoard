@@ -1,3 +1,8 @@
+
+/*====================*/
+/*== Common Styles ==*/
+/*==================*/
+
 .user-controls {
   position: absolute;
   right: 2rem;
@@ -16,17 +21,32 @@
   display: flex;
 }
 
-.user-menu-view {
+.user-menu-view,
+.user-settings-view {
   display: block;
+  overflow: hidden;
+  transition: .2s ease;
+  background: var(--headerBgColor);
+  border: .4rem solid var(--accentColor);
+}
+
+.user-menu-view .user-options,
+.user-settings-view .user-options {
+  padding: 6px;
+  color: var(--headerFgColorDark);
+  transition: .2s ease;
+}
+
+/*===============*/
+/*== MenuView ==*/
+/*=============*/
+
+.user-menu-view {
   min-width: 52px;
   min-height: 52px;
   max-width: 52px;
   max-height: 52px;
   border-radius: 50%;
-  overflow: hidden;
-  transition: .2s ease;
-  background: var(--headerBgColor);
-  border: .4rem solid var(--accentColor);
 }
 .user-menu-view.open {
   max-width: 250px;
@@ -34,17 +54,16 @@
   border-radius: 0;
   border-width: .2rem;
 }
+
 .user-menu-view .user-options {
-  padding: 6px;
   opacity: 0;
   text-align: right;
-  color: var(--headerFgColorDark);
-  transition: .2s ease;
 }
 .user-menu-view.open .user-options {
   opacity: 1;
   transition: .2s ease .15s;
 }
+
 .user-menu-view .user-options .rat-name {
   padding-right: 38px;
   line-height: 32px;
@@ -64,6 +83,7 @@
   color: var(--headerFgColorDark);
   text-decoration: none;
   transition: .2s ease, padding .075s linear;
+  cursor: pointer;
 }
 .user-menu-view .user-options .option-list li a:hover,
 .user-menu-view .user-options .option-list li span:hover {
@@ -92,4 +112,21 @@
   top: 6px;
   right: 6px;
   transition: .1s ease;
+}
+
+/*===================*/
+/*== SettingsView ==*/
+/*=================*/
+
+
+.user-settings-view .user-view-controls {
+  padding: 6px;
+  text-align: right;
+}
+.user-settings-view .user-view-controls .button.button-close {
+  padding: 4px;
+}
+
+.user-settings-view .user-options label {
+  display: block;
 }

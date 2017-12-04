@@ -2,7 +2,7 @@ body.theme-twitchPurple {
   --headerBgColor: #201c2b;
   --headerFgColor: #FFFFFF;
   --headerFgColorDark: #9D9D9D;
-  --pageBgColor: #17141f;
+  --pageBgColor: #201c2b;
   --pageBgColorDark: #0e0c13;
   --pageFgColor: #FFF;
   --pageFgColorDark: #9D9D9D;
@@ -27,17 +27,4 @@ body.theme-twitchPurple {
   --textAccentYellow: #F0AD4E;
   --pageBackgroundImage: url('../../static/ratdecal_grey_nosaturn.png');
   --pageBackgroundOpacity: .1;
-}
-
-body.theme-twitchPurple .rescue {
-  border: 1px solid var(--accentColorDark);
-}
-body.theme-twitchPurple .rescue.rescue-platform-pc {
-  border: 1px solid var(--rescuePCBgColor);
-}
-body.theme-twitchPurple .rescue.rescue-platform-xb {
-  border: 1px solid var(--rescueXBBgColor);
-}
-body.theme-twitchPurple .rescue.rescue-platform-ps {
-  border: 1px solid var(--rescuePSBgColor);
 }
