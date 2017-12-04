@@ -1,6 +1,6 @@
 // App Imports
 import Component from 'Components/Component.jsx';
-import FuelRatsApi from 'Api/FuelRatsApi.js';
+import * as FuelRatsApi from 'Api/FuelRatsApi.js';
 import { classNames } from 'Helpers';
 import { CurrentUser } from 'app.jsx';
 
