@@ -42,3 +42,15 @@ a, a:hover, a:active, a:focus {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+div.dev-warn {
+  pointer-events: none;
+  opacity: .3;
+  color: var(--pageFgColor);
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  font-size: 5rem;
+  font-weight: 700;
+  font-family: monospace;
+}
