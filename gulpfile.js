@@ -2,15 +2,16 @@
 
 // Required Modules
 const 
+  cleanCSS = require('gulp-clean-css'),
+  cpx = require('cpx'),
+  del = require('del'),
+  directoryNamedWebpackPlugin = require('directory-named-webpack-plugin'),
   gulp = require('gulp'),
   gulpUtil = require('gulp-util'),
-  path = require('path'),
-  del = require('del'),
-  cpx = require('cpx'),
-  mkdirp = require('mkdirp'),
-  rename = require('gulp-rename'),
   inject = require('gulp-inject-string'),
-  cleanCSS = require('gulp-clean-css'),
+  mkdirp = require('mkdirp'),
+  path = require('path'),
+  rename = require('gulp-rename'),
   webpack = require('webpack'),
   webpackStream = require('webpack-stream');
 
@@ -125,6 +126,9 @@ gulp.task('webpack', function() {
       modules: [
         paths.jsRoot, 
         path.resolve(__dirname, 'node_modules')
+      ],
+      plugins: [
+        new directoryNamedWebpackPlugin()
       ]
     },
     stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
