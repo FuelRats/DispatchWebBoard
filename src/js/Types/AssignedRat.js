@@ -8,5 +8,12 @@ export default PropTypes.shape({
     'name': PropTypes.string.isRequired,
     'platform': PropTypes.string,
     'identified': PropTypes.bool
-  }).isRequired
+  }).isRequired,
+  'initStatus': PropTypes.shape({
+    'friend': PropTypes.bool.isRequired,
+    'wing': PropTypes.bool.isRequired,
+    'system': PropTypes.bool.isRequired,
+    'beacon': PropTypes.bool.isRequired,
+    'delay': PropTypes.bool.isRequired
+  })
 }).isRequired;
