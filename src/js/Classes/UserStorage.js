@@ -86,7 +86,7 @@ export default class UserStorage extends EventEmitter {
   }
 
   /**
-   * Creates an array containing valid options of the given key, and includes human readable text if available.
+   * Returns an iterable of valid options for the given key, and includes human readable text if available.
    *
    * @param   {String} key Store item to get valid options for
    * @returns {*[]}        Valid options for the item.
