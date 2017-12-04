@@ -1,0 +1,31 @@
+body.theme-wireframe {
+  --headerBgColor: #1A1A1A;
+  --headerFgColor: #FFFFFF;
+  --headerFgColorDark: #9D9D9D;
+  --pageBgColor: #1A1A1A;
+  --pageBgColorDark: #171717;
+  --pageFgColor: #FFF;
+  --pageFgColorDark: #9D9D9D;
+  --accentColor: #D65050;
+  --accentColorDark: #BF4848;
+  --badgeFgColor: 255, 255, 255;
+  --badgeNeutralColor: 171, 171, 171;
+  --badgeOkColor: 59, 184,  59;
+  --badgeWarningColor: 184, 184,  59;
+  --badgeErrorColor: 194,  60,  60;
+  --rescueInactiveColor: rgba(240, 230, 140, 0.25);
+  --rescueCoderedColor: rgba(255, 87, 69, 0.25);
+  --textAccentRed: #D65050;
+  --textAccentBlack: #1A1A1A;
+  --textAccentGreen: #5CB85C;
+  --textAccentBlue: #5BC0DE;
+  --textAccentGrey: #AAAAAA;
+  --textAccentWhite: #FFFFFF;
+  --textAccentYellow: #F0AD4E;
+  --pageBackgroundImage: url('../../static/ratdecal_grey_nosaturn.png');
+  --pageBackgroundOpacity: .1;
+}
+body.theme-wireframe * {
+  outline: solid 1px #50D650 !important;
+  outline-offset: -1px !important;
+}

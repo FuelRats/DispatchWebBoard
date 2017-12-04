@@ -2,13 +2,14 @@ language: node_js
 node_js:
 - 8
 cache:
+  yarn: true
   directories:
   - node_modules
 env:
 - ENV_NAME=$(./.travis/get_branch_env_name.sh)
 before_script:
-- wget "https://www.uncleclapton.me/static/dwb/app.${ENV_NAME}.config.js"
-- npm install -g gulp-cli
+- wget "https://dispatch.fuelrats.com/buildfiles/app.${ENV_NAME}.config.js"
+- yarn global add gulp-cli
 script:
 - gulp --env ${ENV_NAME} --buildid ${TRAVIS_COMMIT}
 addons:

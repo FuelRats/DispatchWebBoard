@@ -24,10 +24,11 @@ const
 // Utility Functions
 
 /**
- * Generates a random base64 ID of a given char length
+ * Generates a random ID of a given char length, which has been created from the string of allowed characters.
  * 
- * @param  {Number=} length Desired length of the ID
- * @return {String}         Generated base64 ID
+ * @param   {Number=} length Desired length of the ID. Default: 48
+ * @param   {String=} chars  Chars used in generating the id. Default: Base64
+ * @returns {String}         Generated ID.
  */
 function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
   // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
@@ -47,7 +48,8 @@ const
 const 
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
-    jsEntry: 'src/js/app.js',
+    jsEntry: 'src/js/app.jsx',
+    jsRoot: path.resolve(__dirname, 'src', 'js'),
     cssEntry: 'src/css/app.css',
     buildDir: 'deploy',
     distDir: path.resolve(__dirname, 'deploy', 'dist')
@@ -99,12 +101,32 @@ gulp.task('webpack', function() {
   let conf = {
     bail: true,
     module: {
-      rules: []
+      rules: [
+        {
+          test: /\.jsx$/,
+          exclude: /(node_modules)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              'presets' : [
+                '@babel/react'
+              ]
+            }
+          }
+        }
+      ]
     },
     output: {
       filename: `app.${fingerprint}.js`
     },
     plugins: [],
+    resolve: {
+      extensions: ['.js', '.jsx', '.json'],
+      modules: [
+        paths.jsRoot, 
+        path.resolve(__dirname, 'node_modules')
+      ]
+    },
     stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
       entrypoints: true,
       modules: false,
@@ -121,6 +143,9 @@ gulp.task('webpack', function() {
   };
 
   conf.plugins.push(new webpack.DefinePlugin({
+    'process.env': {
+      NODE_ENV: JSON.stringify(gulpConf.gulp.production ? 'production' : 'development')
+    },
     ENV: {
       FR: {
         'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),
