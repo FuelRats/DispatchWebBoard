@@ -20,7 +20,7 @@ function init() {
   CurrentUser = new User();
 
   // Handle theming and changes to the theme setting.
-  CurrentUser.store.observe('boardTheme', (ctx, newValue) => {
+  CurrentUser.store.observe('boardTheme', newValue => {
     document.getElementsByTagName('body')[0].className = `theme-${newValue}`;
   });
   document.getElementsByTagName('body')[0].className = `theme-${CurrentUser.store.boardTheme}`;
