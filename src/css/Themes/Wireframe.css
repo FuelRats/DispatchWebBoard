@@ -13,6 +13,9 @@ body.theme-wireframe {
   --badgeOkColor: 59, 184,  59;
   --badgeWarningColor: 184, 184,  59;
   --badgeErrorColor: 194,  60,  60;
+  --rescuePlatformColorPC: #d74f4f;
+  --rescuePlatformColorXB: #31af31;
+  --rescuePlatformColorPS: #5959e1;
   --rescueInactiveColor: rgba(240, 230, 140, 0.25);
   --rescueCoderedColor: rgba(255, 87, 69, 0.25);
   --textAccentRed: #D65050;

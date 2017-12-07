@@ -11,6 +11,7 @@
   justify-content: center;
   align-items: flex-start;
   align-content: flex-start;
+  color: var(--pageFgColor);
 }
 
 .rescue {
@@ -74,6 +75,9 @@
   margin-left: 25px;
   overflow-y: auto;
   flex-grow: 1;
+  justify-content: flex-end;
+  display: flex;
+  flex-direction: column;
 }
 
 .rescue .rescue-rats .rat {
@@ -109,7 +113,7 @@
   transition: border     .2s ease,
               background .2s ease,
               color      .2s ease;
-  color: #aaa;
+  color: var(--pageFgColorDark);
   cursor: pointer;
 }
 
@@ -146,7 +150,7 @@
     border-style: none;
     border: none;
     outline: none !important;
-    color: #DDD;
+    color: var(--pageFgColorDark);
     padding: 4px;
     margin-top: 7px;
     width: 100%;
