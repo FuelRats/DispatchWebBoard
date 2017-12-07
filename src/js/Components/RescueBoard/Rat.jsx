@@ -68,7 +68,7 @@ export default class Rat extends Component {
       }
     };
 
-    CurrentUser.store.observe('useWG', (ctx, newValue) => {
+    CurrentUser.store.observe('useWG', newValue => {
       let statusButtons = this.state.statusButtons;
       statusButtons.wing.text = newValue ? 'WG' : 'WR';
       this.setState({ statusButtons });
