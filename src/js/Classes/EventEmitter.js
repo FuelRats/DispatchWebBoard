@@ -97,7 +97,7 @@ export default class EventEmitter {
    * Executes all listeners of a given event name.
    * 
    * @param  {String}  evt    Name of the event to emit.
-   * @param  {(*|*[])} [args] Argument(s) to send with the event.
+   * @param  {...*}   [args]  Argument(s) to send with the event.
    * @return {Object}         Current instance.
    */
   async _emitEvent(evt, ...args) {
@@ -114,7 +114,7 @@ export default class EventEmitter {
     for (let listener of evtListeners) {
 
       // Execute function and get response from it.
-      let res = listener.func.apply(this, [this].concat(args));
+      let res = listener.func.apply(this, [...args]);
 
       // If the listener was set to run once, or returned as 'true', remove it from the listener list.
       if (listener.once === true || res === true) {
