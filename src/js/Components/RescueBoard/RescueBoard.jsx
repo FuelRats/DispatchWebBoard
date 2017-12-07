@@ -3,6 +3,7 @@ import AppConfig from 'Config/Config.js';
 import Component from 'Components/Component.jsx';
 import PageOverlay from 'Components/PageOverlay.jsx';
 import RatSocket from 'Classes/RatSocket.js';
+import { OpenRescuePayload } from 'Classes/SocketPayload.js';
 import Rescue from './Rescue.jsx';
 import {
   mapRelationships,
@@ -28,140 +29,89 @@ export default class RescueBoard extends Component {
     super(props);
 
     this._bindMethods([
-      'addRescue',
-      'handleRescueCreated',
-      'handleRescueUpdated',
-      'handleRescuesRead',
-      'updateRescue'
+      'startSocketConnection',
+      'refreshRescueData',
+      'setRescuesState'
     ]);
 
     this.state = {
       rescues: {},
-      loading: true
+      isLoading: true
     };
 
+    this.socket = new RatSocket(AppConfig.WssURI)
+      .on('ratsocket:reconnect', () => this.refreshRescueData())
+      .on('rescueCreated', (data) => this.setRescuesState(data))
+      .on('rescueUpdated', (data) => this.setRescuesState(data));
+
+  }
+
+  /**
+   * Connects to the API, subscribes to RatTracker stream, and then grabs 
+   *
+   * @returns {[type]} [description]
+   */
+  async startSocketConnection() {
     let authToken = WebStore.local.get('token');
     if (authToken) {
-      this.socket = new RatSocket(AppConfig.WssURI);
-      this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx))
-        .on('rescueCreated', (ctx, data) => { this.handleRescueCreated(ctx, data); })
-        .on('rescueUpdated', (ctx, data) => { this.handleRescueUpdated(ctx, data); })
-        .connect(authToken)
-        .then(() => this.socket.subscribe('0xDEADBEEF'))
-        .then(() => this.socket.request({action:['rescues', 'read'], status: { $not: enumRescueStatus.CLOSED }}))
-        .then(res => this.handleRescuesRead(res.context, res.data))
-        .catch(error => window.console.error(error));
+      try {
+        await this.socket.connect(authToken);
+        await this.socket.subscribe('0xDEADBEEF');
+
+        this.refreshRescueData();
+
+      } catch (error) {
+        window.console.error(error);
+      }
     } else {
-      window.console.error('components/RescueBoard - Failed socket initialization. Missing auth token!');
+      window.console.error('Components/RescueBoard - Failed socket initialization. Missing auth token!');
     }
   }
 
   /**
-   * Updates the board when the socket reconnects after an unclean disconnect.
+   * Gathers all open rescues and then overwrites known data with up-to-date api data.
    *
-   * @param   {Object} ctx Instance of RatSocket.
    * @returns {void}
    */
-  handleReconnect(ctx) {
-    ctx.request({
-      action: ['rescues', 'read'],
-      status: { $not: enumRescueStatus.CLOSED }
-    }).then((response) => {
-      this.handleRescuesRead(response.context, response.data);
-    }).catch((error) => {
-      window.console.error('fr.client.handleReconnect - reconnect data update failed!', error);
-    });
+  async refreshRescueData() {
+    try {
+      let response = await this.socket.request(new OpenRescuePayload());
+
+      this.setRescuesState(response, true);
+    } catch (error) {
+      window.console.error('Components/RescueBoard - Failed to retrieve data');
+    }
   }
 
   /**
-   * Handles rescues.read action response.
+   * Updates rescue object with new data provided from the API.
    *
-   * @param   {Object} ctx  Instance of RatSocket.
-   * @param   {Object} data Message from socket.
+   * @param   {(Object|Object[])} data       Rescue data from API.
+   * @param   {Boolean}           flush      Indicates whether existing rescues should be flushed with this update.
    * @returns {void}
    */
-  handleRescuesRead(ctx, data) {
-    if (data.included) {
-      data = mapRelationships(data);
-    }
+  setRescuesState(data, flush) {
+    let
+      rescues = flush ? {} : Object.assign({}, this.state.rescues),
+      newRescues = data.included ? mapRelationships(data).data : data.data;
 
-    let rescues = {};
-
-    data.data.forEach(rescue => {
-      rescues[rescue.id] = rescue;
-    });
-
-    this.setState({rescues, 'loading': false});
-  }
-
-  /**
-   * Handles rescueCrated event from RatSocket
-   *
-   * @param   {Object} ctx  Instance of RatSocket.
-   * @param   {Object} data Message from socket.
-   * @returns {void}
-   */
-  handleRescueCreated(ctx, data) {
-    if (data.included) { 
-      data = mapRelationships(data);
-    }
-    this.AddRescue(ctx, data.data);
-  }
-
-  /**
-   * Handles update event from RatSocket
-   *
-   * @param   {Object} ctx  Instance of RatSocket.
-   * @param   {Object} data Message from socket.
-   * @returns {void}
-   */
-  handleRescueUpdated(ctx, data) {
-    if (data.included) {
-      data = mapRelationships(data);
-    }
-    data.data.forEach(rescue => { this.updateRescue(ctx, rescue); });
-  }
-
-  /**
-   * Adds Rescue data to state.
-   *
-   * @param {Object} ctx  Instance of RatSocket.
-   * @param {Object} data Rescue data to add.
-   * @returns {void}
-   */
-  addRescue(ctx, data) {
-    if (this.state.rescues[data.id]) {
-      this.updateRescue(ctx, data);
-      return;
-    }
-    let rescues = Object.assign({}, this.state.rescues);
-
-    rescues[data.id] = data;
-
-    this.setState({rescues});
-  }
-
-  /**
-   * Updates rescue data already within state.
-   *
-   * @param   {Object} ctx  Instance of RatSocket.
-   * @param   {Object} data Rescue data to update.
-   * @returns {void}
-   */
-  updateRescue(ctx, data) {
-    if (!this.state.rescues[data.id]) {
-      this.addRescue(ctx, data);
-      return;
-    }
-    let rescues = Object.assign({}, this.state.rescues);
-
-    if (data.attributes.status === enumRescueStatus.CLOSED) {
-      delete rescues[data.id];
-    } else {
-      rescues[data.id] = data;
+    if (!Array.isArray(newRescues)) { 
+      newRescues = [newRescues]; 
     }
     
+    newRescues.forEach(rescue => {
+      if (rescues[rescue.id] && rescue.attributes.status === enumRescueStatus.CLOSED) {
+        delete rescues[rescue.id];
+      } else {
+        rescues[rescue.id] = rescue;
+      }
+    });
+
     this.setState({rescues});
+
+    if (this.state.isLoading) {
+      this.setState({'isLoading': false});
+    }
   }
 
   /**
@@ -174,15 +124,22 @@ export default class RescueBoard extends Component {
       <Rescue rescueData={rescue} key={rescue.id} />
     ));
 
-    let loader = this.state.isLoading ? (
-      <PageOverlay isLoader={true} />
-    ) : null;
-
     return (
       <React.Fragment>
-        <div className='rescues'>{rescues}</div>
-        {loader}
+        <div className='rescues'>
+          {rescues}
+        </div>
+        <PageOverlay isLoader={true} isDismissed={!this.state.isLoading} />
       </React.Fragment>
     );
+  }
+
+  /**
+   * React componentDidMount
+   *
+   * @returns {void}
+   */
+  componentDidMount() {
+    this.startSocketConnection();
   }
 }
