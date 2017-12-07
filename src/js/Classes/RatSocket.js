@@ -1,10 +1,9 @@
 // App Imports
 import EventEmitter from 'Classes/EventEmitter.js';
-import SocketPayload from 'Classes/SocketPayload.js'
 import {
-  isValidProperty,
-  makeID
-} from 'Helpers';
+  default as SocketPayload,
+  SubscribePayload
+} from 'Classes/SocketPayload.js';
 
 
 // Constants
@@ -180,11 +179,11 @@ export default class RatSocket extends EventEmitter {
     
     let _data = JSON.parse(data.data);
 
-    if (typeof _data.meta.reqID === 'string' && this.openRequests.hasOwnProperty(_data.meta.reqID)) { // If the message was the response to a request, then call the request's callback.
-      window.console.debug(`RatSocket - Closing request '${_data.meta.reqID}' with data:`, _data);
+    if (typeof _data.meta.plid === 'string' && this.openRequests.hasOwnProperty(_data.meta.plid)) { // If the message was the response to a request, then call the request's callback.
+      window.console.debug(`RatSocket - Closing request '${_data.meta.plid}' with data:`, _data);
 
-      this.openRequests[_data.meta.reqID](_data);
-      delete this.openRequests[_data.meta.reqID];
+      this.openRequests[_data.meta.plid](_data);
+      delete this.openRequests[_data.meta.plid];
 
     } else if (_data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
       window.console.log(`RatSocket - Emitting event '${_data.meta.event}' with data:`, _data);
@@ -220,7 +219,7 @@ export default class RatSocket extends EventEmitter {
     }
 
     window.console.debug('RatSocket - Sending message: ', payload);
-    this.socket.send(payload.toJSON());
+    this.socket.send(payload.json());
 
     return this;
   }
@@ -240,8 +239,7 @@ export default class RatSocket extends EventEmitter {
       opts = {};
     }
     return new Promise((resolve, reject) => {
-
-      let requestID = payload.getRequestId();
+      let payloadId = payload.getPayloadId();
       
       let timeout = window.setTimeout(() => {
         reject({
@@ -250,7 +248,7 @@ export default class RatSocket extends EventEmitter {
         });
       }, (opts.timeout || REQUEST_TIMEOUT_SEC) * MILLISECONDS_IN_SECOND);
 
-      this.openRequests[requestID] = response => {
+      this.openRequests[payloadId] = response => {
         window.clearTimeout(timeout);
         if (response.errors) {
           reject(response);
@@ -270,12 +268,10 @@ export default class RatSocket extends EventEmitter {
    * @return {Promise}            Promise to resolved upon a successful response.
    */
   subscribe(streamName, opts) {
-    return this.request({
-      'action': ['stream','subscribe'],
-      'id': streamName,
-      'data': {},
-      'meta': {}
-    }, opts || {
+    if (!streamName) {
+      throw new ReferenceError('streamName must be defined');
+    }
+    return this.request(new SubscribePayload(streamName), opts || {
       'timeout': 15
     });
   }

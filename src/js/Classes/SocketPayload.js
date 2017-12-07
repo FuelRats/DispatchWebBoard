@@ -4,7 +4,10 @@ import {
   makeID
 } from 'Helpers';
 
-const ACTION_ARRAY_LENGTH = 2;
+const 
+  ACTION_ARRAY_LENGTH = 2,
+  REQUEST_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+  REQUEST_ID_LENGTH = 32;
 
 /**
  * Class to manage RatSocket payloads.
@@ -32,8 +35,8 @@ export default class SocketPayload {
       payload.meta = {};
     }
 
-    if (!isValidProperty(payload.meta, 'reqID', 'string')) {
-      payload.meta.reqID = makeID();
+    if (!isValidProperty(payload.meta, 'plid', 'string')) {
+      payload.meta.plid = makeID(REQUEST_ID_LENGTH, REQUEST_ALLOWED_CHARS);
     }
 
     this.payload = payload;
@@ -44,8 +47,8 @@ export default class SocketPayload {
    *
    * @returns {string} Unique request identifier string.
    */
-  getRequestId() {
-    return this.payload.meta.reqID;
+  getPayloadId() {
+    return this.payload.meta.plid;
   }
 
   /**
@@ -53,13 +56,13 @@ export default class SocketPayload {
    *
    * @returns {String} JSON string of payload.
    */
-  toJson() {
+  json() {
     return JSON.stringify(this.payload || {});
   }
 }
 
 /**
- * 
+ * Socket payload to get open rescues
  */
 export class OpenRescuePayload extends SocketPayload {
   /**
@@ -73,6 +76,25 @@ export class OpenRescuePayload extends SocketPayload {
       status: { 
         $not: enumRescueStatus.CLOSED 
       }
+    });
+  }
+}
+
+
+/**
+ * Socket payload to subscribe to specified socket stream
+ */
+export class SubscribePayload extends SocketPayload {
+  /**
+   * creates a SubscribePayload
+   *
+   * @param   {String} streamName Name of the stream to subscribe to
+   * @returns {void}
+   */
+  constructor(streamName) {
+    super({
+      'action': ['stream','subscribe'],
+      'id': streamName,
     });
   }
 }
