@@ -1,6 +1,8 @@
 /* global ENV:false */
 
-let getEnvironmentVariable = (namespace, prop) => ENV && ENV[namespace] && ENV[namespace][prop] ? ENV[namespace][prop] : null;
+let envVar = ENV;
+
+let getEnvironmentVariable = (namespace, prop) => envVar && envVar[namespace] && envVar[namespace][prop] ? envVar[namespace][prop] : null;
 
 export default {
   WssURI:       getEnvironmentVariable('FR', 'WSSURI')       || 'wss://dev.api.fuelrats.com:443',
