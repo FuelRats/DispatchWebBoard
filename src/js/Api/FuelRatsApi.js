@@ -33,17 +33,15 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
  *
  * @returns {Object} Object containing API user profile data.
  */
-export function getProfile() {
+export async function getProfile() {
   let token = WebStore.local.get('token');
 
-  if (!token) {
-    return Promise.reject(null);
-  }
-
-  return get('/profile', {
+  let response = await get('/profile', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
     }
-  }).then(response => htmlSanitizeObject(mapRelationships(response.json()).data));
+  });
+
+  return mapRelationships(response.json()).data;
 }
