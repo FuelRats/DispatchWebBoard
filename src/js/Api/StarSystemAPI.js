@@ -1,16 +1,25 @@
 // App Imports
 import {
-  http, 
-  htmlSanitizeObject,
-  isObject,
+  http,
+  mapRelationships,
   WebStore
 } from 'Helpers';
-
 
 // Module Imports
 import url from 'url';
 
 
+const
+  SYSTEM_NOT_FOUND = 'System not found.',
+  REQUEST_ERROR = 'Systems API request error.';
+
+/**
+ * http wrapper to request information from the Systems API.
+ *
+ * @param   {String} endpoint Endpoint of the systems API to request.
+ * @param   {Object} opts     Options to pass to the XHR request handler.
+ * @returns {Object}          XHRResponse object containing information from the request.
+ */
 export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
 
 /**
@@ -19,7 +28,7 @@ export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.
  * @param   {String} system System name to get info on.
  * @returns {Object}        Object containing information pertaining to the given starsystem name.
  */
-export function getSystem(system) {
+export async function getSystem(system) {
   system = system.toUpperCase();
 
   if (WebStore.session.get(`system.${system}`)) {
@@ -27,52 +36,56 @@ export function getSystem(system) {
     let sysData = JSON.parse(WebStore.session.get(`system.${system}`));
 
     if (sysData === null) { 
-      return Promise.reject('System not found.');
+      throw new SystemNotFoundError(system, SYSTEM_NOT_FOUND);
     }
 
-    return Promise.resolve(sysData);
+    return sysData;
 
   } else {
-    return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
-      .then(response => {
-        let sysData = htmlSanitizeObject(processNewStarSystemData(response.json()));
-        WebStore.session.set(`system.${system}`, sysData !== null ? JSON.stringify(sysData) : sysData);
-        return sysData;
-      });
+
+    try {
+
+      let response = await get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`);
+      response = response.json();
+
+      if (response.data && response.data.length > 0) {
+
+        response = mapRelationships(response);
+        
+        WebStore.session.set(`system.${system}`, JSON.stringify(response));
+        return response;
+
+      } else {
+        throw new SystemNotFoundError(system, SYSTEM_NOT_FOUND);
+      }
+
+    } catch (error) {
+
+      if (error instanceof SystemNotFoundError) {
+        WebStore.session.set(`system.${system}`, null);
+        throw error;
+      }
+
+      throw new Error(REQUEST_ERROR);
+    }
   }
 }
 
 /**
- * Formats returned data into a single object for ease of use.
- *
- * @param   {Object} data System data to process.
- * @returns {Object}      Simplified system data.
+ * Error thrown when no system is found
  */
-function processNewStarSystemData(data) {
-  let system = JSON.parse(JSON.stringify(data)); // Deep clone copy.
-  if (!isObject(system) || system.meta.results.returned < 1) {
-    return null;
+export class SystemNotFoundError extends Error {
+  /**
+   * Creates a SystemNotFoundError
+   *
+   * @param   {String} system Name of the system that was not found.
+   * @param   {...*}   params Params to be passed to super.
+   * @returns {void}
+   */
+  constructor(system, ...params) {
+    super(...params);
+    this.system = system;
   }
-  let sysData = system.data[0];
-
-  if (system.included && system.included[0]) {
-    sysData.bodies = system.included.filter(function(body) {
-      return body.attributes.group_name === 'Star';
-    });
-    // cleanup body info
-    for (let body in sysData.bodies) {
-      if (sysData.bodies.hasOwnProperty(body)) {
-        delete sysData.bodies[body].relationships;
-        delete sysData.bodies[body].type;
-        delete sysData.bodies[body].links;
-      }
-    }
-  }
-  
-  // clean up other json properties.
-  delete sysData.relationships;
-  delete sysData.type;
-  delete sysData.links;
-
-  return sysData;
 }
+
+
