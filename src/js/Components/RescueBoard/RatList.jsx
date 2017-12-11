@@ -74,7 +74,7 @@ export default class RatList extends Component {
   getAssignedRats() {
     let
       rescuePlatform = this.props.rescueData.attributes.platform || 'pc',
-      identifiedRats = this.props.rescueData.relationships.rats.data ? {} : this.props.rescueData.relationships.rats, // If ...rats.data exists, use empty object, otherwise get the rats object.
+      identifiedRats = this.props.rescueData.relationships.rats.data || {},
       unidentifiedRats = this.props.rescueData.attributes.unidentifiedRats || [];
 
     let rats = [];

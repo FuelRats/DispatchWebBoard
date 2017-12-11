@@ -21,15 +21,17 @@ export function mapRelationships(data) {
     return data;
   }
 
-  if (Array.isArray(data.data)) {
-    for (let dataItem of data.data) {
-      dataItem.relationships = _mapRelationshipItems(dataItem.relationships, data.included);
+  let newData = Object.assign({}, data);
+
+  if (Array.isArray(newData.data)) {
+    for (let dataItem of newData.data) {
+      dataItem.relationships = _mapIncludedToRelationships(dataItem.relationships, newData.included);
     }
-  } else if (isObject(data.data)) {
-    data.data.relationships = _mapRelationshipItems(data.data.relationships, data.included);
+  } else if (isObject(newData.data)) {
+    newData.data.relationships = _mapIncludedToRelationships(newData.data.relationships, newData.included);
   }
   
-  return data;
+  return newData;
 }
 
 /**
@@ -48,40 +50,50 @@ function _findInclude(relRef, included) {
 }
 
 /**
- * Recursively maps included data to the given relationship data.
+ * Recursively maps included data to the given relationships.
  *
  * @param   {Object} relationships Relationship object.
  * @param   {Object} included      Data included with the main data.
  * @returns {Object}               Relationship object with mapped included data.
  */
-function _mapRelationshipItems(relationships, included) {
+function _mapIncludedToRelationships(relationships, included) {
+  if (!isObject(relationships) || !Array.isArray(included)) { 
+    throw TypeError('Invalid Parameter Types.'); 
+  }
 
-  if (!isObject(relationships) || !Array.isArray(included)) { throw TypeError('Invalid Parameter Types.'); }
+  let newRelationships = {};
 
-  for (let relationship of Object.values(relationships)) {
+  for (let [relType, value] of Object.entries(relationships)) {
+    let 
+      relContents = Object.assign({}, value),
+      newRelContents = {
+        data: {}
+      };
+      
+    if (relContents.links) { newRelContents.links = relContents.links; }
+    if (relContents.meta) { newRelContents.meta = relContents.meta; }
 
-    if (Array.isArray(relationship.data) && relationship.data.length > 0) {
-      for (let relMember of Object.values(relationship.data)) {
-        if (relMember && relMember.id && relMember.type) {
-          relationship[relMember.id] = _findInclude(relMember, included);
-          if (relationship[relMember.id].relationships) {
-            relationship[relMember.id].relationships = _mapRelationshipItems(relationship[relMember.id].relationships, included);
+    if (relContents.data) {
+
+      if (isObject(relContents.data)) {
+        relContents.data = [relContents.data];
+      }
+
+      relContents.data.forEach(relMember => {
+        if (relMember.id && relMember.type) {
+  
+          let relData = _findInclude(relMember, included);
+          if (relData.relationships) {
+            relData.relationships = _mapIncludedToRelationships(relData.relationships, included);
           }
+  
+          newRelContents.data[relMember.id] = relData;
         }
-      }
-    } else if (isObject(relationship.data)) {
-
-      let relMember = relationship.data;
-      if (relMember && relMember.id && relMember.type) {
-        relationship[relMember.id] = _findInclude(relMember, included);
-        if (relationship[relMember.id].relationships) {
-          relationship[relMember.id].relationships = _mapRelationshipItems(relationship[relMember.id].relationships, included);
-        }
-      }
+      });
     }
 
-    delete relationship.data;
-
+    newRelationships[relType] = newRelContents;
   }
-  return relationships;
+
+  return newRelationships;
 }

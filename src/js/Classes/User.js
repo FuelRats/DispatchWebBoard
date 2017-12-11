@@ -65,7 +65,7 @@ export default class User {
    * @returns {Boolean} Value representing the administrator status of the user.
    */
   isAdministrator() {
-    return Object.keys(this.userData.relationships.groups).filter(obj => this.userData.relationships.groups[obj].isAdministrator).length > 0;
+    return Object.keys(this.userData.relationships.groups.data).filter(obj => this.userData.relationships.groups.data[obj].isAdministrator).length > 0;
   }
 
   /**
@@ -84,7 +84,7 @@ export default class User {
    * @returns {Boolean}       Value representing whether the user has the specified group
    */
   hasGroup(group) {
-    return this.userData.relationships.groups.hasOwnProperty(group);
+    return this.userData.relationships.groups.data.hasOwnProperty(group);
   }
 
   /**
@@ -94,8 +94,8 @@ export default class User {
    */
   getUserDisplayName() {
     return this.userData.attributes.displayRatId ? 
-      this.userData.relationships.rats[this.userData.attributes.displayRatId].attributes.name : 
-      this.userData.relationships.rats[Object.keys(this.userData.relationships.rats)[0]].attributes.name;
+      this.userData.relationships.rats.data[this.userData.attributes.displayRatId].attributes.name : 
+      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]].attributes.name;
   }
 
   /**
@@ -105,8 +105,8 @@ export default class User {
    */
   getDisplayRat() {
     return this.userData.attributes.displayRatId ?
-      this.userData.relationships.rats[this.userData.attributes.displayRatId] :
-      this.userData.relationships.rats[Object.keys(this.userData.relationships.rats)[0]];
+      this.userData.relationships.rats.data[this.userData.attributes.displayRatId] :
+      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]];
   }
 
 
@@ -115,28 +115,42 @@ export default class User {
    *
    * @returns {Promise} Promise to be resolved upon successful fetching of the user's profile.
    */
-  authenticate() {
-    return new Promise((resolve, reject) => {
-      if (this.isAuthenticated()) {
-        resolve(this.userData);
+  async authenticate() {
+    if (this.isAuthenticated()) {
+
+      return this.userData;
+
+    } else if (WebStore.session.get('user.userData')) {
+
+      try {
+        this.userData = JSON.parse(WebStore.session.get('user.userData'));
+        return this.userData;
+
+      } catch (error) {
+        WebStore.session.remove('user.userData');
+        window.conosle.error(error);
+        return await this.authenticate();
       }
 
-      if (WebStore.session.set('user.userData')) {
-        this.userData = JSON.parse(WebStore.session.get('user.userData'));
-        resolve(this.userData);
-      } else if (this.accessToken !== null) {
-        FuelRatsApi.getProfile().then(data => {
-          this.userData = data;
-          WebStore.session.set('user.userData', JSON.stringify(this.userData));
-          resolve(this.userData);
-        }).catch((error) => {
+    } else if (this.accessToken !== null) {
+
+      try {
+        let profile = await FuelRatsApi.getProfile();
+
+        this.userData = profile;
+        WebStore.session.set('user.userData', JSON.stringify(profile));
+        return profile;
+        
+      } catch (error) {
+        if (error instanceof FuelRatsApi.AuthorizationError) {
           WebStore.local.remove('token');
-          reject(error);
-        });
-      } else {
-        reject(null);
+        }
+        throw error;
       }
-    });
+
+    } else {
+      throw new Error('Client lacks access token.');
+    }
   }
 
   /**
@@ -146,8 +160,6 @@ export default class User {
    */
   login() {
     if (this.isAuthenticated()) { return; }
-
-    WebStore.local.set('DUCKS', 'Thisisjustatest');
     window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${AppConfig.AppURI}&scope=${AppConfig.AppScope}&response_type=token&state=${funny[Math.floor(Math.random() * (funny.length - 1))]}`);
   }
 
