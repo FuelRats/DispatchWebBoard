@@ -1,8 +1,7 @@
 // App Imports
 import AppConfig from 'Config/Config.js';
 import { 
-  http, 
-  htmlSanitizeObject, 
+  http,
   mapRelationships,
   WebStore
 } from 'Helpers';
@@ -10,6 +9,11 @@ import {
 
 // Module Imports
 import url from 'url';
+
+
+const 
+  UNAUTHORIZED_STATUS_CODE = 401,
+  REQUEST_ERROR = 'Fuel Rats API request error.';
 
 /**
  * Perform a GET XHR on the API
@@ -34,14 +38,40 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
  * @returns {Object} Object containing API user profile data.
  */
 export async function getProfile() {
-  let token = WebStore.local.get('token');
+  try {
 
-  let response = await get('/profile', {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+    let token = WebStore.local.get('token');
+
+    let response = await get('/profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+    
+    return mapRelationships(response.json()).data;
+
+  } catch (error) {
+
+    if (error.isXHRResponse && error.status === UNAUTHORIZED_STATUS_CODE) {
+      throw new AuthorizationError(error.statusText);
+    } else {
+      throw new Error(REQUEST_ERROR);
     }
-  });
+  }
+}
 
-  return mapRelationships(response.json()).data;
+/**
+ * Error to be thrown when Authorization fails.
+ */
+export class AuthorizationError extends Error {
+  /**
+   * Creates an AuthorizationError
+   *
+   * @param   {...*} props Props to pass to super.
+   * @returns {void}
+   */
+  constructor(...props) {
+    super(...props);
+  }
 }
