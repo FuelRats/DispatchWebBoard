@@ -28,16 +28,16 @@ export default class User {
 
     let 
       newToken = document.location.hash.match(/access_token=([\w-]+)/),
-      curToken = WebStore.local.get('token');
+      curToken = WebStore.local.token;
 
     if (newToken && newToken[1]) {
       this.accessToken = newToken[1];
-      WebStore.local.set('token', this.accessToken);
+      WebStore.local.token = this.accessToken;
       clearUrlHash();
     } else if (curToken) {
       this.accessToken = curToken;
     } else {
-      WebStore.local.remove('token');
+      delete WebStore.local.token;
     }
   }
 
@@ -120,14 +120,14 @@ export default class User {
 
       return this.userData;
 
-    } else if (WebStore.session.get('user.userData')) {
+    } else if (WebStore.session['user.userData']) {
 
       try {
-        this.userData = JSON.parse(WebStore.session.get('user.userData'));
+        this.userData = JSON.parse(WebStore.session['user.userData']);
         return this.userData;
 
       } catch (error) {
-        WebStore.session.remove('user.userData');
+        delete WebStore.session['user.userData'] ;
         window.conosle.error(error);
         return await this.authenticate();
       }
@@ -138,12 +138,12 @@ export default class User {
         let profile = await FuelRatsApi.getProfile();
 
         this.userData = profile;
-        WebStore.session.set('user.userData', JSON.stringify(profile));
+        WebStore.session['user.userData'] = JSON.stringify(profile);
         return profile;
         
       } catch (error) {
         if (error instanceof FuelRatsApi.AuthorizationError) {
-          WebStore.local.remove('token');
+          delete WebStore.local.token;
         }
         throw error;
       }
@@ -169,8 +169,8 @@ export default class User {
    * @returns {void}
    */
   logout() {
-    WebStore.local.remove('token');
-    WebStore.session.remove('user.userData');
+    delete WebStore.local.token;
+    delete WebStore.session['user.userData'];
     window.location.reload();
   }
 }

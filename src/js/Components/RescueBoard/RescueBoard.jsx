@@ -52,7 +52,7 @@ export default class RescueBoard extends Component {
    * @returns {[type]} [description]
    */
   async startSocketConnection() {
-    let authToken = WebStore.local.get('token');
+    let authToken = WebStore.local.token;
     if (authToken) {
       try {
         await this.socket.connect(authToken);

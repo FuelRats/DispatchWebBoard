@@ -30,7 +30,7 @@ export default class Rescue extends PureComponent {
       'handleNoteChange'
     ]);
 
-    let rescueSessionData = WebStore.session.get(`rescue-${this.props.rescueData.id}`);
+    let rescueSessionData = WebStore.session[`rescue-${this.props.rescueData.id}`];
     rescueSessionData = rescueSessionData ? JSON.parse(rescueSessionData) : {};
 
     this.state = {
@@ -45,9 +45,9 @@ export default class Rescue extends PureComponent {
    * @returns {void}
    */
   handleNoteChange(event) {
-    WebStore.session.set(`rescue-${this.props.rescueData.id}`, JSON.stringify({
+    WebStore.session[`rescue-${this.props.rescueData.id}`] = JSON.stringify({
       notes: event.target.value
-    }));
+    });
   }
 
   /**
@@ -108,7 +108,7 @@ export default class Rescue extends PureComponent {
    * @returns {void}
    */
   componentWillUnmount() {
-    WebStore.session.remove(`rescue-${this.props.rescueData.id}`);
+    delete WebStore.session[`rescue-${this.props.rescueData.id}`];
   }
 }
 Rescue.propTypes = {

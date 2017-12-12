@@ -36,7 +36,7 @@ export default class RatList extends Component {
 
     this.ratCurStatus = {};
     this.ratInitStatus = {};
-    let ratInitStatus = WebStore.session.get(`rescueRats-${this.props.rescueData.id}`);
+    let ratInitStatus = WebStore.session[`rescueRats-${this.props.rescueData.id}`];
     if (ratInitStatus) {
       this.ratInitStatus = JSON.parse(ratInitStatus);
       this.ratCurStatus = JSON.parse(ratInitStatus);
@@ -63,7 +63,7 @@ export default class RatList extends Component {
 
     this.ratCurStatus[rat.id] = Object.assign(this.ratCurStatus[rat.id], status);
 
-    WebStore.session.set(`rescueRats-${this.props.rescueData.id}`, JSON.stringify(this.ratCurStatus));
+    WebStore.session[`rescueRats-${this.props.rescueData.id}`] = JSON.stringify(this.ratCurStatus);
   }
 
   /**
@@ -126,7 +126,7 @@ export default class RatList extends Component {
    * @returns {void}
    */
   componentWillUnmount() {
-    WebStore.session.remove(`rescueRats-${this.props.rescueData.id}`);
+    delete WebStore.session[`rescueRats-${this.props.rescueData.id}`];
   }
 }
 RatList.propTypes = {
