@@ -40,7 +40,7 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
 export async function getProfile() {
   try {
 
-    let token = WebStore.local.get('token');
+    let token = WebStore.local.token;
 
     let response = await get('/profile', {
       headers: {

@@ -31,9 +31,9 @@ export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.
 export async function getSystem(system) {
   system = system.toUpperCase();
 
-  if (WebStore.session.get(`system.${system}`)) {
+  if (WebStore.session[`system.${system}`]) {
 
-    let sysData = JSON.parse(WebStore.session.get(`system.${system}`));
+    let sysData = JSON.parse(WebStore.session[`system.${system}`]);
 
     if (sysData === null) { 
       throw new SystemNotFoundError(system, SYSTEM_NOT_FOUND);
@@ -52,7 +52,7 @@ export async function getSystem(system) {
 
         response = mapRelationships(response);
         
-        WebStore.session.set(`system.${system}`, JSON.stringify(response));
+        WebStore.session[`system.${system}`] = JSON.stringify(response);
         return response;
 
       } else {
@@ -62,7 +62,7 @@ export async function getSystem(system) {
     } catch (error) {
 
       if (error instanceof SystemNotFoundError) {
-        WebStore.session.set(`system.${system}`, null);
+        WebStore.session[`system.${system}`] = null;
         throw error;
       }
 

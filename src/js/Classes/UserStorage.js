@@ -145,10 +145,10 @@ export default class UserStorage extends EventEmitter {
 }
 
 const loadSettings = () => {
-  let settings = WebStore.local.get('user.settings');
+  let settings = WebStore.local['user.settings'];
   return settings ? JSON.parse(settings) : null;
 };
 
 const saveSettings = value => { 
-  WebStore.local.set('user.settings', JSON.stringify(value));
+  WebStore.local['user.settings'] = JSON.stringify(value);
 };
