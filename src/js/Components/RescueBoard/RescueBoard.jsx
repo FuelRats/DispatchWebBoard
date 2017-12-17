@@ -102,9 +102,9 @@ export default class RescueBoard extends Component {
         if (rescues[rescue.id]) {
           delete rescues[rescue.id];
         }
-        return;
+      } else {
+        rescues[rescue.id] = rescue;
       }
-      rescues[rescue.id] = rescue;
     }
 
     this.setState({rescues});
