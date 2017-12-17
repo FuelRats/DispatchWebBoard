@@ -93,19 +93,19 @@ export default class RescueBoard extends Component {
   setRescuesState(data, flush) {
     let
       rescues = flush ? {} : Object.assign({}, this.state.rescues),
-      newRescues = data.included ? mapRelationships(data).data : data.data;
+      newRescues = mapRelationships(data);
 
-    if (!Array.isArray(newRescues)) { 
-      newRescues = [newRescues]; 
-    }
+    newRescues = Array.isArray(newRescues.data) ? newRescues.data : [newRescues.data];
     
-    newRescues.forEach(rescue => {
-      if (rescues[rescue.id] && rescue.attributes.status === enumRescueStatus.CLOSED) {
-        delete rescues[rescue.id];
-      } else {
-        rescues[rescue.id] = rescue;
+    for (let rescue of newRescues) {
+      if (rescue.attributes.status === enumRescueStatus.CLOSED) {
+        if (rescues[rescue.id]) {
+          delete rescues[rescue.id];
+        }
+        return;
       }
-    });
+      rescues[rescue.id] = rescue;
+    }
 
     this.setState({rescues});
 
