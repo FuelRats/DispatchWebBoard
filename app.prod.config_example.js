@@ -60,4 +60,4 @@ module.exports = {
     hostname: 'dwbrsync',
     destination: '/path/to/destination/path'
   }
-};
+}

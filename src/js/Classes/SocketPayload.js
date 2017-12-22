@@ -2,12 +2,12 @@ import {
   enumRescueStatus,
   isValidProperty,
   makeID
-} from 'Helpers';
+} from 'Helpers'
 
 const 
   ACTION_ARRAY_LENGTH = 2,
   REQUEST_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-  REQUEST_ID_LENGTH = 32;
+  REQUEST_ID_LENGTH = 32
 
 /**
  * Class to manage RatSocket payloads.
@@ -21,34 +21,34 @@ export default class SocketPayload {
    * @returns {void}
    */
   constructor(newPayload) {
-    let payload = Object.assign({}, newPayload || {});
+    let payload = Object.assign({}, newPayload || {})
 
     if (!isValidProperty(payload, 'action', 'array') || payload.action.length !== ACTION_ARRAY_LENGTH) {
-      throw ReferenceError('Action must be defined.');
+      throw ReferenceError('Action must be defined.')
     }
 
     if (!isValidProperty(payload, 'data', 'object')) {
-      payload.data = {};
+      payload.data = {}
     }
 
     if (!isValidProperty(payload, 'meta', 'object')) {
-      payload.meta = {};
+      payload.meta = {}
     }
 
     if (!isValidProperty(payload.meta, 'plid', 'string')) {
-      payload.meta.plid = makeID(REQUEST_ID_LENGTH, REQUEST_ALLOWED_CHARS);
+      payload.meta.plid = makeID(REQUEST_ID_LENGTH, REQUEST_ALLOWED_CHARS)
     }
 
-    this.payload = payload;
+    this.payload = payload
   }
 
   /**
-   * Gets or creates a payload request identifier;
+   * Gets or creates a payload request identifier
    *
    * @returns {string} Unique request identifier string.
    */
   getPayloadId() {
-    return this.payload.meta.plid;
+    return this.payload.meta.plid
   }
 
   /**
@@ -57,7 +57,7 @@ export default class SocketPayload {
    * @returns {String} JSON string of payload.
    */
   json() {
-    return JSON.stringify(this.payload || {});
+    return JSON.stringify(this.payload || {})
   }
 }
 
@@ -76,7 +76,7 @@ export class OpenRescuePayload extends SocketPayload {
       status: { 
         $not: enumRescueStatus.CLOSED 
       }
-    });
+    })
   }
 }
 
@@ -95,6 +95,6 @@ export class SubscribePayload extends SocketPayload {
     super({
       'action': ['stream','subscribe'],
       'id': streamName,
-    });
+    })
   }
 }

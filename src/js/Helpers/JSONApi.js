@@ -1,7 +1,7 @@
 import {
   isObject, 
   isValidProperty
-} from './Validation.js';
+} from './Validation.js'
 
 
 /**
@@ -14,24 +14,24 @@ export function mapRelationships(data) {
   // Ensure some level of integrity, just to be safe.
   if (!isObject(data) || 
       !isValidProperty(data, 'data', ['array', 'object'])) {
-    throw TypeError('Invalid data model');
+    throw TypeError('Invalid data model')
   }
 
   if (!isValidProperty(data, 'included', 'array')) {
-    return data;
+    return data
   }
 
-  let newData = Object.assign({}, data);
+  let newData = Object.assign({}, data)
 
   if (Array.isArray(newData.data)) {
     for (let dataItem of newData.data) {
-      dataItem.relationships = _mapIncludedToRelationships(dataItem.relationships, newData.included);
+      dataItem.relationships = _mapIncludedToRelationships(dataItem.relationships, newData.included)
     }
   } else if (isObject(newData.data)) {
-    newData.data.relationships = _mapIncludedToRelationships(newData.data.relationships, newData.included);
+    newData.data.relationships = _mapIncludedToRelationships(newData.data.relationships, newData.included)
   }
   
-  return newData;
+  return newData
 }
 
 /**
@@ -42,11 +42,11 @@ export function mapRelationships(data) {
  * @returns {Object}            Object matching the relationship reference. 
  */
 function _findInclude(relRef, included) {
-  let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type);
+  let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type)
   if (includeMatches.length > 1) { 
-    window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches);
+    window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches)
   }
-  return includeMatches[0];
+  return includeMatches[0]
 }
 
 /**
@@ -58,42 +58,42 @@ function _findInclude(relRef, included) {
  */
 function _mapIncludedToRelationships(relationships, included) {
   if (!isObject(relationships) || !Array.isArray(included)) { 
-    throw TypeError('Invalid Parameter Types.'); 
+    throw TypeError('Invalid Parameter Types.') 
   }
 
-  let newRelationships = {};
+  let newRelationships = {}
 
   for (let [relType, value] of Object.entries(relationships)) {
     let 
       relContents = Object.assign({}, value),
       newRelContents = {
         data: {}
-      };
+      }
       
-    if (relContents.links) { newRelContents.links = relContents.links; }
-    if (relContents.meta) { newRelContents.meta = relContents.meta; }
+    if (relContents.links) { newRelContents.links = relContents.links }
+    if (relContents.meta) { newRelContents.meta = relContents.meta }
 
     if (relContents.data) {
 
       if (isObject(relContents.data)) {
-        relContents.data = [relContents.data];
+        relContents.data = [relContents.data]
       }
 
       relContents.data.forEach(relMember => {
         if (relMember.id && relMember.type) {
   
-          let relData = _findInclude(relMember, included);
+          let relData = _findInclude(relMember, included)
           if (relData.relationships) {
-            relData.relationships = _mapIncludedToRelationships(relData.relationships, included);
+            relData.relationships = _mapIncludedToRelationships(relData.relationships, included)
           }
   
-          newRelContents.data[relMember.id] = relData;
+          newRelContents.data[relMember.id] = relData
         }
-      });
+      })
     }
 
-    newRelationships[relType] = newRelContents;
+    newRelationships[relType] = newRelContents
   }
 
-  return newRelationships;
+  return newRelationships
 }

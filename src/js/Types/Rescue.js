@@ -1,8 +1,8 @@
 // App imports
-import quotePropType from 'Types/Quote.js';
+import quotePropType from 'Types/Quote.js'
 
 // Module imports
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 
 export default PropTypes.shape({
@@ -39,4 +39,4 @@ export default PropTypes.shape({
     'firstLimpet': PropTypes.object,
     'epics': PropTypes.object
   }).isRequired
-}).isRequired;
+}).isRequired

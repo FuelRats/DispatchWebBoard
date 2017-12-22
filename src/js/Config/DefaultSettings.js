@@ -11,9 +11,9 @@ export default {
       'wireframe' : 'debug_wireframe',
     }
   }
-};
+}
 
 export const SETTING_KEYS = {
   USE_WG: 'useWG',
   BOARD_THEME: 'boardTheme' 
-};
+}

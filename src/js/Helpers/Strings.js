@@ -1,4 +1,4 @@
-import {monthString} from 'Config/Strings.js';
+import {monthString} from 'Config/Strings.js'
 
 
 const 
@@ -13,7 +13,7 @@ const
   SECONDS_IN_HOUR = 3600,
   SECONDS_IN_MINUTE = 60,
   // makeDateHumanReadable, makeTimeSpanString
-  TEN = 10;
+  TEN = 10
 
 
 /**
@@ -25,7 +25,7 @@ const
  */
 export function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
   // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
-  return Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  return Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
 }
 
 /**
@@ -43,10 +43,10 @@ export function makeDateHumanReadable(date) {
     day    = date.getUTCDate()    < TEN ? `0${date.getUTCDate()}`    : date.getUTCDate(),
     hour   = date.getUTCHours()   < TEN ? `0${date.getUTCHours()}`   : date.getUTCHours(),
     minute = date.getUTCMinutes() < TEN ? `0${date.getUTCMinutes()}` : date.getUTCMinutes(),
-    second = date.getUTCSeconds() < TEN ? `0${date.getUTCSeconds()}` : date.getUTCSeconds();
+    second = date.getUTCSeconds() < TEN ? `0${date.getUTCSeconds()}` : date.getUTCSeconds()
 
   // Format: 1970 JAN 01 00:00:00
-  return `${year} ${month} ${day} ${hour}:${minute}:${second}`;
+  return `${year} ${month} ${day} ${hour}:${minute}:${second}`
 }
 
 /**
@@ -63,8 +63,8 @@ export function makeTimeSpanString(startTime, endTime) {
     secondsElapsed = Math.round(startTime / MILLISECONDS_IN_SECOND) - Math.round(endTime / MILLISECONDS_IN_SECOND),
     hours   = ~~(secondsElapsed / SECONDS_IN_HOUR),
     minutes = ~~(secondsElapsed % SECONDS_IN_HOUR / MINUTES_IN_HOUR),
-    seconds = secondsElapsed % SECONDS_IN_MINUTE;
+    seconds = secondsElapsed % SECONDS_IN_MINUTE
 
   // Format: 00:00:00
-  return `${hours < TEN ? `0${hours}` : hours}:${minutes < TEN ? `0${minutes}` : minutes}:${seconds < TEN ? `0${seconds}` : seconds}`;
+  return `${hours < TEN ? `0${hours}` : hours}:${minutes < TEN ? `0${minutes}` : minutes}:${seconds < TEN ? `0${seconds}` : seconds}`
 }

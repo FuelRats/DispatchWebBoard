@@ -7,7 +7,7 @@
 export function isObject(object) {
   return object !== null &&
          typeof object === 'object' &&
-         Object.prototype.toString.call(object) === '[object Object]';
+         Object.prototype.toString.call(object) === '[object Object]'
 }
 
 
@@ -23,18 +23,18 @@ export function isValidProperty(obj, key, ktype) {
   let isValidType = (item, type) => {
     switch (type) {
     case 'array':
-      return Array.isArray(item);
+      return Array.isArray(item)
     case 'object':
-      return isObject(item);
+      return isObject(item)
     case 'null':
-      return item === null;
+      return item === null
     case 'undefined':
-      return item === undefined;
+      return item === undefined
     default:
-      return typeof item === type;
+      return typeof item === type
     }
-  };
-  return Array.isArray(ktype) ? ktype.some(item => isValidType(obj[key],item)) : isValidType(obj[key],ktype);
+  }
+  return Array.isArray(ktype) ? ktype.some(item => isValidType(obj[key],item)) : isValidType(obj[key],ktype)
 }
 
 
@@ -52,5 +52,5 @@ export function isInRange(num, min, max) {
          typeof max === 'number' && // 
          max >= min && // Ensure max is at least = to min
          num >= min && // Is number greater than or equal to min
-         num <= max;   // Is number less than or equal to max
+         num <= max   // Is number less than or equal to max
 }

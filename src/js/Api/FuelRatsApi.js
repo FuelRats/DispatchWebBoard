@@ -1,19 +1,19 @@
 // App Imports
-import AppConfig from 'Config/Config.js';
+import AppConfig from 'Config/Config.js'
 import { 
   http,
   mapRelationships,
   WebStore
-} from 'Helpers';
+} from 'Helpers'
 
 
 // Module Imports
-import url from 'url';
+import url from 'url'
 
 
 const 
   UNAUTHORIZED_STATUS_CODE = 401,
-  REQUEST_ERROR = 'Fuel Rats API request error.';
+  REQUEST_ERROR = 'Fuel Rats API request error.'
 
 /**
  * Perform a GET XHR on the API
@@ -22,7 +22,7 @@ const
  * @param   {Object} opts     Options to pass to underlaying http XHR handler.
  * @returns {Object}          Response data from the XHR handler.
  */
-export const get = (endpoint, opts) => http.get(resolve(endpoint), opts);
+export const get = (endpoint, opts) => http.get(resolve(endpoint), opts)
 
 /**
  * Resolves an endpoint path to the current attached API.
@@ -30,7 +30,7 @@ export const get = (endpoint, opts) => http.get(resolve(endpoint), opts);
  * @param   {...String} args  API endpoint path.
  * @returns {String}          Full API URL with the given path.          
  */
-export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
+export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args)
 
 /**
  * Gets the current user profile
@@ -40,23 +40,23 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
 export async function getProfile() {
   try {
 
-    let token = WebStore.local.token;
+    let token = WebStore.local.token
 
     let response = await get('/profile', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json'
       }
-    });
+    })
     
-    return mapRelationships(response.json()).data;
+    return mapRelationships(response.json()).data
 
   } catch (error) {
 
     if (error.isXHRResponse && error.status === UNAUTHORIZED_STATUS_CODE) {
-      throw new AuthorizationError(error.statusText);
+      throw new AuthorizationError(error.statusText)
     } else {
-      throw new Error(REQUEST_ERROR);
+      throw new Error(REQUEST_ERROR)
     }
   }
 }
@@ -72,6 +72,6 @@ export class AuthorizationError extends Error {
    * @returns {void}
    */
   constructor(...props) {
-    super(...props);
+    super(...props)
   }
 }

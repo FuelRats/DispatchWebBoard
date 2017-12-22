@@ -1,4 +1,4 @@
-import { isObject } from './Validation';
+import { isObject } from './Validation'
 
 /**
  * Returns a class string from a given set of class name parameters.
@@ -7,16 +7,16 @@ import { isObject } from './Validation';
  * @returns {String}                      String containing resolved class names separated by a space.
  */
 export function classNames(...classNames) {
-  let classes = {};
+  let classes = {}
 
   for (let className of classNames) {
     if (typeof className === 'string') {
-      classes[className] = true;
+      classes[className] = true
     } else if (isObject(className)) {
       for (let [key, value] of Object.entries(className)) {
-        classes[key] = typeof value === 'function' ? Boolean(value()) : Boolean(value);
+        classes[key] = typeof value === 'function' ? Boolean(value()) : Boolean(value)
       }
     }
   }
-  return Object.keys(classes).filter(item => classes[item] === true).join(' ');
+  return Object.keys(classes).filter(item => classes[item] === true).join(' ')
 }

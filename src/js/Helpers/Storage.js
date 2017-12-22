@@ -1,4 +1,4 @@
-import AppConfig from 'Config/Config.js';
+import AppConfig from 'Config/Config.js'
 
 const storageProxyHandler = {
   
@@ -10,7 +10,7 @@ const storageProxyHandler = {
    * @returns {String}          Value of property
    */
   get(target, property) {
-    return target.getItem(`${AppConfig.AppNamespace}.${property}`);
+    return target.getItem(`${AppConfig.AppNamespace}.${property}`)
   },
 
   /**
@@ -22,12 +22,12 @@ const storageProxyHandler = {
    * @returns {void}
    */
   set(target, property, value) {
-    target.setItem(`${AppConfig.AppNamespace}.${property}`, value);
+    target.setItem(`${AppConfig.AppNamespace}.${property}`, value)
     
     if (target.getItem(`${AppConfig.AppNamespace}.${property}`) === value) {
-      return true;
+      return true
     }
-    return false;
+    return false
   },
 
   /**
@@ -38,16 +38,16 @@ const storageProxyHandler = {
    * @returns {Boolean}          Whether the delete operation succeeds.
    */
   delete(target, property) {
-    target.removeItem(`${AppConfig.AppNamespace}.${property}`);
+    target.removeItem(`${AppConfig.AppNamespace}.${property}`)
     
     if (target.getItem(`${AppConfig.AppNamespace}.${property}`)) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
-};
+}
 
 export const WebStore = {
   local: new Proxy(window.localStorage, storageProxyHandler),
   session: new Proxy(window.sessionStorage, storageProxyHandler)
-};
+}
