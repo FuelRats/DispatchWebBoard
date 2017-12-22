@@ -11,17 +11,17 @@ export default class EventEmitter {
    * @returns {void}
    */
   constructor(limited, validEvents) {
-    this.limited = Boolean(limited);
-    this.__listeners = {};
-    this.isEventEmitter = {};
+    this.limited = Boolean(limited)
+    this.__listeners = {}
+    this.isEventEmitter = {}
 
     if (limited) {
       if (!validEvents || !Array.isArray(validEvents) || !validEvents.length) {
-        throw new Error('Invalid constructor args. limiting valid events requires an array of event names.');
+        throw new Error('Invalid constructor args. limiting valid events requires an array of event names.')
       }
 
       // Register valid event names.
-      validEvents.forEach(eventName => { this.__listeners[eventName] = []; });
+      validEvents.forEach(eventName => { this.__listeners[eventName] = [] })
 
     }
   }
@@ -37,22 +37,22 @@ export default class EventEmitter {
    */
   on(evt, func) {
     if (typeof evt !== 'string' || func === null) {
-      throw new TypeError('Invalid argument(s)');
+      throw new TypeError('Invalid argument(s)')
     }
 
     if (this.limited && !this.__listeners.hasOwnProperty(evt)) {
-      window.console.error('WARN: Attempted registration of listener for invalid event name. Event: ', evt);
-      return;
+      window.console.error('WARN: Attempted registration of listener for invalid event name. Event: ', evt)
+      return
     } else if (!this.__listeners.hasOwnProperty(evt)) {
-      this.__listeners[evt] = [];
+      this.__listeners[evt] = []
     }
 
     this.__listeners[evt].push(typeof func === 'object' ? func : { 
       'func': func, 
       'once': false 
-    });
+    })
 
-    return this;
+    return this
   }
 
   /**
@@ -66,7 +66,7 @@ export default class EventEmitter {
     return this.on(evt, {
       'func': func,
       'once': true
-    });
+    })
   }
 
   /**
@@ -78,19 +78,19 @@ export default class EventEmitter {
    */
   off(evt, func) {
     if (typeof evt !== 'string' || typeof func !== 'function') {
-      throw new TypeError('Invalid argument(s)');
+      throw new TypeError('Invalid argument(s)')
     }
 
     if (!this.__listeners.hasOwnProperty(evt)) {
-      return;
+      return
     }
 
-    let listenerIndex = this.__listeners[evt].findIndex(listener => listener.func === func);
-    if (listenerIndex < 0) { return; }
+    let listenerIndex = this.__listeners[evt].findIndex(listener => listener.func === func)
+    if (listenerIndex < 0) { return }
 
-    this.__listeners[evt].splice(listenerIndex, 1);
+    this.__listeners[evt].splice(listenerIndex, 1)
 
-    return this;
+    return this
   }
 
   /**
@@ -102,26 +102,26 @@ export default class EventEmitter {
    */
   async _emitEvent(evt, ...args) {
     if (typeof evt !== 'string') {
-      throw new TypeError('Event must be string');
+      throw new TypeError('Event must be string')
     }
 
     if (!this.__listeners.hasOwnProperty(evt)) {
-      return;
+      return
     }
 
-    let evtListeners = this.__listeners[evt];
+    let evtListeners = this.__listeners[evt]
 
     for (let listener of evtListeners) {
 
       // Execute function and get response from it.
-      let res = listener.func.apply(this, [...args]);
+      let res = listener.func.apply(this, [...args])
 
       // If the listener was set to run once, or returned as 'true', remove it from the listener list.
       if (listener.once === true || res === true) {
-        this.off(evt, listener.func);
+        this.off(evt, listener.func)
       }
 
     }
-    return this;
+    return this
   }
 }

@@ -1,5 +1,5 @@
 // Module imports
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 export default PropTypes.shape({
   'id': PropTypes.string.isRequired,
@@ -16,4 +16,4 @@ export default PropTypes.shape({
     'beacon': PropTypes.bool.isRequired,
     'delay': PropTypes.bool.isRequired
   })
-}).isRequired;
+}).isRequired

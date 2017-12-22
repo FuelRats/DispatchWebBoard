@@ -1,12 +1,12 @@
 // App Imports
-import * as FuelRatsApi from 'Api/FuelRatsApi.js';
-import UserStorage from 'Classes/UserStorage.js';
-import AppConfig from 'Config/Config.js';
-import { funny } from 'Config/Strings.js';
+import * as FuelRatsApi from 'Api/FuelRatsApi.js'
+import UserStorage from 'Classes/UserStorage.js'
+import AppConfig from 'Config/Config.js'
+import { funny } from 'Config/Strings.js'
 import {
   WebStore,
   clearUrlHash
-} from 'Helpers';
+} from 'Helpers'
 
 
 /**
@@ -20,24 +20,24 @@ export default class User {
    * @returns {void}
    */
   constructor() {
-    this.accessToken = null;
-    this.userData = null;
-    this.store = new UserStorage();
+    this.accessToken = null
+    this.userData = null
+    this.store = new UserStorage()
 
-    window.console.debug(this.store);
+    window.console.debug(this.store)
 
     let 
       newToken = document.location.hash.match(/access_token=([\w-]+)/),
-      curToken = WebStore.local.token;
+      curToken = WebStore.local.token
 
     if (newToken && newToken[1]) {
-      this.accessToken = newToken[1];
-      WebStore.local.token = this.accessToken;
-      clearUrlHash();
+      this.accessToken = newToken[1]
+      WebStore.local.token = this.accessToken
+      clearUrlHash()
     } else if (curToken) {
-      this.accessToken = curToken;
+      this.accessToken = curToken
     } else {
-      delete WebStore.local.token;
+      delete WebStore.local.token
     }
   }
 
@@ -47,7 +47,7 @@ export default class User {
    * @returns {Boolean} Value representing rather or not the user has a token.
    */
   hasToken() {
-    return Boolean(this.accessToken !== null);
+    return Boolean(this.accessToken !== null)
   }
 
   /**
@@ -56,7 +56,7 @@ export default class User {
    * @returns {Boolean} Value representing the authentication status of the user.
    */
   isAuthenticated() {
-    return this.hasToken() && this.userData !== null;
+    return this.hasToken() && this.userData !== null
   }
 
   /**
@@ -65,7 +65,7 @@ export default class User {
    * @returns {Boolean} Value representing the administrator status of the user.
    */
   isAdministrator() {
-    return Object.keys(this.userData.relationships.groups.data).filter(obj => this.userData.relationships.groups.data[obj].isAdministrator).length > 0;
+    return Object.keys(this.userData.relationships.groups.data).filter(obj => this.userData.relationships.groups.data[obj].isAdministrator).length > 0
   }
 
   /**
@@ -74,7 +74,7 @@ export default class User {
    * @returns {Boolean} Value representing the permission status of the user.
    */
   hasPermission() {
-    return this.isAuthenticated() && (this.isAdministrator() || this.hasGroup('rat'));
+    return this.isAuthenticated() && (this.isAdministrator() || this.hasGroup('rat'))
   }
 
   /**
@@ -84,7 +84,7 @@ export default class User {
    * @returns {Boolean}       Value representing whether the user has the specified group
    */
   hasGroup(group) {
-    return this.userData.relationships.groups.data.hasOwnProperty(group);
+    return this.userData.relationships.groups.data.hasOwnProperty(group)
   }
 
   /**
@@ -95,7 +95,7 @@ export default class User {
   getUserDisplayName() {
     return this.userData.attributes.displayRatId ? 
       this.userData.relationships.rats.data[this.userData.attributes.displayRatId].attributes.name : 
-      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]].attributes.name;
+      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]].attributes.name
   }
 
   /**
@@ -106,7 +106,7 @@ export default class User {
   getDisplayRat() {
     return this.userData.attributes.displayRatId ?
       this.userData.relationships.rats.data[this.userData.attributes.displayRatId] :
-      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]];
+      this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]]
   }
 
 
@@ -118,38 +118,38 @@ export default class User {
   async authenticate() {
     if (this.isAuthenticated()) {
 
-      return this.userData;
+      return this.userData
 
     } else if (WebStore.session['user.userData']) {
 
       try {
-        this.userData = JSON.parse(WebStore.session['user.userData']);
-        return this.userData;
+        this.userData = JSON.parse(WebStore.session['user.userData'])
+        return this.userData
 
       } catch (error) {
-        delete WebStore.session['user.userData'] ;
-        window.conosle.error(error);
-        return await this.authenticate();
+        delete WebStore.session['user.userData']
+        window.conosle.error(error)
+        return await this.authenticate()
       }
 
     } else if (this.accessToken !== null) {
 
       try {
-        let profile = await FuelRatsApi.getProfile();
+        let profile = await FuelRatsApi.getProfile()
 
-        this.userData = profile;
-        WebStore.session['user.userData'] = JSON.stringify(profile);
-        return profile;
+        this.userData = profile
+        WebStore.session['user.userData'] = JSON.stringify(profile)
+        return profile
         
       } catch (error) {
         if (error instanceof FuelRatsApi.AuthorizationError) {
-          delete WebStore.local.token;
+          delete WebStore.local.token
         }
-        throw error;
+        throw error
       }
 
     } else {
-      throw new Error('Client lacks access token.');
+      throw new Error('Client lacks access token.')
     }
   }
 
@@ -159,8 +159,8 @@ export default class User {
    * @returns {void}
    */
   login() {
-    if (this.isAuthenticated()) { return; }
-    window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${AppConfig.AppURI}&scope=${AppConfig.AppScope}&response_type=token&state=${funny[Math.floor(Math.random() * (funny.length - 1))]}`);
+    if (this.isAuthenticated()) { return }
+    window.location.href = encodeURI(`${AppConfig.WebURI}authorize?client_id=${AppConfig.ClientID}&redirect_uri=${AppConfig.AppURI}&scope=${AppConfig.AppScope}&response_type=token&state=${funny[Math.floor(Math.random() * (funny.length - 1))]}`)
   }
 
   /**
@@ -169,8 +169,8 @@ export default class User {
    * @returns {void}
    */
   logout() {
-    delete WebStore.local.token;
-    delete WebStore.session['user.userData'];
-    window.location.reload();
+    delete WebStore.local.token
+    delete WebStore.session['user.userData']
+    window.location.reload()
   }
 }

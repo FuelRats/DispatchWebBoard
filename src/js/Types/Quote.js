@@ -1,5 +1,5 @@
 // Module imports
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 export default PropTypes.shape({
   'author': PropTypes.string.isRequired,
@@ -7,4 +7,4 @@ export default PropTypes.shape({
   'createdAt': PropTypes.string.isRequired,
   'updatedAt': PropTypes.string.isRequired,
   'lastAuthor': PropTypes.string.isRequired,
-});
+})

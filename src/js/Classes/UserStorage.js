@@ -1,7 +1,7 @@
 // App Imports
-import DefaultSettings from 'Config/DefaultSettings.js';
-import EventEmitter from 'Classes/EventEmitter.js';
-import { WebStore, isObject } from 'Helpers';
+import DefaultSettings from 'Config/DefaultSettings.js'
+import EventEmitter from 'Classes/EventEmitter.js'
+import { WebStore, isObject } from 'Helpers'
 
 
 /**
@@ -14,24 +14,24 @@ export default class UserStorage extends EventEmitter {
    * @returns {[type]} [description]
    */
   constructor() {
-    let events = Object.keys(DefaultSettings);
+    let events = Object.keys(DefaultSettings)
     events.concat([
       'storage:load',
       'storage:save',
       'storage:set'
-    ]);
-    super(true, events);
+    ])
+    super(true, events)
 
-    let curSettings = loadSettings();
+    let curSettings = loadSettings()
     if (curSettings) {
       Object.entries(curSettings).forEach(([ key, value ]) => {
-        this[key] = value;
-      });
+        this[key] = value
+      })
     } else {
       Object.entries(DefaultSettings).forEach(([ key, value ]) => {
-        this[key] = value.value;
-      });
-      this.save();
+        this[key] = value.value
+      })
+      this.save()
     }
   }
 
@@ -44,19 +44,19 @@ export default class UserStorage extends EventEmitter {
    */
   set(key, value) {
     if (DefaultSettings[key] !== undefined && this[key] !== value) {
-      let opts = this.getOptions(key);
+      let opts = this.getOptions(key)
       if (opts && !opts.includes(value)) {
-        return false;
+        return false
       } 
 
-      let oldValue = this[key];
-      this[key] = value;
-      this._emitEvent(key, value, oldValue);
-      this._emitEvent('storage:set', key, value, oldValue);
-      return true;
+      let oldValue = this[key]
+      this[key] = value
+      this._emitEvent(key, value, oldValue)
+      this._emitEvent('storage:set', key, value, oldValue)
+      return true
       
     }
-    return false;
+    return false
   }
 
   /**
@@ -65,7 +65,7 @@ export default class UserStorage extends EventEmitter {
    * @returns {string[]} All known setting keys
    */
   getKeys() {
-    return Object.Keys(DefaultSettings);
+    return Object.Keys(DefaultSettings)
   }
 
   /**
@@ -75,14 +75,14 @@ export default class UserStorage extends EventEmitter {
    * @returns {*[]}        Valid options for the item.
    */
   getOptions(key) {
-    let opts = DefaultSettings[key].options;
+    let opts = DefaultSettings[key].options
     if (opts) {
       if (isObject(opts)) {
-        return Object.keys(opts);
+        return Object.keys(opts)
       }
-      return opts;
+      return opts
     }
-    return null;
+    return null
   }
 
   /**
@@ -92,16 +92,16 @@ export default class UserStorage extends EventEmitter {
    * @returns {*[]}        Valid options for the item.
    */
   getOptionsWithHumanReadable(key) {
-    let opts = DefaultSettings[key].options;
+    let opts = DefaultSettings[key].options
     if (opts) {
       if (isObject(opts)) {
-        return Object.entries(opts);
+        return Object.entries(opts)
       } else if (Array.isArray(opts)) {
-        return opts.map(option => [option, option]);
+        return opts.map(option => [option, option])
       }
-      return opts;
+      return opts
     }
-    return null;
+    return null
   }
 
   /**
@@ -110,11 +110,11 @@ export default class UserStorage extends EventEmitter {
    * @returns {void}
    */
   forceLoad() {
-    let curSettings = loadSettings() || Object.assign({}, DefaultSettings); // Get settings object. If none exist, copy the default.
+    let curSettings = loadSettings() || Object.assign({}, DefaultSettings) // Get settings object. If none exist, copy the default.
     Object.entries(curSettings).forEach(([ key, value ]) => {
-      this.set(key, value);
-    });
-    this._emitEvent('storage:load');
+      this.set(key, value)
+    })
+    this._emitEvent('storage:load')
   }
 
   /**
@@ -123,12 +123,12 @@ export default class UserStorage extends EventEmitter {
    * @returns {void}
    */
   save() {
-    let settings = {};
+    let settings = {}
     Object.keys(DefaultSettings).forEach(key => {
-      settings[key] = this[key];
-    });
-    saveSettings(settings);
-    this._emitEvent('storage:save');
+      settings[key] = this[key]
+    })
+    saveSettings(settings)
+    this._emitEvent('storage:save')
   }
 
   /**
@@ -140,15 +140,15 @@ export default class UserStorage extends EventEmitter {
    * @returns {Object} output of EventEmitter.on().
    */
   observe(evt, func) {
-    return this.on(evt, func);
+    return this.on(evt, func)
   }
 }
 
 const loadSettings = () => {
-  let settings = WebStore.local['user.settings'];
-  return settings ? JSON.parse(settings) : null;
-};
+  let settings = WebStore.local['user.settings']
+  return settings ? JSON.parse(settings) : null
+}
 
 const saveSettings = value => { 
-  WebStore.local['user.settings'] = JSON.stringify(value);
-};
+  WebStore.local['user.settings'] = JSON.stringify(value)
+}

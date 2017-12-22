@@ -7,8 +7,8 @@
 export function getUrlParam(key) {
   let param = window.location.search.slice(1)
     .split('&')
-    .find(kvPair => kvPair.split('=')[0] === key);
-  return param === undefined ? null : param.split('=')[1];
+    .find(kvPair => kvPair.split('=')[0] === key)
+  return param === undefined ? null : param.split('=')[1]
   // Can you tell I tried REALLY HARD to make this a one liner?
 }
 
@@ -19,7 +19,7 @@ export function getUrlParam(key) {
  */
 export function clearUrlHash() {
   if (window.history.replaceState) {
-    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.search)
   }
 }
 
@@ -30,6 +30,6 @@ export function clearUrlHash() {
  */
 export function clearUrlParams() {
   if (window.history.replaceState) {
-    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash)
   }
 }

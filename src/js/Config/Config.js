@@ -1,8 +1,8 @@
 /* global ENV:false */
 
-let envVar = ENV;
+let envVar = ENV
 
-let getEnvironmentVariable = (namespace, prop) => envVar && envVar[namespace] && envVar[namespace][prop] !== undefined ? envVar[namespace][prop] : null;
+let getEnvironmentVariable = (namespace, prop) => envVar && envVar[namespace] && envVar[namespace][prop] !== undefined ? envVar[namespace][prop] : null
 
 export default {
   WssURI:       getEnvironmentVariable('FR', 'WSSURI')       || 'wss://dev.api.fuelrats.com:443',
@@ -13,4 +13,4 @@ export default {
   AppURI:       getEnvironmentVariable('APP','APPURI')       || null,
   AppScope:     getEnvironmentVariable('APP','APPSCOPE')     || 'user.read.me rescue.read',
   AppNamespace: getEnvironmentVariable('APP','APPNAMESPACE') || 'dwb'
-};
+}

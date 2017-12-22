@@ -1,5 +1,5 @@
 // App Imports
-import {isObject} from './Validation.js';
+import {isObject} from './Validation.js'
 
 /**
  * Sanitize a given string to make it DOM safe.
@@ -8,12 +8,12 @@ import {isObject} from './Validation.js';
  * @returns {String}        String clean of HTML-specific characters.
  */
 export function htmlSanitize(string) {
-  return string.replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+  return string.replace(/&/g, '&amp')
+    .replace(/</g, '&lt')
+    .replace(/>/g, '&gt')
+    .replace(/"/g, '&quot')
+    .replace(/'/g, '&#x27')
+    .replace(/\//g, '&#x2F')
 }
 
 /**
@@ -25,14 +25,14 @@ export function htmlSanitize(string) {
 export function htmlSanitizeObject(obj) {
   for (let [key, value] of Object.entries(obj)) {
     if (typeof value === 'string') {
-      obj[key] = htmlSanitize(value);
+      obj[key] = htmlSanitize(value)
     } else if (isObject(value)) {
-      obj[key] = htmlSanitizeObject(value);
+      obj[key] = htmlSanitizeObject(value)
     } else if (Array.isArray(value)) {
-      obj[key] = htmlSanitizeArray(value);
+      obj[key] = htmlSanitizeArray(value)
     }
   }
-  return obj;
+  return obj
 }
 
 /**
@@ -42,17 +42,17 @@ export function htmlSanitizeObject(obj) {
  * @returns {Object}         Sanitized object.
  */
 export function htmlSanitizeArray(array) {
-  let newArray = [];
+  let newArray = []
   for (let value of array) {
     if (typeof value === 'string') {
-      newArray.push(htmlSanitize(value));
+      newArray.push(htmlSanitize(value))
     } else if (isObject(value)) {
-      newArray.push(htmlSanitizeObject(value));
+      newArray.push(htmlSanitizeObject(value))
     } else if (Array.isArray(value)) {
-      newArray.push(htmlSanitizeArray(value));
+      newArray.push(htmlSanitizeArray(value))
     } else {
-      newArray.push(value);
+      newArray.push(value)
     }
   }
-  return newArray;
+  return newArray
 }
