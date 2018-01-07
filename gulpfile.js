@@ -1,9 +1,8 @@
 /* eslint import/no-commonjs: "off" */
 
 // Required Modules
-const 
+const
   path = require('path'),
-  
   cleanCSS = require('gulp-clean-css'),
   colors = require('ansi-colors'),
   cpx = require('cpx'),
@@ -28,7 +27,7 @@ const
 
 /**
  * Generates a random ID of a given char length, which has been created from the string of allowed characters.
- * 
+ *
  * @param   {Number=} length Desired length of the ID. Default: 48
  * @param   {String=} chars  Chars used in generating the id. Default: Base64
  * @returns {String}         Generated ID.
@@ -40,7 +39,7 @@ function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
 
 // Variables
 
-const 
+const
   buildEnvironment = envArgs['env'] || 'dev',   // Sets which app config to use
   indexSuffix = envArgs['index'] || 'main',     // Sets which index file to use
   deploy = envArgs['deploy'],                   // Enables automatic deployment to remote server
@@ -49,14 +48,14 @@ const
 // Build Configs
 
 const gulpConf = require(`./app.${buildEnvironment}.config.js`);
-  
+
 
 const paths = {
   jsEntry: 'src/js/app.jsx',
   jsRoot: path.resolve(__dirname, 'src', 'js'),
   cssEntry: 'src/css/app.css',
   buildDir: 'deploy',
-  distDir: path.resolve(__dirname, 'deploy', 'dist')
+  distDir: path.resolve(__dirname, 'deploy', 'dist'),
 };
 
 if (envArgs['production']) {
@@ -85,9 +84,9 @@ gulp.task('postBuild', function(next) {
   const rsconf = Object.assign({
     root: `${paths.buildDir}/`,
     recursive: true,
-    clean: true
+    clean: true,
   }, gulpConf.rsync);
-  
+
   if (!rsconf.hostname || !rsconf.destination) {
     fancyLog(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
     next();
@@ -101,29 +100,29 @@ gulp.task('postBuild', function(next) {
 
 
 gulp.task('webpack', function() {
-  
+
   let conf = require('./webpack.config.js');
 
   conf.output.filename = `app.${fingerprint}.js`;
 
   conf.plugins.push(new webpack.DefinePlugin({
     'process.env': {
-      NODE_ENV: JSON.stringify(gulpConf.gulp.production ? 'production' : 'development')
+      NODE_ENV: JSON.stringify(gulpConf.gulp.production ? 'production' : 'development'),
     },
     ENV: {
       FR: {
         'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),
         'APIURI': JSON.stringify(gulpConf.appconf.ApiURI),
-        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI)
+        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI),
       },
       APP: {
         'CLIENTID': JSON.stringify(gulpConf.appconf.ClientID),
         'APPTITLE': JSON.stringify(gulpConf.appconf.AppTitle),
         'APPURI': JSON.stringify(gulpConf.appconf.AppURI),
         'APPSCOPE': JSON.stringify(gulpConf.appconf.AppScope),
-        'APPNAMESPACE': JSON.stringify(gulpConf.appconf.AppNamespace)
-      }
-    }
+        'APPNAMESPACE': JSON.stringify(gulpConf.appconf.AppNamespace),
+      },
+    },
   }));
 
   if (gulpConf.gulp.production) {
@@ -139,12 +138,12 @@ gulp.task('webpack', function() {
           unused: true,
           if_return: true,
           join_vars: true,
-          pure_funcs: ['window.console.debug']
+          pure_funcs: ['window.console.debug'],
         },
         output: {
-          comments: false
-        }
-      }
+          comments: false,
+        },
+      },
     }));
 
     // Strip debug code.
@@ -157,10 +156,10 @@ gulp.task('webpack', function() {
           loader: 'webpack-strip-block',
           options: {
             start: 'DEVBLOCK:START',
-            end: 'DEVBLOCK:END'
-          }
+            end: 'DEVBLOCK:END',
+          },
         },
-      ]
+      ],
     });
   }
 
@@ -174,10 +173,10 @@ gulp.task('cleancss', function() {
     .pipe(cleanCSS({
       level: 2,
       inline: ['local', 'fonts.googleapis.com'],
-      format: gulpConf.gulp.production ? false : 'beautify'
+      format: gulpConf.gulp.production ? false : 'beautify',
     }))
     .pipe(rename({
-      suffix: `.${fingerprint}`
+      suffix: `.${fingerprint}`,
     }))
     .pipe(gulp.dest(paths.distDir));
 });
