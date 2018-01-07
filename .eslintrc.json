@@ -255,10 +255,9 @@
       "warn",
       {
         "groups": [
-          "builtin",
           ["internal", "parent", "sibling"],
           "index",
-          "external"
+          ["builtin","external"]
         ],
         "newlines-between": "always"
       }
