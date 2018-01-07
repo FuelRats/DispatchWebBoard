@@ -1,16 +1,18 @@
-/* jslint node:true */
+/* eslint import/no-commonjs: "off" */
 
 // Required Modules
 const 
+  path = require('path'),
+  
   cleanCSS = require('gulp-clean-css'),
+  colors = require('ansi-colors'),
   cpx = require('cpx'),
   del = require('del'),
-  directoryNamedWebpackPlugin = require('directory-named-webpack-plugin'),
+  envArgs = require('minimist')(process.argv.slice(2)),
+  fancyLog = require('fancy-log'),
   gulp = require('gulp'),
-  gulpUtil = require('gulp-util'),
   inject = require('gulp-inject-string'),
   mkdirp = require('mkdirp'),
-  path = require('path'),
   rename = require('gulp-rename'),
   webpack = require('webpack'),
   webpackStream = require('webpack-stream');
@@ -39,24 +41,25 @@ function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
 // Variables
 
 const 
-  buildEnvironment = gulpUtil.env['env'] || 'dev',   // Sets which app config to use
-  indexSuffix = gulpUtil.env['index'] || 'main',     // Sets which index file to use
-  deploy = gulpUtil.env['deploy'],                   // Enables automatic deployment to remote server
-  fingerprint = gulpUtil.env['buildid'] || makeID(); // Randomized fingerprint for the build.
+  buildEnvironment = envArgs['env'] || 'dev',   // Sets which app config to use
+  indexSuffix = envArgs['index'] || 'main',     // Sets which index file to use
+  deploy = envArgs['deploy'],                   // Enables automatic deployment to remote server
+  fingerprint = envArgs['buildid'] || makeID(); // Randomized fingerprint for the build.
 
 // Build Configs
 
-const 
-  gulpConf = require(`./app.${buildEnvironment}.config.js`),
-  paths = {
-    jsEntry: 'src/js/app.jsx',
-    jsRoot: path.resolve(__dirname, 'src', 'js'),
-    cssEntry: 'src/css/app.css',
-    buildDir: 'deploy',
-    distDir: path.resolve(__dirname, 'deploy', 'dist')
-  };
+const gulpConf = require(`./app.${buildEnvironment}.config.js`);
+  
 
-if (gulpUtil.env['production']) {
+const paths = {
+  jsEntry: 'src/js/app.jsx',
+  jsRoot: path.resolve(__dirname, 'src', 'js'),
+  cssEntry: 'src/css/app.css',
+  buildDir: 'deploy',
+  distDir: path.resolve(__dirname, 'deploy', 'dist')
+};
+
+if (envArgs['production']) {
   gulpConf.gulp.production = true;
 }
 
@@ -86,12 +89,12 @@ gulp.task('postBuild', function(next) {
   }, gulpConf.rsync);
   
   if (!rsconf.hostname || !rsconf.destination) {
-    gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
+    fancyLog(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
     next();
     return;
   }
 
-  gulpUtil.log(`Deploying build to ${rsconf.hostname}`);
+  fancyLog(`Deploying build to ${rsconf.hostname}`);
   return gulp.src(`${paths.buildDir}/**`)
     .pipe(rsync(rsconf));
 });
@@ -99,52 +102,9 @@ gulp.task('postBuild', function(next) {
 
 gulp.task('webpack', function() {
   
-  let conf = {
-    bail: true,
-    module: {
-      rules: [
-        {
-          test: /\.jsx$/,
-          exclude: /(node_modules)/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              'presets' : [
-                '@babel/react'
-              ]
-            }
-          }
-        }
-      ]
-    },
-    output: {
-      filename: `app.${fingerprint}.js`
-    },
-    plugins: [],
-    resolve: {
-      extensions: ['.js', '.jsx', '.json'],
-      modules: [
-        paths.jsRoot, 
-        path.resolve(__dirname, 'node_modules')
-      ],
-      plugins: [
-        new directoryNamedWebpackPlugin()
-      ]
-    },
-    stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
-      entrypoints: true,
-      modules: false,
-      chunks: true,
-      chunkModules: true,
-      chunkOrigins: true,
-      depth: true,
-      optimizationBailout: true,
-      errorDetails: true,
-      publicPath: true,
-      exclude: () => false,
-      maxModules: Infinity
-    }
-  };
+  let conf = require('./webpack.config.js');
+
+  conf.output.filename = `app.${fingerprint}.js`;
 
   conf.plugins.push(new webpack.DefinePlugin({
     'process.env': {
@@ -231,11 +191,11 @@ gulp.task('html', function() {
 });
 
 // Output for debugging purposes
-gulpUtil.log('Using environment file', gulpUtil.colors.magenta(`${__dirname}/app.${buildEnvironment}.config.js`));
-gulpUtil.log('Using index file', gulpUtil.colors.magenta(`${__dirname}/src/index.${indexSuffix}.html`));
-gulpUtil.log('Using buildID', gulpUtil.colors.magenta(`${fingerprint}`));
-gulpUtil.log('Using production build', gulpConf.gulp.production ? gulpUtil.colors.green.bold('true') : gulpUtil.colors.magenta('false'));
-if (deploy) { gulpUtil.log('Using deployment destination', gulpUtil.colors.magenta(`${gulpConf.rsync.hostname}:${gulpConf.rsync.destination}`)); }
+fancyLog('Using environment file', colors.magenta(`${__dirname}/app.${buildEnvironment}.config.js`));
+fancyLog('Using index file', colors.magenta(`${__dirname}/src/index.${indexSuffix}.html`));
+fancyLog('Using buildID', colors.magenta(`${fingerprint}`));
+fancyLog('Using production build', gulpConf.gulp.production ? colors.green.bold('true') : colors.magenta('false'));
+if (deploy) { fancyLog('Using deployment destination', colors.magenta(`${gulpConf.rsync.hostname}:${gulpConf.rsync.destination}`)); }
 
 // Task Defaults and Shortcuts
 gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss', 'html'), 'postBuild'));
