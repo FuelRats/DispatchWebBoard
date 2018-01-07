@@ -32,6 +32,10 @@
       "warn",
       2
     ],
+    "comma-dangle": [
+      "warn",
+      "always-multiline"
+    ],
     "linebreak-style": [
       "warn",
       "unix"
@@ -83,6 +87,18 @@
     ],
     "valid-typeof": [
       "error"
+    ],
+    "no-trailing-spaces": [
+      "error", 
+      { 
+        "ignoreComments": true 
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error", 
+      { 
+        "max": 5 
+      }
     ],
     "no-irregular-whitespace": [
       "error"
@@ -243,9 +259,6 @@
       "error"
     ],
     "import/first": [
-      "warn"
-    ],
-    "import/exports-last": [
       "warn"
     ],
     "import/no-duplicates": [
