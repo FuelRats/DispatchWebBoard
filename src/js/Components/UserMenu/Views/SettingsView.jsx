@@ -24,7 +24,7 @@ export default class SettingsView extends Component {
 
     this._bindMethods([
       'handleSettingChange',
-      'handleSettingsClose'
+      'handleSettingsClose',
     ]);
   }
 
@@ -36,12 +36,12 @@ export default class SettingsView extends Component {
    */
   handleSettingChange(event) {
     let {
-      target
+      target,
     } = event;
 
     window.console.debug(event.target.type);
 
-    let 
+    let
       changedSetting = target.name || null,
       newValue = null;
 
@@ -88,7 +88,7 @@ export default class SettingsView extends Component {
     let themeOptions = CurrentUser.store.getOptionsWithHumanReadable(SETTINGS.BOARD_THEME)
       .map(([ setting, description ]) => <option key={setting} value={setting}>{description}</option>);
     let boardTheme = (
-      <label className={`setting-${SETTINGS.BOARD_THEME}`}>Theme: 
+      <label className={`setting-${SETTINGS.BOARD_THEME}`}>Theme:
         <select name={SETTINGS.BOARD_THEME} defaultValue={CurrentUser.store.boardTheme} onChange={this.handleSettingChange}>
           {themeOptions}
         </select>
@@ -110,5 +110,5 @@ export default class SettingsView extends Component {
   }
 }
 SettingsView.propTypes = {
-  viewChangeHandler: PropTypes.func.isRequired
+  viewChangeHandler: PropTypes.func.isRequired,
 };

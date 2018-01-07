@@ -27,10 +27,10 @@ export default class EventEmitter {
   }
 
   /* ====== Event Handling ====== */
-  
+
   /**
    * Adds listener for the given event name.
-   * 
+   *
    * @param  {String}   evt  Name of the event to listen to.
    * @param  {Function} func Function to be called on event.
    * @return {Object}        Current instance.
@@ -47,9 +47,9 @@ export default class EventEmitter {
       this.__listeners[evt] = [];
     }
 
-    this.__listeners[evt].push(typeof func === 'object' ? func : { 
-      'func': func, 
-      'once': false 
+    this.__listeners[evt].push(typeof func === 'object' ? func : {
+      'func': func,
+      'once': false,
     });
 
     return this;
@@ -65,13 +65,13 @@ export default class EventEmitter {
   once(evt, func) {
     return this.on(evt, {
       'func': func,
-      'once': true
+      'once': true,
     });
   }
 
   /**
    * Removes a listener from the given event name.
-   * 
+   *
    * @param  {String}   evt  Name of the event.
    * @param  {Function} func Function to remove.
    * @return {Object}        Current instance.
@@ -95,7 +95,7 @@ export default class EventEmitter {
 
   /**
    * Executes all listeners of a given event name.
-   * 
+   *
    * @param  {String}  evt    Name of the event to emit.
    * @param  {...*}   [args]  Argument(s) to send with the event.
    * @return {Object}         Current instance.

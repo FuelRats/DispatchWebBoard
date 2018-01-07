@@ -23,11 +23,11 @@ export default class MenuView extends Component {
     super(props);
     this._bindMethods([
       'handleIconClick',
-      'handleLogoutClick'
+      'handleLogoutClick',
     ]);
 
     this.state = {
-      'menuOpen': false
+      'menuOpen': false,
     };
   }
 
@@ -74,5 +74,5 @@ export default class MenuView extends Component {
   }
 }
 MenuView.propTypes = {
-  viewChangeHandler: PropTypes.func.isRequired
+  viewChangeHandler: PropTypes.func.isRequired,
 };

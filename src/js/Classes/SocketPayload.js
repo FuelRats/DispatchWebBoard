@@ -1,10 +1,10 @@
 import {
   enumRescueStatus,
   isValidProperty,
-  makeID
+  makeID,
 } from 'Helpers';
 
-const 
+const
   ACTION_ARRAY_LENGTH = 2,
   REQUEST_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
   REQUEST_ID_LENGTH = 32;
@@ -71,11 +71,11 @@ export class OpenRescuePayload extends SocketPayload {
    * @returns {void}
    */
   constructor() {
-    super({ 
-      action:['rescues', 'read'], 
-      status: { 
-        $not: enumRescueStatus.CLOSED 
-      }
+    super({
+      action:['rescues', 'read'],
+      status: {
+        $not: enumRescueStatus.CLOSED,
+      },
     });
   }
 }

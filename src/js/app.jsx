@@ -1,6 +1,6 @@
 // App Imports
-import User from 'Classes/User.js';
 import IndexPage from 'Pages/index.jsx';
+import User from 'Classes/User.js';
 
 // Module Imports
 import Clipboard from 'clipboard';
@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom';
 
 
 
-export let CurrentUser = null;
+export const CurrentUser = new User();
 
 /**
  * Handles user authentication and app injection.
@@ -17,7 +17,6 @@ export let CurrentUser = null;
  * @returns {[type]} [description]
  */
 function init() {
-  CurrentUser = new User();
 
   // Handle theming and changes to the theme setting.
   CurrentUser.store.observe('boardTheme', newValue => {
@@ -31,11 +30,11 @@ function init() {
 
   // Initialize clipboard.
   new Clipboard('.clipboard');
-  
+
   // Expose user and page for console access during debug
   window._dwbug = {
     'user': CurrentUser,
-    'page': page
+    'page': page,
   };
 }
 

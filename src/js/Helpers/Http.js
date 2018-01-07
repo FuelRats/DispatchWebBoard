@@ -1,8 +1,8 @@
 // App Imports
 import {
-  isObject, 
   isInRange,
-  isValidProperty 
+  isObject,
+  isValidProperty,
 } from './Validation.js';
 
 
@@ -48,10 +48,10 @@ function makeXHR(method, dest, opts) {
 
     // Open Request
     xhr.open(
-      method, 
-      dest, 
-      true, 
-      isValidProperty(opts, 'username', 'string') ? opts.username : null, 
+      method,
+      dest,
+      true,
+      isValidProperty(opts, 'username', 'string') ? opts.username : null,
       isValidProperty(opts, 'password', 'string') ? opts.password : null
     );
 
@@ -102,7 +102,7 @@ export const http = {
   get: (dest, opts) => makeXHR('GET', dest, opts),
   post: (dest, opts) => makeXHR('POST', dest, opts),
   put: (dest, opts) => makeXHR('PUT', dest, opts),
-  xhr: (method, dest, opts) => makeXHR(method, dest, opts)
+  xhr: (method, dest, opts) => makeXHR(method, dest, opts),
 };
 
 /**

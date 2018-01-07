@@ -11,9 +11,9 @@ export default PropTypes.shape({
     'platform': PropTypes.string,
     'createdAt': PropTypes.string.isRequired,
     'updatedAt': PropTypes.string.isRequired,
-    'userId': PropTypes.string.isRequired
+    'userId': PropTypes.string.isRequired,
   }).isRequired,
   'relationships': PropTypes.shape({
-    'ships': PropTypes.object
-  }).isRequired
+    'ships': PropTypes.object,
+  }).isRequired,
 }).isRequired;
