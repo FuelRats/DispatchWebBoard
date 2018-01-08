@@ -133,6 +133,18 @@
     "guard-for-in": [
       "error"
     ],
+    "require-await": [
+      "warn"
+    ],
+    "require-yield": [
+      "warn"
+    ],
+    "no-return-await": [
+      "warn"
+    ],
+    "no-await-in-loop": [
+      "warn"
+    ],
     "default-case": [
       "error"
     ],
@@ -211,6 +223,13 @@
     ],
     "prefer-template": [
       "warn"
+    ],
+    "prefer-destructuring": [
+      "warn",
+      {
+        "array": true,
+        "object": true
+      }
     ],
     "require-jsdoc": [
       "warn",
