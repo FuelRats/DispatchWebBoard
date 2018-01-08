@@ -1,6 +1,6 @@
 import {
-  isObject, 
-  isValidProperty
+  isObject,
+  isValidProperty,
 } from './Validation.js';
 
 
@@ -12,7 +12,7 @@ import {
  */
 export function mapRelationships(data) {
   // Ensure some level of integrity, just to be safe.
-  if (!isObject(data) || 
+  if (!isObject(data) ||
       !isValidProperty(data, 'data', ['array', 'object'])) {
     throw TypeError('Invalid data model');
   }
@@ -30,7 +30,7 @@ export function mapRelationships(data) {
   } else if (isObject(newData.data)) {
     newData.data.relationships = _mapIncludedToRelationships(newData.data.relationships, newData.included);
   }
-  
+
   return newData;
 }
 
@@ -39,11 +39,11 @@ export function mapRelationships(data) {
  *
  * @param   {Object}   relRef   relationship reference containing relationship id and type.
  * @param   {Object[]} included Array of included data objects.
- * @returns {Object}            Object matching the relationship reference. 
+ * @returns {Object}            Object matching the relationship reference.
  */
 function _findInclude(relRef, included) {
   let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type);
-  if (includeMatches.length > 1) { 
+  if (includeMatches.length > 1) {
     window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches);
   }
   return includeMatches[0];
@@ -57,19 +57,19 @@ function _findInclude(relRef, included) {
  * @returns {Object}               Relationship object with mapped included data.
  */
 function _mapIncludedToRelationships(relationships, included) {
-  if (!isObject(relationships) || !Array.isArray(included)) { 
-    throw TypeError('Invalid Parameter Types.'); 
+  if (!isObject(relationships) || !Array.isArray(included)) {
+    throw TypeError('Invalid Parameter Types.');
   }
 
   let newRelationships = {};
 
   for (let [relType, value] of Object.entries(relationships)) {
-    let 
+    let
       relContents = Object.assign({}, value),
       newRelContents = {
-        data: {}
+        data: {},
       };
-      
+
     if (relContents.links) { newRelContents.links = relContents.links; }
     if (relContents.meta) { newRelContents.meta = relContents.meta; }
 
@@ -81,12 +81,12 @@ function _mapIncludedToRelationships(relationships, included) {
 
       relContents.data.forEach(relMember => {
         if (relMember.id && relMember.type) {
-  
+
           let relData = _findInclude(relMember, included);
           if (relData.relationships) {
             relData.relationships = _mapIncludedToRelationships(relData.relationships, included);
           }
-  
+
           newRelContents.data[relMember.id] = relData;
         }
       });

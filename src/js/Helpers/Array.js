@@ -9,4 +9,4 @@ export function concatUnique(array, ...args) {
   return array.concat(...args).filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
-} 
+}

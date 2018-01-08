@@ -1,9 +1,9 @@
 // App Imports
-import Clock from 'Components/Clock.jsx';
-import RescueBoard from 'Components/RescueBoard';
-import PageOverlay from 'Components/PageOverlay.jsx';
-import UserMenu from 'Components/UserMenu';
 import AppConfig from 'Config/Config.js';
+import Clock from 'Components/Clock.jsx';
+import PageOverlay from 'Components/PageOverlay.jsx';
+import RescueBoard from 'Components/RescueBoard';
+import UserMenu from 'Components/UserMenu';
 import { CurrentUser } from 'app.jsx';
 
 // Module imports
@@ -30,7 +30,7 @@ export default class index extends React.Component {
     }
 
     this.state = {
-      pageIsLoading: true
+      pageIsLoading: true,
     };
   }
 
@@ -47,7 +47,7 @@ export default class index extends React.Component {
       window.console.log(err);
     } finally {
       this.setState({
-        pageIsLoading: false
+        pageIsLoading: false,
       });
     }
   }
@@ -84,7 +84,7 @@ export default class index extends React.Component {
         <RescueBoard />
       );
     }
-    
+
     return (
       <React.Fragment>
         <div className='background'></div>

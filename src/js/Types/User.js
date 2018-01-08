@@ -15,5 +15,5 @@ export default PropTypes.shape({
     'rats': PropTypes.object,
     'groups': PropTypes.object,
     'displayRat': PropTypes.object,
-  }).isRequired
+  }).isRequired,
 }).isRequired;

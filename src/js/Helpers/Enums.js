@@ -1,18 +1,18 @@
 export const enumRescueStatus = {
   OPEN: 'open',
   INACTIVE: 'inactive',
-  CLOSED: 'closed'
+  CLOSED: 'closed',
 };
 
 export const enumPlatform = {
   PC: 'pc',
   XB: 'xb',
-  PS: 'ps'
+  PS: 'ps',
 };
 
 export const enumRescueOutcome = {
-  SUCCESS: 'success', 
-  FAILURE: 'failure', 
-  INVALID: 'invalid', 
-  OTHER: 'other'
+  SUCCESS: 'success',
+  FAILURE: 'failure',
+  INVALID: 'invalid',
+  OTHER: 'other',
 };

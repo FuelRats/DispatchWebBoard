@@ -1,9 +1,9 @@
 // App Imports
 import AppConfig from 'Config/Config.js';
-import { 
+import {
   http,
   mapRelationships,
-  WebStore
+  WebStore,
 } from 'Helpers';
 
 
@@ -11,7 +11,7 @@ import {
 import url from 'url';
 
 
-const 
+const
   UNAUTHORIZED_STATUS_CODE = 401,
   REQUEST_ERROR = 'Fuel Rats API request error.';
 
@@ -28,7 +28,7 @@ export const get = (endpoint, opts) => http.get(resolve(endpoint), opts);
  * Resolves an endpoint path to the current attached API.
  *
  * @param   {...String} args  API endpoint path.
- * @returns {String}          Full API URL with the given path.          
+ * @returns {String}          Full API URL with the given path.
  */
 export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
 
@@ -45,10 +45,10 @@ export async function getProfile() {
     let response = await get('/profile', {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
-      }
+        'Accept': 'application/json',
+      },
     });
-    
+
     return mapRelationships(response.json()).data;
 
   } catch (error) {

@@ -2,7 +2,7 @@
 import {
   http,
   mapRelationships,
-  WebStore
+  WebStore,
 } from 'Helpers';
 
 // Module Imports
@@ -35,7 +35,7 @@ export async function getSystem(system) {
 
     let sysData = JSON.parse(WebStore.session[`system.${system}`]);
 
-    if (sysData === null) { 
+    if (sysData === null) {
       throw new SystemNotFoundError(system, SYSTEM_NOT_FOUND);
     }
 
@@ -51,7 +51,7 @@ export async function getSystem(system) {
       if (response.data && response.data.length > 0) {
 
         response = mapRelationships(response);
-        
+
         WebStore.session[`system.${system}`] = JSON.stringify(response);
         return response;
 

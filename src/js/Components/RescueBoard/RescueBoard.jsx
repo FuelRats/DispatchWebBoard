@@ -8,7 +8,7 @@ import Rescue from './Rescue.jsx';
 import {
   mapRelationships,
   enumRescueStatus,
-  WebStore
+  WebStore,
 } from 'Helpers';
 
 // Module imports
@@ -18,7 +18,7 @@ import React from 'react';
  * Component to manage and display Rescues.
  */
 export default class RescueBoard extends Component {
-  
+
   /**
    * Creates a RescueBoard
    *
@@ -31,12 +31,12 @@ export default class RescueBoard extends Component {
     this._bindMethods([
       'startSocketConnection',
       'refreshRescueData',
-      'setRescuesState'
+      'setRescuesState',
     ]);
 
     this.state = {
       rescues: {},
-      isLoading: true
+      isLoading: true,
     };
 
     this.socket = new RatSocket(AppConfig.WssURI)
@@ -47,7 +47,7 @@ export default class RescueBoard extends Component {
   }
 
   /**
-   * Connects to the API, subscribes to RatTracker stream, and then grabs 
+   * Connects to the API, subscribes to RatTracker stream, and then grabs
    *
    * @returns {[type]} [description]
    */
@@ -96,7 +96,7 @@ export default class RescueBoard extends Component {
       newRescues = mapRelationships(data);
 
     newRescues = Array.isArray(newRescues.data) ? newRescues.data : [newRescues.data];
-    
+
     for (let rescue of newRescues) {
       if (rescue.attributes.status === enumRescueStatus.CLOSED) {
         if (rescues[rescue.id]) {

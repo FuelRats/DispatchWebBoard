@@ -34,5 +34,5 @@ export default class LogoutView extends Component {
   }
 }
 LogoutView.propTypes = {
-  logoutHandler: PropTypes.func.isRequired
+  logoutHandler: PropTypes.func.isRequired,
 };

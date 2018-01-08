@@ -13,7 +13,7 @@ export function isObject(object) {
 
 /**
  * Checks that the given key is a proper member of the given object, and is of the correct given type.
- * 
+ *
  * @param   {Object}            obj   - object containing the given property.
  * @param   {String}            key   - Name of the property to check for.
  * @param   {(String|String[])} ktype - Expected type of the property object.
@@ -49,7 +49,7 @@ export function isValidProperty(obj, key, ktype) {
 export function isInRange(num, min, max) {
   return typeof num === 'number' && //
          typeof min === 'number' && // Ensure all args are numbers
-         typeof max === 'number' && // 
+         typeof max === 'number' && //
          max >= min && // Ensure max is at least = to min
          num >= min && // Is number greater than or equal to min
          num <= max;   // Is number less than or equal to max

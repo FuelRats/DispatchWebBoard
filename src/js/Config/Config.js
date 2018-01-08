@@ -12,5 +12,5 @@ export default {
   AppTitle:     getEnvironmentVariable('APP','APPTITLE')     || 'Dispatch Web Board',
   AppURI:       getEnvironmentVariable('APP','APPURI')       || null,
   AppScope:     getEnvironmentVariable('APP','APPSCOPE')     || 'user.read.me rescue.read',
-  AppNamespace: getEnvironmentVariable('APP','APPNAMESPACE') || 'dwb'
+  AppNamespace: getEnvironmentVariable('APP','APPNAMESPACE') || 'dwb',
 };

@@ -1,7 +1,7 @@
 import {monthString} from 'Config/Strings.js';
 
 
-const 
+const
   // makeID
   DEFAULT_ID_LENGTH = 48,
   DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', // Base64 characters
@@ -18,7 +18,7 @@ const
 
 /**
  * Generates a random ID of a given char length, which has been created from the string of allowed characters.
- * 
+ *
  * @param   {Number=} length Desired length of the ID. Default: 48
  * @param   {String=} chars  Chars used in generating the id. Default: Base64
  * @returns {String}         Generated ID.
@@ -57,9 +57,9 @@ export function makeDateHumanReadable(date) {
  * @returns {String}           Formatted time string
  */
 export function makeTimeSpanString(startTime, endTime) {
-  
+
   // Get disparity between start and end times, then convert that disparity to hours, minutes, and seconds.
-  let 
+  let
     secondsElapsed = Math.round(startTime / MILLISECONDS_IN_SECOND) - Math.round(endTime / MILLISECONDS_IN_SECOND),
     hours   = ~~(secondsElapsed / SECONDS_IN_HOUR),
     minutes = ~~(secondsElapsed % SECONDS_IN_HOUR / MINUTES_IN_HOUR),

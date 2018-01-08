@@ -3,6 +3,6 @@ jshint:
 
 eslint:
   enabled: true
-  config_file: .eslintrc.json
+  config_file: .hound-eslintrc.json
 
 fail_on_violations: true
