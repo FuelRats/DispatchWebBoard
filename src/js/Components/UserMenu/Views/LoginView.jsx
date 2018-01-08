@@ -34,5 +34,5 @@ export default class LoginView extends Component {
   }
 }
 LoginView.propTypes = {
-  loginHandler: PropTypes.func.isRequired
+  loginHandler: PropTypes.func.isRequired,
 };

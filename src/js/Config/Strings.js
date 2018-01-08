@@ -2,162 +2,162 @@
 export const platform = {
   'pc': {
     short: 'PC',
-    long: 'PC'
+    long: 'PC',
   },
   'xb': {
     short: 'XB1',
-    long: 'Xbox One'
+    long: 'Xbox One',
   },
   'ps': {
     short: 'PS4',
-    long: 'Playstation 4'
+    long: 'Playstation 4',
   },
   'unknown': {
     short: '?',
-    long: 'Unknown...'
-  }
+    long: 'Unknown...',
+  },
 };
 export const language = {
   'bg': {
     short: 'BG',
-    long: 'Bulgarian'
+    long: 'Bulgarian',
   },
   'bs': {
     short: 'BS',
-    long: 'Bosnian'
+    long: 'Bosnian',
   },
   'ca': {
     short: 'CA',
-    long: 'Catalan / Valencian'
+    long: 'Catalan / Valencian',
   },
   'cs': {
     short: 'CS',
-    long: 'Czech'
+    long: 'Czech',
   },
   'da': {
     short: 'DA',
-    long: 'Danish'
+    long: 'Danish',
   },
   'de': {
     short: 'DE',
-    long: 'German'
+    long: 'German',
   },
   'el': {
     short: 'EL',
-    long: 'Modern Greek'
+    long: 'Modern Greek',
   },
   'en': {
     short: 'EN',
-    long: 'English'
+    long: 'English',
   },
   'es': {
     short: 'ES',
-    long: 'Spanish / Castilian'
+    long: 'Spanish / Castilian',
   },
   'et': {
     short: 'ET',
-    long: 'Estonian'
+    long: 'Estonian',
   },
   'fi': {
     short: 'FI',
-    long: 'Finnish'
+    long: 'Finnish',
   },
   'fr': {
     short: 'FR',
-    long: 'French'
+    long: 'French',
   },
   'he': {
     short: 'HE',
-    long: 'Modern Hebrew'
+    long: 'Modern Hebrew',
   },
   'hr': {
     short: 'HR',
-    long: 'Croatian'
+    long: 'Croatian',
   },
   'hu': {
     short: 'HU',
-    long: 'Hungarian'
+    long: 'Hungarian',
   },
   'it': {
     short: 'IT',
-    long: 'Italian'
+    long: 'Italian',
   },
   'ja': {
     short: 'JA',
-    long: 'Japanese'
+    long: 'Japanese',
   },
   'lt': {
     short: 'LT',
-    long: 'Lithuanian'
+    long: 'Lithuanian',
   },
   'lv': {
     short: 'LV',
-    long: 'Latvian'
+    long: 'Latvian',
   },
   'nb': {
     short: 'NB',
-    long: 'Norwegian Bokmål'
+    long: 'Norwegian Bokmål',
   },
   'nv': {
     short: 'NV',
-    long: 'Navajo, Navaho'
+    long: 'Navajo, Navaho',
   },
   'nl': {
     short: 'NL',
-    long: 'Dutch'
+    long: 'Dutch',
   },
   'pl': {
     short: 'PL',
-    long: 'Polish'
+    long: 'Polish',
   },
   'pt': {
     short: 'PT',
-    long: 'Portuguese'
+    long: 'Portuguese',
   },
   'ro': {
     short: 'RO',
-    long: 'Romanian, Moldavian, Moldovan'
+    long: 'Romanian, Moldavian, Moldovan',
   },
   'ru': {
     short: 'RU',
-    long: 'Russian'
+    long: 'Russian',
   },
   'sk': {
     short: 'SK',
-    long: 'Slovak'
+    long: 'Slovak',
   },
   'sl': {
     short: 'SL',
-    long: 'Slovene'
+    long: 'Slovene',
   },
   'sr': {
     short: 'SR',
-    long: 'Serbian'
+    long: 'Serbian',
   },
   'sv': {
     short: 'SV',
-    long: 'Swedish'
+    long: 'Swedish',
   },
   'th': {
     short: 'TH',
-    long: 'Thai'
+    long: 'Thai',
   },
   'tr': {
     short: 'TR',
-    long: 'Turkish'
+    long: 'Turkish',
   },
   'uk': {
     short: 'UK',
-    long: 'Ukrainian'
+    long: 'Ukrainian',
   },
   'unknown': {
     short: '?',
-    long: 'Unknown...'
+    long: 'Unknown...',
   },
   'zh': {
     short: 'ZH',
-    long: 'Chinese'
-  }
+    long: 'Chinese',
+  },
 };
 export const funny = [
   'iwanttologinplease',
@@ -177,7 +177,7 @@ export const funny = [
   'ratisasleepathotas',
   'ratheatxxx',
   'youneedtobedrillednotgrilled',
-  'limpets4thargoids3303'
+  'limpets4thargoids3303',
 ];
 export const iconSVG = {
   clipboard: '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg>',

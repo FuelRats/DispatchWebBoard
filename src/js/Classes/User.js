@@ -1,11 +1,11 @@
 // App Imports
+import AppConfig from 'Config/Config.js';
 import * as FuelRatsApi from 'Api/FuelRatsApi.js';
 import UserStorage from 'Classes/UserStorage.js';
-import AppConfig from 'Config/Config.js';
 import { funny } from 'Config/Strings.js';
 import {
+  clearUrlHash,
   WebStore,
-  clearUrlHash
 } from 'Helpers';
 
 
@@ -26,7 +26,7 @@ export default class User {
 
     window.console.debug(this.store);
 
-    let 
+    let
       newToken = document.location.hash.match(/access_token=([\w-]+)/),
       curToken = WebStore.local.token;
 
@@ -52,7 +52,7 @@ export default class User {
 
   /**
    * Checks if the user is currently authenticated with the API
-   * 
+   *
    * @returns {Boolean} Value representing the authentication status of the user.
    */
   isAuthenticated() {
@@ -61,7 +61,7 @@ export default class User {
 
   /**
    * Checks if the user is an administrator
-   * 
+   *
    * @returns {Boolean} Value representing the administrator status of the user.
    */
   isAdministrator() {
@@ -70,7 +70,7 @@ export default class User {
 
   /**
    * Checks if the user has permission to use the dispatch board
-   * 
+   *
    * @returns {Boolean} Value representing the permission status of the user.
    */
   hasPermission() {
@@ -80,7 +80,7 @@ export default class User {
   /**
    * Checks if user has a specific group
    *
-   * @param   {String}  group Name of the group.     
+   * @param   {String}  group Name of the group.
    * @returns {Boolean}       Value representing whether the user has the specified group
    */
   hasGroup(group) {
@@ -93,8 +93,8 @@ export default class User {
    * @returns {String} Name of the authenticated user.
    */
   getUserDisplayName() {
-    return this.userData.attributes.displayRatId ? 
-      this.userData.relationships.rats.data[this.userData.attributes.displayRatId].attributes.name : 
+    return this.userData.attributes.displayRatId ?
+      this.userData.relationships.rats.data[this.userData.attributes.displayRatId].attributes.name :
       this.userData.relationships.rats.data[Object.keys(this.userData.relationships.rats.data)[0]].attributes.name;
   }
 
@@ -140,7 +140,7 @@ export default class User {
         this.userData = profile;
         WebStore.session['user.userData'] = JSON.stringify(profile);
         return profile;
-        
+
       } catch (error) {
         if (error instanceof FuelRatsApi.AuthorizationError) {
           delete WebStore.local.token;
@@ -164,7 +164,7 @@ export default class User {
   }
 
   /**
-   * Logs the user out. 
+   * Logs the user out.
    *
    * @returns {void}
    */

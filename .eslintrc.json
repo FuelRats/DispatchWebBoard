@@ -16,8 +16,13 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "import"
   ],
+  "settings": {
+    "import/extensions": [".js", ".jsx"],
+    "import/resolver": "webpack"
+  },
   "rules": {
     "no-restricted-syntax": [
       "error",
@@ -26,6 +31,10 @@
     "indent": [
       "warn",
       2
+    ],
+    "comma-dangle": [
+      "warn",
+      "always-multiline"
     ],
     "linebreak-style": [
       "warn",
@@ -78,6 +87,18 @@
     ],
     "valid-typeof": [
       "error"
+    ],
+    "no-trailing-spaces": [
+      "error", 
+      { 
+        "ignoreComments": true 
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error", 
+      { 
+        "max": 5 
+      }
     ],
     "no-irregular-whitespace": [
       "error"
@@ -169,7 +190,7 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignore": [-1, 0, 1],
+        "ignore": [-1, 0, 1, 2, 3, 4, 5],
         "enforceConst": true
       }
     ],
@@ -231,6 +252,53 @@
         "min": 2,
         "max": 35
       }
+    ],
+    "import/no-unresolved": [
+      "error"
+    ],
+    "import/named": [
+      "error"
+    ],
+    "import/namespace": [
+      "error"
+    ],
+    "import/no-webpack-loader-syntax": [
+      "warn"
+    ],
+    "import/export": [
+      "error"
+    ],
+    "import/no-deprecated": [
+      "warn"
+    ],
+    "import/no-mutable-exports": [
+      "error"
+    ],
+    "import/no-commonjs": [
+      "error"
+    ],
+    "import/first": [
+      "warn"
+    ],
+    "import/no-duplicates": [
+      "warn"
+    ],
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          ["internal", "parent", "sibling"],
+          "index",
+          ["builtin","external"]
+        ],
+        "newlines-between": "always"
+      }
+    ],
+    "import/newline-after-import": [
+      "warn"
+    ],
+    "import/no-unassigned-import": [
+      "error"
     ]
   }
 }

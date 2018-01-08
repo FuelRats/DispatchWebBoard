@@ -2,9 +2,9 @@
 import Component from 'Components/Component.jsx';
 import Rat from './Rat.jsx';
 import RescuePropType from 'Types/Rescue.js';
-import { 
+import {
   makeID,
-  WebStore
+  WebStore,
 } from 'Helpers';
 
 // Module imports
@@ -15,11 +15,15 @@ const
   RATID_LENGTH = 12,
   RATID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+const getRatObj = (id, name, platform, identified) => {
+  return { 'id': id, 'type': 'assignedRats', 'attributes': { 'name': name, 'platform': platform, 'identified': identified } };
+};
+
 /**
  * Component to display given rats in a list of Rat components.
  */
 export default class RatList extends Component {
-  
+
   /**
    * Creates a RatList
    *
@@ -31,7 +35,7 @@ export default class RatList extends Component {
 
     this._bindMethods([
       'getAssignedRats',
-      'handleRatStatusChange'
+      'handleRatStatusChange',
     ]);
 
     this.ratCurStatus = {};
@@ -46,7 +50,7 @@ export default class RatList extends Component {
   /**
    * handles when a rat's status has changed for session caching.
    *
-   * @param   {Object} rat    Rat the 
+   * @param   {Object} rat    Rat the
    * @param   {[type]} status [description]
    * @returns {[type]}        [description]
    */
@@ -57,7 +61,7 @@ export default class RatList extends Component {
         wing: false,
         system: false,
         beacon: false,
-        delay: false
+        delay: false,
       };
     }
 
@@ -97,7 +101,7 @@ export default class RatList extends Component {
    * @returns {Object} React element.
    */
   render() {
-    let listItems = this.getAssignedRats().map(rat => { 
+    let listItems = this.getAssignedRats().map(rat => {
 
       if (this.ratInitStatus[rat.id]) {
         rat.initStatus = this.ratInitStatus[rat.id];
@@ -112,7 +116,7 @@ export default class RatList extends Component {
       let rat = getRatObj(`dummy_${makeID(RATID_LENGTH, RATID_CHARS)}`, '\u2063', this.props.rescueData.attributes.platform || 'pc', true);
       listItems.push(<Rat rat={rat} key={rat.id} onStatusChange={this.handleRatStatusChange} disabled={true} />);
     }
-    
+
     return (
       <div className='rescue-rats'>
         {listItems}
@@ -130,10 +134,5 @@ export default class RatList extends Component {
   }
 }
 RatList.propTypes = {
-  rescueData: RescuePropType
-};
-
-
-const getRatObj = (id, name, platform, identified) => {
-  return { 'id': id, 'type': 'assignedRats', 'attributes': { 'name': name, 'platform': platform, 'identified': identified } };
+  rescueData: RescuePropType,
 };

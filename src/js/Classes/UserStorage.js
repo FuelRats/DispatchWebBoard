@@ -1,8 +1,19 @@
 // App Imports
 import DefaultSettings from 'Config/DefaultSettings.js';
 import EventEmitter from 'Classes/EventEmitter.js';
-import { WebStore, isObject } from 'Helpers';
+import {
+  isObject,
+  WebStore,
+} from 'Helpers';
 
+const loadSettings = () => {
+  let settings = WebStore.local['user.settings'];
+  return settings ? JSON.parse(settings) : null;
+};
+
+const saveSettings = value => {
+  WebStore.local['user.settings'] = JSON.stringify(value);
+};
 
 /**
  * Manages user settings and storage, and notifies listening parties when their values are updated.
@@ -18,7 +29,7 @@ export default class UserStorage extends EventEmitter {
     events.concat([
       'storage:load',
       'storage:save',
-      'storage:set'
+      'storage:set',
     ]);
     super(true, events);
 
@@ -47,14 +58,14 @@ export default class UserStorage extends EventEmitter {
       let opts = this.getOptions(key);
       if (opts && !opts.includes(value)) {
         return false;
-      } 
+      }
 
       let oldValue = this[key];
       this[key] = value;
       this._emitEvent(key, value, oldValue);
       this._emitEvent('storage:set', key, value, oldValue);
       return true;
-      
+
     }
     return false;
   }
@@ -143,12 +154,3 @@ export default class UserStorage extends EventEmitter {
     return this.on(evt, func);
   }
 }
-
-const loadSettings = () => {
-  let settings = WebStore.local['user.settings'];
-  return settings ? JSON.parse(settings) : null;
-};
-
-const saveSettings = value => { 
-  WebStore.local['user.settings'] = JSON.stringify(value);
-};

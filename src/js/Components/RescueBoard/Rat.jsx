@@ -24,7 +24,7 @@ export default class Rat extends Component {
     super(props);
 
     this._bindMethods([
-      'handleStatusToggle'
+      'handleStatusToggle',
     ]);
 
     let initStatus = this.props.rat.initStatus || {};
@@ -32,40 +32,40 @@ export default class Rat extends Component {
     this.state = {
       statusButtons: {
         friend: {
-          text: 'FR', 
-          title: 'Rat is friends with client.', 
-          color: 'blue', 
+          text: 'FR',
+          title: 'Rat is friends with client.',
+          color: 'blue',
           suffix: true,
-          value: initStatus.friend || false
+          value: initStatus.friend || false,
         },
         wing: {
-          text: CurrentUser.store.useWG ? 'WG' : 'WR', 
-          title: 'Rat is winged with client.', 
+          text: CurrentUser.store.useWG ? 'WG' : 'WR',
+          title: 'Rat is winged with client.',
           color: 'yellow',
           suffix: true,
-          value: initStatus.wing || false
+          value: initStatus.wing || false,
         },
         system: {
-          text: 'SYS', 
-          title: 'Rat is in reported system', 
-          color: 'cyan', 
+          text: 'SYS',
+          title: 'Rat is in reported system',
+          color: 'cyan',
           suffix: true,
-          value: initStatus.system || false
+          value: initStatus.system || false,
         },
         beacon: {
-          text: 'BC', 
-          title: "Rat has visual on client's beacon.", 
+          text: 'BC',
+          title: "Rat has visual on client's beacon.",
           color: 'orange',
-          suffix: true, 
-          value: initStatus.beacon || false
+          suffix: true,
+          value: initStatus.beacon || false,
         },
         delay: {
-          text: 'DELAY', 
-          title: 'Rat has been delayed or disconnected.', 
-          color: 'red', 
-          value: initStatus.delay || false
+          text: 'DELAY',
+          title: 'Rat has been delayed or disconnected.',
+          color: 'red',
+          value: initStatus.delay || false,
         },
-      }
+      },
     };
 
     CurrentUser.store.observe('useWG', newValue => {
@@ -110,14 +110,14 @@ export default class Rat extends Component {
 
     statusButtons[buttonName].value = newValue;
     this.setState({statusButtons});
-    
+
     if (this.props.onStatusChange) {
       let newStatus = {};
 
       Object.entries(statusButtons).forEach(([key, value]) => {
         newStatus[key] = value.value;
       });
-      
+
       this.props.onStatusChange(Object.assign({}, this.props.rat), newStatus);
     }
   }
@@ -131,8 +131,8 @@ export default class Rat extends Component {
     const ratData = this.props.rat;
 
     let statusButtons = Object.entries(this.state.statusButtons).map(([button, bState]) => (
-      <span 
-        className={classNames('statusbutton', `statusbutton-${button}`, {'active' : bState.value})} 
+      <span
+        className={classNames('statusbutton', `statusbutton-${button}`, {'active' : bState.value})}
         title={bState.title}
         onClick={() => this.handleStatusToggle(button)}
         key={button}>
@@ -151,5 +151,5 @@ export default class Rat extends Component {
 Rat.propTypes = {
   rat: AssignedRatPropType,
   disabled: PropTypes.bool,
-  onStatusChange: PropTypes.func
+  onStatusChange: PropTypes.func,
 };

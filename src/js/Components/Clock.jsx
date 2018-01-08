@@ -1,6 +1,6 @@
 // App Imports
 import Component from 'Components/Component.jsx';
-import {makeDateHumanReadable} from 'Helpers';
+import { makeDateHumanReadable } from 'Helpers';
 
 // Module imports
 import React from 'react';
@@ -26,7 +26,7 @@ export default class Clock extends Component {
     this._bindMethods(['tick']);
 
     this.state = {
-      time: makeDateHumanReadable(new Date())
+      time: makeDateHumanReadable(new Date()),
     };
   }
 
@@ -37,7 +37,7 @@ export default class Clock extends Component {
    */
   tick() {
     this.setState({
-      time: makeDateHumanReadable(new Date())
+      time: makeDateHumanReadable(new Date()),
     });
   }
 

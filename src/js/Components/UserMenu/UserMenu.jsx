@@ -25,21 +25,21 @@ export default class UserMenu extends Component {
     super(props);
     this.views = ['login','logout','menu','settings','none'];
 
-    let startingView = this.props.view;
+    let activeView = this.props.view;
 
-    if (!this.views.includes(startingView)) {
-      window.console.error(`UserMenu - WARN: UserMenu was passed invalid starting view name: "${startingView}"`);
-      startingView = 'login';
+    if (!this.views.includes(activeView)) {
+      window.console.error(`UserMenu - WARN: UserMenu was passed invalid starting view name: "${activeView}"`);
+      activeView = 'login';
     }
 
     this._bindMethods([
       'viewChangeHandler',
       'handleLoginClick',
-      'handleLogoutClick'
+      'handleLogoutClick',
     ]);
 
     this.state = {
-      activeView: startingView
+      activeView,
     };
   }
 
@@ -99,12 +99,12 @@ export default class UserMenu extends Component {
     case 'logout':
       view = (<LogoutView logoutHandler={this.handleLogoutClick} />);
       break;
-    case 'none': 
+    case 'none':
       return null;
     default:
       break;
     }
-    
+
     return (
       <div className='user-controls' data-activeview={this.state.activeView}>
         {view}
@@ -126,5 +126,5 @@ export default class UserMenu extends Component {
 
 }
 UserMenu.propTypes = {
-  view: PropTypes.string
+  view: PropTypes.string,
 };

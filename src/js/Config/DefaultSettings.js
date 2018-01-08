@@ -1,6 +1,6 @@
 export default {
   'useWG': {
-    'value': false
+    'value': false,
   },
   'boardTheme': {
     'value': 'dark',
@@ -9,11 +9,11 @@ export default {
       'light': 'Light',
       'twitchPurple': 'Twitch Purple',
       'wireframe' : 'debug_wireframe',
-    }
-  }
+    },
+  },
 };
 
 export const SETTING_KEYS = {
   USE_WG: 'useWG',
-  BOARD_THEME: 'boardTheme' 
+  BOARD_THEME: 'boardTheme',
 };

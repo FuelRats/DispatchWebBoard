@@ -3,10 +3,10 @@ import { PureComponent } from 'Components/Component.jsx';
 import RatList from './RatList.jsx';
 import RescuePropType from 'Types/Rescue.js';
 import * as HumanReadable from 'Config/Strings.js';
-import { 
-  classNames, 
+import {
+  classNames,
   enumRescueStatus,
-  WebStore
+  WebStore,
 } from 'Helpers';
 
 // Module imports
@@ -16,7 +16,7 @@ import React from 'react';
  * Component to display the given rescue data as a rescue card.
  */
 export default class Rescue extends PureComponent {
-  
+
   /**
    * Creates a Rescue
    *
@@ -34,7 +34,7 @@ export default class Rescue extends PureComponent {
     rescueSessionData = rescueSessionData ? JSON.parse(rescueSessionData) : {};
 
     this.state = {
-      initNotes: rescueSessionData.notes || ''
+      initNotes: rescueSessionData.notes || '',
     };
   }
 
@@ -46,7 +46,7 @@ export default class Rescue extends PureComponent {
    */
   handleNoteChange(event) {
     WebStore.session[`rescue-${this.props.rescueData.id}`] = JSON.stringify({
-      notes: event.target.value
+      notes: event.target.value,
     });
   }
 
@@ -56,7 +56,7 @@ export default class Rescue extends PureComponent {
    * @returns {Object} React element.
    */
   render() {
-    let 
+    let
       rescue = this.props.rescueData,
       boardIndex = '?',
       clientName = rescue.attributes.client || 'unknown_client',
@@ -66,7 +66,7 @@ export default class Rescue extends PureComponent {
         'rescue': true,
         [`rescue-platform-${rescue.attributes.platform || 'unknown'}`]: true,
         'rescue-codered': rescue.attributes.codeRed,
-        'rescue-inactive': rescue.attributes.status !== enumRescueStatus.OPEN
+        'rescue-inactive': rescue.attributes.status !== enumRescueStatus.OPEN,
       };
 
     // Resolve data attribute data.
@@ -112,6 +112,5 @@ export default class Rescue extends PureComponent {
   }
 }
 Rescue.propTypes = {
-  rescueData: RescuePropType
+  rescueData: RescuePropType,
 };
- 

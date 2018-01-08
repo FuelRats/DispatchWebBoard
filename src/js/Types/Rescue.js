@@ -19,8 +19,8 @@ export default PropTypes.shape({
       'markedForDeletion': PropTypes.shape({
         'marked': PropTypes.boolean,
         'reason': PropTypes.string,
-        'reporter': PropTypes.string
-      })
+        'reporter': PropTypes.string,
+      }),
     }),
     'notes': PropTypes.string.isRequired,
     'platform': PropTypes.oneOf(['pc','xb','ps']),
@@ -32,11 +32,11 @@ export default PropTypes.shape({
     'unidentifiedRats': PropTypes.arrayOf(PropTypes.string).isRequired,
     'createdAt': PropTypes.string.isRequired,
     'updatedAt': PropTypes.string.isRequired,
-    'firstLimpetId': PropTypes.string
+    'firstLimpetId': PropTypes.string,
   }).isRequired,
   'relationships': PropTypes.shape({
     'rats': PropTypes.object,
     'firstLimpet': PropTypes.object,
-    'epics': PropTypes.object
-  }).isRequired
+    'epics': PropTypes.object,
+  }).isRequired,
 }).isRequired;

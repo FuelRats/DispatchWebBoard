@@ -2,14 +2,13 @@
 import EventEmitter from 'Classes/EventEmitter.js';
 import {
   default as SocketPayload,
-  SubscribePayload
+  SubscribePayload,
 } from 'Classes/SocketPayload.js';
 
 
 // Constants
 const
   RECONNECT_TIMEOUT = 5000,
-  REQUEST_ID_LENGTH = 32,
   REQUEST_TIMEOUT = 60000,
   REQUEST_TIMEOUT_SEC = 60,
   MILLISECONDS_IN_SECOND = 1000;
@@ -20,7 +19,7 @@ const
 export default class RatSocket extends EventEmitter {
 
   /**
-   * 
+   *
    * @param   {String} uri Address of the API to connect to.
    * @returns {Object}     Current instance of RatSocket
    */
@@ -39,7 +38,7 @@ export default class RatSocket extends EventEmitter {
     if (typeof uri !== 'string') {
       throw new TypeError('URI must be a string');
     }
-    
+
     this.WSSUri = uri;
     this.socket = null;
     this.currentToken = null;
@@ -54,7 +53,7 @@ export default class RatSocket extends EventEmitter {
 
   /* ====== Socket Handling  ====== */
 
-  
+
   /**
    * Creates, opens, and handles the initial setup of the WebSocket client.
    *
@@ -72,7 +71,7 @@ export default class RatSocket extends EventEmitter {
         window.console.error('RatSocket - Connection failed.');
         reject({
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
-          'meta': {}
+          'meta': {},
         });
       }, REQUEST_TIMEOUT);
 
@@ -99,7 +98,7 @@ export default class RatSocket extends EventEmitter {
 
           reject({
             'errors': [ {'code': 500, 'detail': data, 'status': 'Error.', 'title': 'Error.'} ],
-            'meta': {}
+            'meta': {},
           });
         };
 
@@ -176,7 +175,7 @@ export default class RatSocket extends EventEmitter {
    */
   _onSocketMessage(data) {
     window.console.debug('RatSocket - Received message: ', data);
-    
+
     let _data = JSON.parse(data.data);
 
     if (typeof _data.meta.plid === 'string' && this.openRequests.hasOwnProperty(_data.meta.plid)) { // If the message was the response to a request, then call the request's callback.
@@ -199,10 +198,10 @@ export default class RatSocket extends EventEmitter {
 
   /**
    * Sends the given JSON Object to the API.
-   * 
+   *
    * @param   {Object} payload SocketPayload to be sent
    * @returns {Object}         Current instance of RatSocket.
-   */ 
+   */
   send(payload) {
     if (!(payload instanceof SocketPayload)) {
       throw new TypeError('Payload must be SocketPayload');
@@ -226,7 +225,7 @@ export default class RatSocket extends EventEmitter {
 
   /**
    * Promise wrapper for RatSocket.send().
-   * 
+   *
    * @param  {Object}  payload SocketPayload to be sent
    * @param  {Object}  opts    Options to define specific request behavior.
    * @return {Promise}         Promise to be resolved upon a response from the API.
@@ -240,11 +239,11 @@ export default class RatSocket extends EventEmitter {
     }
     return new Promise((resolve, reject) => {
       let payloadId = payload.getPayloadId();
-      
+
       let timeout = window.setTimeout(() => {
         reject({
           'errors': [ { 'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout' } ],
-          'meta': payload.payload.meta
+          'meta': payload.payload.meta,
         });
       }, (opts.timeout || REQUEST_TIMEOUT_SEC) * MILLISECONDS_IN_SECOND);
 
@@ -262,7 +261,7 @@ export default class RatSocket extends EventEmitter {
 
   /**
    * Pseudo-alias for RatSocket.request to send a preformatted subscribe message to the API.
-   * 
+   *
    * @param  {String}  streamName Name of the information stream to subscribe to.
    * @param  {Object}  opts       See RatSocket.request() opts.
    * @return {Promise}            Promise to resolved upon a successful response.
@@ -272,7 +271,7 @@ export default class RatSocket extends EventEmitter {
       throw new ReferenceError('streamName must be defined');
     }
     return this.request(new SubscribePayload(streamName), opts || {
-      'timeout': 15
+      'timeout': 15,
     });
   }
 }

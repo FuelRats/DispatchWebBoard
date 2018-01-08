@@ -3,7 +3,7 @@ import { isObject } from './Validation';
 /**
  * Returns a class string from a given set of class name parameters.
  *
- * @param {...(String|Object)} classNames Class names to resolve. 
+ * @param {...(String|Object)} classNames Class names to resolve.
  * @returns {String}                      String containing resolved class names separated by a space.
  */
 export function classNames(...classNames) {

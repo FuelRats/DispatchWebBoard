@@ -21,11 +21,11 @@ export default class PageOverlay extends Component {
     super(props);
 
     this._bindMethods([
-      'handleDismissal'
+      'handleDismissal',
     ]);
 
     this.state = {
-      isDismissed: false
+      isDismissed: false,
     };
   }
 
@@ -49,7 +49,7 @@ export default class PageOverlay extends Component {
     if (!this.state.isDismissed) {
       return (
         <div className={classNames('overlay', {'loading': this.props.isLoader})}>
-          <span className='overlay-text text'>{this.props.text || ''}</span>      
+          <span className='overlay-text text'>{this.props.text || ''}</span>
           <span className='overlay-text subtext'>{this.props.subtext || ''}</span>
           {this.props.isDismissable ? dismissButton : null}
         </div>
@@ -70,7 +70,6 @@ export default class PageOverlay extends Component {
       this.setState({ 'isDismissed': true });
     }
   }
-  
 }
 PageOverlay.propTypes = {
   text: PropTypes.string,
@@ -78,5 +77,5 @@ PageOverlay.propTypes = {
   dismissButtonText: PropTypes.string,
   isLoader: PropTypes.bool,
   isDismissable: PropTypes.bool,
-  isDismissed: PropTypes.bool
+  isDismissed: PropTypes.bool,
 };
