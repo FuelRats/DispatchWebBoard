@@ -71,7 +71,7 @@ export default class Rescue extends PureComponent {
 
     // Resolve data attribute data.
     if (rescue.attributes.data) {
-      boardIndex = rescue.attributes.data.boardIndex || '?';
+      boardIndex = typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?';
       clientIRCName = rescue.attributes.data.IRCNick || clientName;
     }
 
