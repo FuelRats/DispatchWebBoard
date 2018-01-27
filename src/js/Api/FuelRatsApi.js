@@ -39,8 +39,9 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
  */
 export async function getProfile() {
   try {
-
-    let token = WebStore.local.token;
+    let {
+      token,
+    } = WebStore.local;
 
     let response = await get('/profile', {
       headers: {
@@ -52,7 +53,6 @@ export async function getProfile() {
     return mapRelationships(response.json()).data;
 
   } catch (error) {
-
     if (error.isXHRResponse && error.status === UNAUTHORIZED_STATUS_CODE) {
       throw new AuthorizationError(error.statusText);
     } else {

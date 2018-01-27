@@ -31,7 +31,8 @@ export default class User {
       curToken = WebStore.local.token;
 
     if (newToken && newToken[1]) {
-      this.accessToken = newToken[1];
+      [ , this.accessToken ] = newToken;
+
       WebStore.local.token = this.accessToken;
       clearUrlHash();
     } else if (curToken) {
@@ -129,7 +130,7 @@ export default class User {
       } catch (error) {
         delete WebStore.session['user.userData'] ;
         window.conosle.error(error);
-        return await this.authenticate();
+        return this.authenticate();
       }
 
     } else if (this.accessToken !== null) {
