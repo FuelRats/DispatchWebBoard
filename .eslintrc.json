@@ -56,6 +56,14 @@
     "curly": [
       "error"
     ],
+    "one-var": [
+      "warn",
+      "never"
+    ],
+    "one-var-declaration-per-line": [
+      "warn",
+      "always"
+    ],
     "no-cond-assign": [
       "error",
       "always"
@@ -217,6 +225,9 @@
     ],
     "no-plusplus": [
       "error"
+    ],
+    "prefer-const": [
+      "warn"
     ],
     "prefer-spread": [
       "warn"
