@@ -5,7 +5,7 @@
  * @returns {String}     The value corresponding to the given parameter key. returns null if not found.
  */
 export function getUrlParam(key) {
-  let param = window.location.search.slice(1)
+  const param = window.location.search.slice(1)
     .split('&')
     .find(kvPair => kvPair.split('=')[0] === key);
   return param === undefined ? null : param.split('=')[1];

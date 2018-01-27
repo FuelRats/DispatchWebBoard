@@ -26,9 +26,8 @@ export default class User {
 
     window.console.debug(this.store);
 
-    let
-      newToken = document.location.hash.match(/access_token=([\w-]+)/),
-      curToken = WebStore.local.token;
+    const newToken = document.location.hash.match(/access_token=([\w-]+)/);
+    const curToken = WebStore.local.token;
 
     if (newToken && newToken[1]) {
       [ , this.accessToken ] = newToken;
@@ -136,7 +135,7 @@ export default class User {
     } else if (this.accessToken !== null) {
 
       try {
-        let profile = await FuelRatsApi.getProfile();
+        const profile = await FuelRatsApi.getProfile();
 
         this.userData = profile;
         WebStore.session['user.userData'] = JSON.stringify(profile);

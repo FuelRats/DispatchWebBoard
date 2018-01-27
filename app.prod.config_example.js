@@ -1,17 +1,19 @@
 // IMPORTANT: make a copy of this file, and name it 'app.prod.config.js'
 // You can create any environment config you like with the pattern 'app.<environment>.config.js', Then use it by executing 'gulp --env=<environment>'. The default is 'dev'.
 // Repo .gitignore ignores any 'app.*.config.js', so updating through git pull is possible.
+
+/* eslint-disable import/no-commonjs */
 module.exports = {
-  
+
   gulp: {
     // Toggles production optimizations and minification. Set this to false if you wish to create a debugging build.
-    production: true
+    production: true,
   },
 
   appconf: {
 
     // API URLS
-    
+
     // Set this to the WebSocket URL of the FuelRats API instance you're connecting to.
     WssURI: 'wss://api.fuelrats.com:443',
     // Set this to the FuelRats API instance you're connecting to.
@@ -37,10 +39,10 @@ module.exports = {
     // ==================================================================================================== //
     //  NOTE: THIS STEP IS OPTIONAL. ONLY CONFIGURE IF YOU'RE USING --deploy TO ASSIST IN YOUR DEVELOPMENT //
     // ================================================================================================== //
-    // 
+    //
     // An rsync task runner has been baked into the gulpfile to assist in easy development deployment.
-    // While it can be used in an production environment, it's main purpose is to allow developers to work remotely from the webserver hosting their dev instance. 
-    // 
+    // While it can be used in an production environment, it's main purpose is to allow developers to work remotely from the webserver hosting their dev instance.
+    //
     //     // ================= //
     //    // RECOMMENDED SETUP //
     // = // ================= // ===================================== //
@@ -54,10 +56,10 @@ module.exports = {
     //       IdentityFile ~/.ssh/id_rsa                        //
     //                                                        //
     // ===================================================== //
-    // 
+    //
     // Options documentation: https://www.npmjs.com/package/gulp-rsync#options
-    
+
     hostname: 'dwbrsync',
-    destination: '/path/to/destination/path'
-  }
+    destination: '/path/to/destination/path',
+  },
 };

@@ -85,7 +85,7 @@ export default class EventEmitter {
       return;
     }
 
-    let listenerIndex = this.__listeners[evt].findIndex(listener => listener.func === func);
+    const listenerIndex = this.__listeners[evt].findIndex(listener => listener.func === func);
     if (listenerIndex < 0) { return; }
 
     this.__listeners[evt].splice(listenerIndex, 1);
@@ -100,7 +100,7 @@ export default class EventEmitter {
    * @param  {...*}   [args]  Argument(s) to send with the event.
    * @return {Object}         Current instance.
    */
-  async _emitEvent(evt, ...args) {
+  _emitEvent(evt, ...args) {
     if (typeof evt !== 'string') {
       throw new TypeError('Event must be string');
     }
@@ -109,12 +109,12 @@ export default class EventEmitter {
       return;
     }
 
-    let evtListeners = this.__listeners[evt];
+    const evtListeners = this.__listeners[evt];
 
-    for (let listener of evtListeners) {
+    for (const listener of evtListeners) {
 
       // Execute function and get response from it.
-      let res = listener.func.apply(this, [...args]);
+      const res = listener.func.apply(this, [...args]);
 
       // If the listener was set to run once, or returned as 'true', remove it from the listener list.
       if (listener.once === true || res === true) {

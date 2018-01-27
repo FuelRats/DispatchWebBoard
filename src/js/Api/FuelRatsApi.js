@@ -11,9 +11,15 @@ import {
 import url from 'url';
 
 
-const
-  UNAUTHORIZED_STATUS_CODE = 401,
-  REQUEST_ERROR = 'Fuel Rats API request error.';
+
+
+// Constants
+const UNAUTHORIZED_STATUS_CODE = 401;
+const REQUEST_ERROR = 'Fuel Rats API request error.';
+
+
+
+
 
 /**
  * Perform a GET XHR on the API
@@ -39,11 +45,11 @@ export const resolve = (...args) => url.resolve(AppConfig.ApiURI, ...args);
  */
 export async function getProfile() {
   try {
-    let {
+    const {
       token,
     } = WebStore.local;
 
-    let response = await get('/profile', {
+    const response = await get('/profile', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
@@ -64,14 +70,4 @@ export async function getProfile() {
 /**
  * Error to be thrown when Authorization fails.
  */
-export class AuthorizationError extends Error {
-  /**
-   * Creates an AuthorizationError
-   *
-   * @param   {...*} props Props to pass to super.
-   * @returns {void}
-   */
-  constructor(...props) {
-    super(...props);
-  }
-}
+export class AuthorizationError extends Error {}

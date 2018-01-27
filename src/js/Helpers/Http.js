@@ -6,9 +6,15 @@ import {
 } from './Validation.js';
 
 
-const
-  SUCCESSFUL_RESPONSE_RANGE_START = 200,
-  SUCCESSFUL_RESPONSE_RANGE_END = 206;
+
+
+
+// Constants
+const SUCCESSFUL_RESPONSE_RANGE_START = 200;
+const SUCCESSFUL_RESPONSE_RANGE_END = 206;
+
+
+
 
 
 /**
@@ -32,7 +38,7 @@ function makeXHR(method, dest, opts) {
 
     if (!opts) { opts = {}; }
 
-    let xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
 
     xhr.onload = () => {
       if (isInRange(xhr.status, SUCCESSFUL_RESPONSE_RANGE_START, SUCCESSFUL_RESPONSE_RANGE_END)) {
@@ -73,7 +79,7 @@ function makeXHR(method, dest, opts) {
     }
 
     if (isObject(opts.headers)) {
-      for (let header in opts.headers) {
+      for (const header in opts.headers) {
         if (!opts.headers.hasOwnProperty(header)) { continue; }
         xhr.setRequestHeader(header, opts.headers[header]);
       }
@@ -131,8 +137,8 @@ export class XHRResponse {
       headers.split('\u000d\u000a')
         .forEach((line) => {
           if (line.length > 0) {
-            let delimiter = '\u003a\u0020',
-              header = line.split(delimiter);
+            const delimiter = '\u003a\u0020';
+            const header = line.split(delimiter);
 
             this.headers[header.shift().toLowerCase()] = header.join(delimiter);
           }

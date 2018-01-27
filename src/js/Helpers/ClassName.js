@@ -7,13 +7,13 @@ import { isObject } from './Validation';
  * @returns {String}                      String containing resolved class names separated by a space.
  */
 export function classNames(...classNames) {
-  let classes = {};
+  const classes = {};
 
-  for (let className of classNames) {
+  for (const className of classNames) {
     if (typeof className === 'string') {
       classes[className] = true;
     } else if (isObject(className)) {
-      for (let [key, value] of Object.entries(className)) {
+      for (const [key, value] of Object.entries(className)) {
         classes[key] = typeof value === 'function' ? Boolean(value()) : Boolean(value);
       }
     }

@@ -23,7 +23,7 @@ export function htmlSanitize(string) {
  * @returns {Object}     Sanitized object.
  */
 export function htmlSanitizeObject(obj) {
-  for (let [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'string') {
       obj[key] = htmlSanitize(value);
     } else if (isObject(value)) {
@@ -42,8 +42,8 @@ export function htmlSanitizeObject(obj) {
  * @returns {Object}         Sanitized object.
  */
 export function htmlSanitizeArray(array) {
-  let newArray = [];
-  for (let value of array) {
+  const newArray = [];
+  for (const value of array) {
     if (typeof value === 'string') {
       newArray.push(htmlSanitize(value));
     } else if (isObject(value)) {

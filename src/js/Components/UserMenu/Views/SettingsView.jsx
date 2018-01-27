@@ -35,15 +35,12 @@ export default class SettingsView extends Component {
    * @returns {void}
    */
   handleSettingChange(event) {
-    let {
+    const {
       target,
     } = event;
+    const changedSetting = target.name || null;
 
-    window.console.debug(event.target.type);
-
-    let
-      changedSetting = target.name || null,
-      newValue = null;
+    let newValue = null;
 
     if (event.target.type === 'checkbox') {
       newValue = target.checked;
@@ -54,7 +51,7 @@ export default class SettingsView extends Component {
 
     if (changedSetting) {
       window.console.debug('setting: ', changedSetting, newValue);
-      let result = CurrentUser.store.set(changedSetting, newValue);
+      const result = CurrentUser.store.set(changedSetting, newValue);
       window.console.debug(result);
     }
   }
@@ -78,16 +75,16 @@ export default class SettingsView extends Component {
   render() {
 
 
-    let useWing = (
+    const useWing = (
       <label className={`setting-${SETTINGS.USE_WG}`}>Use &quot;WG&quot; for wing:
         <input name={SETTINGS.USE_WG} onChange={this.handleSettingChange} defaultChecked={CurrentUser.store.useWG} type="checkbox"></input>
       </label>
     );
 
 
-    let themeOptions = CurrentUser.store.getOptionsWithHumanReadable(SETTINGS.BOARD_THEME)
+    const themeOptions = CurrentUser.store.getOptionsWithHumanReadable(SETTINGS.BOARD_THEME)
       .map(([ setting, description ]) => <option key={setting} value={setting}>{description}</option>);
-    let boardTheme = (
+    const boardTheme = (
       <label className={`setting-${SETTINGS.BOARD_THEME}`}>Theme:
         <select name={SETTINGS.BOARD_THEME} defaultValue={CurrentUser.store.boardTheme} onChange={this.handleSettingChange}>
           {themeOptions}

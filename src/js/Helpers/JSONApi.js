@@ -21,10 +21,10 @@ export function mapRelationships(data) {
     return data;
   }
 
-  let newData = Object.assign({}, data);
+  const newData = Object.assign({}, data);
 
   if (Array.isArray(newData.data)) {
-    for (let dataItem of newData.data) {
+    for (const dataItem of newData.data) {
       dataItem.relationships = _mapIncludedToRelationships(dataItem.relationships, newData.included);
     }
   } else if (isObject(newData.data)) {
@@ -42,7 +42,7 @@ export function mapRelationships(data) {
  * @returns {Object}            Object matching the relationship reference.
  */
 function _findInclude(relRef, included) {
-  let includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type);
+  const includeMatches = included.filter(obj => !obj.id || !obj.type ? false : obj.id === relRef.id && obj.type === relRef.type);
   if (includeMatches.length > 1) {
     window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches);
   }
@@ -61,14 +61,13 @@ function _mapIncludedToRelationships(relationships, included) {
     throw TypeError('Invalid Parameter Types.');
   }
 
-  let newRelationships = {};
+  const newRelationships = {};
 
-  for (let [relType, value] of Object.entries(relationships)) {
-    let
-      relContents = Object.assign({}, value),
-      newRelContents = {
-        data: {},
-      };
+  for (const [relType, value] of Object.entries(relationships)) {
+    const relContents = Object.assign({}, value);
+    const newRelContents = {
+      data: {},
+    };
 
     if (relContents.links) { newRelContents.links = relContents.links; }
     if (relContents.meta) { newRelContents.meta = relContents.meta; }
@@ -82,7 +81,7 @@ function _mapIncludedToRelationships(relationships, included) {
       relContents.data.forEach(relMember => {
         if (relMember.id && relMember.type) {
 
-          let relData = _findInclude(relMember, included);
+          const relData = _findInclude(relMember, included);
           if (relData.relationships) {
             relData.relationships = _mapIncludedToRelationships(relData.relationships, included);
           }

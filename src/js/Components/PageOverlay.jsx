@@ -44,7 +44,7 @@ export default class PageOverlay extends Component {
    * @returns {Object} React element.
    */
   render() {
-    let dismissButton = (<button className='button overlay-dismiss' onClick={this.handleDismissal}>{this.props.dismissButtonText || 'Ok'}</button>);
+    const dismissButton = (<button className='button overlay-dismiss' onClick={this.handleDismissal}>{this.props.dismissButtonText || 'Ok'}</button>);
 
     if (!this.state.isDismissed) {
       return (

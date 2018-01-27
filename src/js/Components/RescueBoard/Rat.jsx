@@ -27,7 +27,7 @@ export default class Rat extends Component {
       'handleStatusToggle',
     ]);
 
-    let initStatus = this.props.rat.initStatus || {};
+    const initStatus = this.props.rat.initStatus || {};
 
     this.state = {
       statusButtons: {
@@ -69,8 +69,12 @@ export default class Rat extends Component {
     };
 
     CurrentUser.store.observe('useWG', newValue => {
-      let statusButtons = this.state.statusButtons;
+      const {
+        statusButtons,
+      } = this.state;
+
       statusButtons.wing.text = newValue ? 'WG' : 'WR';
+
       this.setState({ statusButtons });
     });
   }
@@ -82,8 +86,8 @@ export default class Rat extends Component {
    * @returns {void}
    */
   handleStatusToggle(buttonName) {
-    let statusButtons = Object.assign({}, this.state.statusButtons);
-    let newValue = !statusButtons[buttonName].value;
+    const statusButtons = Object.assign({}, this.state.statusButtons);
+    const newValue = !statusButtons[buttonName].value;
 
 
     switch (buttonName) {
@@ -112,7 +116,7 @@ export default class Rat extends Component {
     this.setState({statusButtons});
 
     if (this.props.onStatusChange) {
-      let newStatus = {};
+      const newStatus = {};
 
       Object.entries(statusButtons).forEach(([key, value]) => {
         newStatus[key] = value.value;
@@ -128,9 +132,11 @@ export default class Rat extends Component {
    * @returns {Object} React element.
    */
   render() {
-    const ratData = this.props.rat;
+    const {
+      rat,
+    } = this.props;
 
-    let statusButtons = Object.entries(this.state.statusButtons).map(([button, bState]) => (
+    const statusButtons = Object.entries(this.state.statusButtons).map(([button, bState]) => (
       <span
         className={classNames('statusbutton', `statusbutton-${button}`, {'active' : bState.value})}
         title={bState.title}
@@ -141,8 +147,8 @@ export default class Rat extends Component {
     ));
 
     return (
-      <div className={classNames('rat', {'rat-unidentified': !ratData.attributes.identified, 'disabled': this.props.disabled})}>
-        <span className='rat-name clipboard' data-clipboard-text={ratData.attributes.name}>{ratData.attributes.name}</span>
+      <div className={classNames('rat', {'rat-unidentified': !rat.attributes.identified, 'disabled': this.props.disabled})}>
+        <span className='rat-name clipboard' data-clipboard-text={rat.attributes.name}>{rat.attributes.name}</span>
         {statusButtons}
       </div>
     );

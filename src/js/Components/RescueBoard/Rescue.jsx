@@ -27,7 +27,7 @@ export default class Rescue extends PureComponent {
     super(props);
 
     this._bindMethods([
-      'handleNoteChange'
+      'handleNoteChange',
     ]);
 
     let rescueSessionData = WebStore.session[`rescue-${this.props.rescueData.id}`];
@@ -56,18 +56,18 @@ export default class Rescue extends PureComponent {
    * @returns {Object} React element.
    */
   render() {
-    let
-      rescue = this.props.rescueData,
-      boardIndex = '?',
-      clientName = rescue.attributes.client || 'unknown_client',
-      clientIRCName = clientName,
-      systemName = rescue.attributes.system || 'unknown_system',
-      classes = {
-        'rescue': true,
-        [`rescue-platform-${rescue.attributes.platform || 'unknown'}`]: true,
-        'rescue-codered': rescue.attributes.codeRed,
-        'rescue-inactive': rescue.attributes.status !== enumRescueStatus.OPEN,
-      };
+    const rescue = this.props.rescueData;
+    const clientName = rescue.attributes.client || 'unknown_client';
+    const systemName = rescue.attributes.system || 'unknown_system';
+    const classes = {
+      'rescue': true,
+      [`rescue-platform-${rescue.attributes.platform || 'unknown'}`]: true,
+      'rescue-codered': rescue.attributes.codeRed,
+      'rescue-inactive': rescue.attributes.status !== enumRescueStatus.OPEN,
+    };
+
+    let boardIndex = '?';
+    let clientIRCName = clientName;
 
     // Resolve data attribute data.
     if (rescue.attributes.data) {
@@ -75,7 +75,7 @@ export default class Rescue extends PureComponent {
       clientIRCName = rescue.attributes.data.IRCNick || clientName;
     }
 
-    let badges = [];
+    const badges = [];
 
     if (rescue.attributes.codeRed) {
       badges.push(<span key='badge-code-red' className='badge badge-red'>CODE RED</span>);

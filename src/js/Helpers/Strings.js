@@ -1,19 +1,24 @@
 import {monthString} from 'Config/Strings.js';
 
 
-const
-  // makeID
-  DEFAULT_ID_LENGTH = 48,
-  DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', // Base64 characters
-  // makeDateHumanReadable
-  GAME_TIME_YEAR_DISPARITY = 1286,
-  // makeTimeSpanString
-  MILLISECONDS_IN_SECOND = 1000,
-  MINUTES_IN_HOUR = 60,
-  SECONDS_IN_HOUR = 3600,
-  SECONDS_IN_MINUTE = 60,
-  // makeDateHumanReadable, makeTimeSpanString
-  TEN = 10;
+
+
+
+// makeID
+const DEFAULT_ID_LENGTH = 48;
+const DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'; // Base64 characters
+
+// makeDateHumanReadable
+const GAME_TIME_YEAR_DISPARITY = 1286;
+
+// makeTimeSpanString
+const MILLISECONDS_IN_SECOND = 1000;
+const MINUTES_IN_HOUR = 60;
+const SECONDS_IN_HOUR = 3600;
+const SECONDS_IN_MINUTE = 60;
+
+// makeDateHumanReadable, makeTimeSpanString
+const TEN = 10;
 
 
 /**
@@ -37,13 +42,12 @@ export function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS
 export function makeDateHumanReadable(date) {
 
   // Extract required information to be formatted
-  let
-    year   = date.getUTCFullYear() + GAME_TIME_YEAR_DISPARITY,
-    month  = monthString[date.getUTCMonth()],
-    day    = date.getUTCDate()    < TEN ? `0${date.getUTCDate()}`    : date.getUTCDate(),
-    hour   = date.getUTCHours()   < TEN ? `0${date.getUTCHours()}`   : date.getUTCHours(),
-    minute = date.getUTCMinutes() < TEN ? `0${date.getUTCMinutes()}` : date.getUTCMinutes(),
-    second = date.getUTCSeconds() < TEN ? `0${date.getUTCSeconds()}` : date.getUTCSeconds();
+  const year   = date.getUTCFullYear() + GAME_TIME_YEAR_DISPARITY;
+  const month  = monthString[date.getUTCMonth()];
+  const day    = date.getUTCDate()    < TEN ? `0${date.getUTCDate()}`    : date.getUTCDate();
+  const hour   = date.getUTCHours()   < TEN ? `0${date.getUTCHours()}`   : date.getUTCHours();
+  const minute = date.getUTCMinutes() < TEN ? `0${date.getUTCMinutes()}` : date.getUTCMinutes();
+  const second = date.getUTCSeconds() < TEN ? `0${date.getUTCSeconds()}` : date.getUTCSeconds();
 
   // Format: 1970 JAN 01 00:00:00
   return `${year} ${month} ${day} ${hour}:${minute}:${second}`;
@@ -59,11 +63,10 @@ export function makeDateHumanReadable(date) {
 export function makeTimeSpanString(startTime, endTime) {
 
   // Get disparity between start and end times, then convert that disparity to hours, minutes, and seconds.
-  let
-    secondsElapsed = Math.round(startTime / MILLISECONDS_IN_SECOND) - Math.round(endTime / MILLISECONDS_IN_SECOND),
-    hours   = ~~(secondsElapsed / SECONDS_IN_HOUR),
-    minutes = ~~(secondsElapsed % SECONDS_IN_HOUR / MINUTES_IN_HOUR),
-    seconds = secondsElapsed % SECONDS_IN_MINUTE;
+  const secondsElapsed = Math.round(startTime / MILLISECONDS_IN_SECOND) - Math.round(endTime / MILLISECONDS_IN_SECOND);
+  const hours   = ~~(secondsElapsed / SECONDS_IN_HOUR);
+  const minutes = ~~(secondsElapsed % SECONDS_IN_HOUR / MINUTES_IN_HOUR);
+  const seconds = secondsElapsed % SECONDS_IN_MINUTE;
 
   // Format: 00:00:00
   return `${hours < TEN ? `0${hours}` : hours}:${minutes < TEN ? `0${minutes}` : minutes}:${seconds < TEN ? `0${seconds}` : seconds}`;

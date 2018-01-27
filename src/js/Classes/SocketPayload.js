@@ -4,10 +4,13 @@ import {
   makeID,
 } from 'Helpers';
 
-const
-  ACTION_ARRAY_LENGTH = 2,
-  REQUEST_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-  REQUEST_ID_LENGTH = 32;
+
+
+
+
+const ACTION_ARRAY_LENGTH = 2;
+const REQUEST_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const REQUEST_ID_LENGTH = 32;
 
 /**
  * Class to manage RatSocket payloads.
@@ -21,7 +24,7 @@ export default class SocketPayload {
    * @returns {void}
    */
   constructor(newPayload) {
-    let payload = Object.assign({}, newPayload || {});
+    const payload = Object.assign({}, newPayload || {});
 
     if (!isValidProperty(payload, 'action', 'array') || payload.action.length !== ACTION_ARRAY_LENGTH) {
       throw ReferenceError('Action must be defined.');

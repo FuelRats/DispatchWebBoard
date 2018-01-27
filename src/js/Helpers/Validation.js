@@ -20,7 +20,7 @@ export function isObject(object) {
  * @returns {Boolean}                 - Boolean representing if the given key exists, and is of expected type.
  */
 export function isValidProperty(obj, key, ktype) {
-  let isValidType = (item, type) => {
+  const isValidType = (item, type) => {
     switch (type) {
     case 'array':
       return Array.isArray(item);

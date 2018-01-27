@@ -52,7 +52,8 @@ export default class RescueBoard extends Component {
    * @returns {[type]} [description]
    */
   async startSocketConnection() {
-    let authToken = WebStore.local.token;
+    const authToken = WebStore.local.token;
+
     if (authToken) {
       try {
         await this.socket.connect(authToken);
@@ -75,7 +76,7 @@ export default class RescueBoard extends Component {
    */
   async refreshRescueData() {
     try {
-      let response = await this.socket.request(new OpenRescuePayload());
+      const response = await this.socket.request(new OpenRescuePayload());
 
       this.setRescuesState(response, true);
     } catch (error) {
@@ -91,13 +92,12 @@ export default class RescueBoard extends Component {
    * @returns {void}
    */
   setRescuesState(data, flush) {
-    let
-      rescues = flush ? {} : Object.assign({}, this.state.rescues),
-      newRescues = mapRelationships(data);
+    const rescues = flush ? {} : Object.assign({}, this.state.rescues);
+    let newRescues = mapRelationships(data);
 
     newRescues = Array.isArray(newRescues.data) ? newRescues.data : [newRescues.data];
 
-    for (let rescue of newRescues) {
+    for (const rescue of newRescues) {
       if (rescue.attributes.status === enumRescueStatus.CLOSED) {
         if (rescues[rescue.id]) {
           delete rescues[rescue.id];
@@ -120,7 +120,7 @@ export default class RescueBoard extends Component {
    * @returns {Object} React element.
    */
   render() {
-    let rescues = Object.values(this.state.rescues).map(rescue => (
+    const rescues = Object.values(this.state.rescues).map(rescue => (
       <Rescue rescueData={rescue} key={rescue.id} />
     ));
 

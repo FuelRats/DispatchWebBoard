@@ -10,10 +10,13 @@ import {
 // Module imports
 import React from 'react';
 
-const
-  MINIMUM_ASSIGNED_RATS = 3,
-  RATID_LENGTH = 12,
-  RATID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+
+
+// Constants
+const MINIMUM_ASSIGNED_RATS = 3;
+const RATID_LENGTH = 12;
+const RATID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 const getRatObj = (id, name, platform, identified) => {
   return { 'id': id, 'type': 'assignedRats', 'attributes': { 'name': name, 'platform': platform, 'identified': identified } };
@@ -40,7 +43,9 @@ export default class RatList extends Component {
 
     this.ratCurStatus = {};
     this.ratInitStatus = {};
-    let ratInitStatus = WebStore.session[`rescueRats-${this.props.rescueData.id}`];
+
+    const ratInitStatus = WebStore.session[`rescueRats-${this.props.rescueData.id}`];
+
     if (ratInitStatus) {
       this.ratInitStatus = JSON.parse(ratInitStatus);
       this.ratCurStatus = JSON.parse(ratInitStatus);
@@ -76,12 +81,10 @@ export default class RatList extends Component {
    * @returns {Object[]} Array of objects representing each rat assigned to the case.
    */
   getAssignedRats() {
-    let
-      rescuePlatform = this.props.rescueData.attributes.platform || 'pc',
-      identifiedRats = this.props.rescueData.relationships.rats.data || {},
-      unidentifiedRats = this.props.rescueData.attributes.unidentifiedRats || [];
-
-    let rats = [];
+    const rescuePlatform = this.props.rescueData.attributes.platform || 'pc';
+    const identifiedRats = this.props.rescueData.relationships.rats.data || {};
+    const unidentifiedRats = this.props.rescueData.attributes.unidentifiedRats || [];
+    const rats = [];
 
     Object.values(identifiedRats).forEach(rat => {
       rats.push(getRatObj(rat.id, rat.attributes.name, rat.attributes.platform, true));
@@ -101,7 +104,7 @@ export default class RatList extends Component {
    * @returns {Object} React element.
    */
   render() {
-    let listItems = this.getAssignedRats().map(rat => {
+    const listItems = this.getAssignedRats().map(rat => {
 
       if (this.ratInitStatus[rat.id]) {
         rat.initStatus = this.ratInitStatus[rat.id];
@@ -113,7 +116,7 @@ export default class RatList extends Component {
     });
 
     while (listItems.length < MINIMUM_ASSIGNED_RATS) {
-      let rat = getRatObj(`dummy_${makeID(RATID_LENGTH, RATID_CHARS)}`, '\u2063', this.props.rescueData.attributes.platform || 'pc', true);
+      const rat = getRatObj(`dummy_${makeID(RATID_LENGTH, RATID_CHARS)}`, '\u2063', this.props.rescueData.attributes.platform || 'pc', true);
       listItems.push(<Rat rat={rat} key={rat.id} onStatusChange={this.handleRatStatusChange} disabled={true} />);
     }
 

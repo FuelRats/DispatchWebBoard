@@ -5,13 +5,17 @@ import {
   WebStore,
 } from 'Helpers';
 
+
+
+
+
 // Module Imports
 import url from 'url';
 
 
-const
-  SYSTEM_NOT_FOUND = 'System not found.',
-  REQUEST_ERROR = 'Systems API request error.';
+
+const SYSTEM_NOT_FOUND = 'System not found.';
+const REQUEST_ERROR = 'Systems API request error.';
 
 /**
  * http wrapper to request information from the Systems API.
@@ -33,7 +37,7 @@ export async function getSystem(system) {
 
   if (WebStore.session[`system.${system}`]) {
 
-    let sysData = JSON.parse(WebStore.session[`system.${system}`]);
+    const sysData = JSON.parse(WebStore.session[`system.${system}`]);
 
     if (sysData === null) {
       throw new SystemNotFoundError(system, SYSTEM_NOT_FOUND);

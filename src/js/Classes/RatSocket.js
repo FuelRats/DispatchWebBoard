@@ -6,12 +6,18 @@ import {
 } from 'Classes/SocketPayload.js';
 
 
+
+
+
 // Constants
-const
-  RECONNECT_TIMEOUT = 5000,
-  REQUEST_TIMEOUT = 60000,
-  REQUEST_TIMEOUT_SEC = 60,
-  MILLISECONDS_IN_SECOND = 1000;
+const RECONNECT_TIMEOUT = 5000;
+const REQUEST_TIMEOUT = 60000;
+const REQUEST_TIMEOUT_SEC = 60;
+const MILLISECONDS_IN_SECOND = 1000;
+
+
+
+
 
 /**
  * Websocket handler for the FuelRats API
@@ -60,14 +66,14 @@ export default class RatSocket extends EventEmitter {
    * @param   {String}  token oAuth token to authenticate with.
    * @returns {Promise}       Resolved upon receiving the API's welcome message.
    */
-  async connect(token) {
+  connect(token) {
     if (typeof token !== 'string') {
       throw TypeError('Invalid token string');
     }
 
     this.currentToken = token;
     return new Promise ((resolve,reject) => {
-      let rejectTimeout = window.setTimeout(() => {
+      const rejectTimeout = window.setTimeout(() => {
         window.console.error('RatSocket - Connection failed.');
         reject({
           'errors': [ {'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout'} ],
@@ -75,32 +81,31 @@ export default class RatSocket extends EventEmitter {
         });
       }, REQUEST_TIMEOUT);
 
-      let
-        onConnection = (data) => {
-          window.clearTimeout(rejectTimeout);
-          this.off('ratsocket:error', onSocketError);
+      const onConnection = (data) => {
+        window.clearTimeout(rejectTimeout);
+        this.off('ratsocket:error', onSocketError);
 
-          if (this.reconnected) {
-            window.console.debug('RatSocket - Reconnected and ready! ');
-            this._emitEvent('ratsocket:reconnect', data);
-            this.reconnected = false;
-          } else {
-            window.console.debug('RatSocket - Socket ready!');
-            this._emitEvent('ratsocket:connect', data);
-          }
+        if (this.reconnected) {
+          window.console.debug('RatSocket - Reconnected and ready! ');
+          this._emitEvent('ratsocket:reconnect', data);
+          this.reconnected = false;
+        } else {
+          window.console.debug('RatSocket - Socket ready!');
+          this._emitEvent('ratsocket:connect', data);
+        }
 
-          resolve(data);
-        },
+        resolve(data);
+      };
 
-        onSocketError = (data) => {
-          window.clearTimeout(rejectTimeout);
-          this.off('connection', onConnection);
+      const onSocketError = (data) => {
+        window.clearTimeout(rejectTimeout);
+        this.off('connection', onConnection);
 
-          reject({
-            'errors': [ {'code': 500, 'detail': data, 'status': 'Error.', 'title': 'Error.'} ],
-            'meta': {},
-          });
-        };
+        reject({
+          'errors': [ {'code': 500, 'detail': data, 'status': 'Error.', 'title': 'Error.'} ],
+          'meta': {},
+        });
+      };
 
       this.once('connection', onConnection)
         .once('ratsocket:error', onSocketError);
@@ -170,27 +175,27 @@ export default class RatSocket extends EventEmitter {
   /**
    * Handler method for when the WebSocket receives a message.
    *
-   * @param   {Object} data Data from the WebSocket.
+   * @param   {Object} socketMessage Data from the WebSocket.
    * @returns {void}
    */
-  _onSocketMessage(data) {
-    window.console.debug('RatSocket - Received message: ', data);
+  _onSocketMessage(socketMessage) {
+    window.console.debug('RatSocket - Received message: ', socketMessage);
 
-    let _data = JSON.parse(data.data);
+    const data = JSON.parse(socketMessage.data);
 
-    if (typeof _data.meta.plid === 'string' && this.openRequests.hasOwnProperty(_data.meta.plid)) { // If the message was the response to a request, then call the request's callback.
-      window.console.debug(`RatSocket - Closing request '${_data.meta.plid}' with data:`, _data);
+    if (typeof data.meta.plid === 'string' && this.openRequests.hasOwnProperty(data.meta.plid)) { // If the message was the response to a request, then call the request's callback.
+      window.console.debug(`RatSocket - Closing request '${data.meta.plid}' with data:`, data);
 
-      this.openRequests[_data.meta.plid](_data);
-      delete this.openRequests[_data.meta.plid];
+      this.openRequests[data.meta.plid](data);
+      delete this.openRequests[data.meta.plid];
 
-    } else if (_data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
-      window.console.log(`RatSocket - Emitting event '${_data.meta.event}' with data:`, _data);
+    } else if (data.meta.event) { // If the message wasn't a response to a request, and the message contains an event, then emit the event.
+      window.console.log(`RatSocket - Emitting event '${data.meta.event}' with data:`, data);
 
-      this._emitEvent(_data.meta.event, _data);
+      this._emitEvent(data.meta.event, data);
 
     } else { // if neither of the above conditions are true, just spit it out as an error to the console. This shouldn't happen.
-      window.console.error('RatSocket - Received an unknown message from the attached websocket: ', data);
+      window.console.error('RatSocket - Received an unknown message from the attached websocket: ', socketMessage);
     }
   }
 
@@ -238,9 +243,9 @@ export default class RatSocket extends EventEmitter {
       opts = {};
     }
     return new Promise((resolve, reject) => {
-      let payloadId = payload.getPayloadId();
+      const payloadId = payload.getPayloadId();
 
-      let timeout = window.setTimeout(() => {
+      const timeout = window.setTimeout(() => {
         reject({
           'errors': [ { 'code': 408, 'detail': 'Server produced no response.', 'status': 'Request Timeout', 'title': 'Request Timeout' } ],
           'meta': payload.payload.meta,
