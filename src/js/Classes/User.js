@@ -128,7 +128,7 @@ export default class User {
 
       } catch (error) {
         delete WebStore.session['user.userData'] ;
-        window.conosle.error(error);
+        window.console.error(error);
         return await this.authenticate();
       }
 
