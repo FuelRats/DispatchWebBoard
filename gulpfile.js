@@ -1,7 +1,7 @@
 /* jslint node:true */
 
 // Required Modules
-const 
+const
   gulp = require('gulp'),
   gulpUtil = require('gulp-util'),
   path = require('path'),
@@ -36,10 +36,10 @@ function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
 
 // Variables
 
-const 
-  buildEnvironment = gulpUtil.env['env'] || 'dev',   // Sets which app config to use
-  indexSuffix = gulpUtil.env['index'] || 'main',     // Sets which index file to use
-  deploy = gulpUtil.env['deploy'],                   // Enables automatic deployment to remote server
+const
+  buildEnvironment = gulpUtil.env['env'] || 'dev', // Sets which app config to use
+  indexSuffix = gulpUtil.env['index'] || 'main', // Sets which index file to use
+  deploy = gulpUtil.env['deploy'], // Enables automatic deployment to remote server
   fingerprint = gulpUtil.env['buildid'] || makeID(); // Randomized fingerprint for the build.
 
 gulpUtil.log(`Using Config file: ./app.${buildEnvironment}.config.js`);
@@ -48,7 +48,7 @@ gulpUtil.log(`Using Build ID: ${fingerprint}`);
 
 // Build Configs
 
-const 
+const
   gulpConf = require(`./app.${buildEnvironment}.config.js`),
   paths = {
     jsEntry: 'src/js/app.js',
@@ -59,7 +59,7 @@ const
 
 // Tasks
 
-gulp.task('preBuild', function(next) {
+gulp.task('preBuild', function (next) {
   del([paths.buildDir]).then(() => {
     mkdirp(paths.distDir, () => {
       next();
@@ -67,13 +67,16 @@ gulp.task('preBuild', function(next) {
   });
 });
 
-gulp.task('postBuild', function(next) {
+gulp.task('postBuild', function (next) {
 
   // Copy all static files from src dir.
   cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir);
 
   // Deployment
-  if (!deploy) { next(); return; }
+  if (!deploy) {
+    next();
+    return;
+  }
 
   const rsync = require('gulp-rsync');
   const rsconf = Object.assign({
@@ -81,7 +84,7 @@ gulp.task('postBuild', function(next) {
     recursive: true,
     clean: true
   }, gulpConf.rsync);
-  
+
   if (!rsconf.hostname || !rsconf.destination) {
     gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
     next();
@@ -94,8 +97,8 @@ gulp.task('postBuild', function(next) {
 });
 
 
-gulp.task('webpack', function() {
-  
+gulp.task('webpack', function () {
+
   let conf = {
     bail: true,
     module: {
@@ -125,7 +128,8 @@ gulp.task('webpack', function() {
       FR: {
         'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),
         'APIURI': JSON.stringify(gulpConf.appconf.ApiURI),
-        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI)
+        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI),
+        'SYSTEMURI': JSON.stringify(gulpConf.appconf.SystemsURI)
       },
       APP: {
         'CLIENTID': JSON.stringify(gulpConf.appconf.ClientID),
@@ -163,15 +167,13 @@ gulp.task('webpack', function() {
       test: /\.js$/,
       enforce: 'pre',
       exclude: /(node_modules|\.spec\.js)/,
-      use: [
-        {
-          loader: 'webpack-strip-block',
-          options: {
-            start: 'DEVBLOCK:START',
-            end: 'DEVBLOCK:END'
-          }
-        },
-      ]
+      use: [{
+        loader: 'webpack-strip-block',
+        options: {
+          start: 'DEVBLOCK:START',
+          end: 'DEVBLOCK:END'
+        }
+      }, ]
     });
   }
 
@@ -180,7 +182,7 @@ gulp.task('webpack', function() {
     .pipe(gulp.dest(paths.distDir));
 });
 
-gulp.task('cleancss', function() {
+gulp.task('cleancss', function () {
   return gulp.src(paths.cssEntry)
     .pipe(cleanCSS({
       level: 2,
@@ -193,7 +195,7 @@ gulp.task('cleancss', function() {
     .pipe(gulp.dest(paths.distDir));
 });
 
-gulp.task('html', function() {
+gulp.task('html', function () {
   return gulp.src(`./src/index.${indexSuffix}.html`)
     .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
     .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))

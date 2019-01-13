@@ -4,9 +4,15 @@ import Clipboard from 'clipboard';
 import RatSocket from './classes/RatSocket.js';
 import * as StarSystemAPI from './api/StarSystemAPI.js';
 import * as frConst from './util/frConstants.js';
-import {getUrlParam, mapRelationships, makeTimeSpanString, makeDateHumanReadable, htmlSanitizeObject} from './helpers';
+import {
+  getUrlParam,
+  mapRelationships,
+  makeTimeSpanString,
+  makeDateHumanReadable,
+  htmlSanitizeObject
+} from './helpers';
 
-const 
+const
   ANIMATE_OPACITY_DOWN_SPEED = 100,
   ANIMATE_OPACITY_UP_SPEED = 500,
   RESCUE_REMOVE_DELAY = 5000,
@@ -20,10 +26,10 @@ export default class ClientControl {
     this.socket = null;
     this.theme = 'default';
     this.AuthHeader = AuthHeader;
-    
+
     window.console.debug('fr.client.init - Client manager loaded.');
     Jq('#navbar-brand-title').text(AppConfig.AppTitle);
-    
+
     window.onpopstate = this.HandlePopState.bind(this);
 
     // Theming shit. This needs to be actually made a thing instead of just a hack to make it work.
@@ -67,7 +73,9 @@ export default class ClientControl {
     this.socket = new RatSocket(AppConfig.WssURI);
     this.socket.on('ratsocket:reconnect', ctx => this.handleReconnect(ctx))
       .on('rescueCreated', (ctx, data) => {
-        if (data.included) { data = mapRelationships(data); }
+        if (data.included) {
+          data = mapRelationships(data);
+        }
         this.AddRescue(ctx, data.data);
       }).on('rescueUpdated', (ctx, data) => {
         if (data.included) {
@@ -79,17 +87,24 @@ export default class ClientControl {
         }
       }).connect(this.AuthHeader)
       .then(() => this.socket.subscribe('0xDEADBEEF'))
-      .then(() => this.socket.request({action:['rescues', 'read'], status: { $not: 'closed' }}))
+      .then(() => this.socket.request({
+        action: ['rescues', 'read'],
+        status: {
+          $not: 'closed'
+        }
+      }))
       .then(res => this.PopulateBoard(res.context, res.data))
       .catch(error => window.console.error(error)); // TODO proper error handling, display shutter with error message.
-                                            
+
     this.UpdateClocks();
   }
 
   handleReconnect(ctx) {
     ctx.request({
       action: ['rescues', 'read'],
-      status: { $not: 'closed' },
+      status: {
+        $not: 'closed'
+      },
       meta: {
         'updateList': 'true'
       }
@@ -102,11 +117,11 @@ export default class ClientControl {
 
   ReloadBoard(ctx, data) {
     let oldSelected = this.SelectedRescue ? this.SelectedRescue.id.split('-')[0] : null;
-    
+
     this.SelectedRescue = null;
     this.CachedRescues = {};
     this.setHtml('#rescueRows', '');
-    
+
     this.PopulateBoard(ctx, data);
     this.SetSelectedRescue(oldSelected);
   }
@@ -128,7 +143,7 @@ export default class ClientControl {
     } else {
       window.console.debug(`fr.client.FetchRatInfo - Gathering RatInfo: ${ratId}`);
       return this.socket.request({
-        action:'rats:read',
+        action: 'rats:read',
         data: {
           'id': ratId
         },
@@ -179,7 +194,7 @@ export default class ClientControl {
       // Retrieve system information now to speed things up later on....
       StarSystemAPI.getSystem(rescue.attributes.system).then(() => {
         window.console.debug('fr.client.AddRescue - Additional info found! Caching...');
-      }).catch(() =>{
+      }).catch(() => {
         window.console.debug('fr.client.AddRescue - No additional system information found.');
       });
     }
@@ -247,9 +262,9 @@ export default class ClientControl {
     }
 
     let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : {
-      'short': rescue.attributes.data.langID,
-      'long': rescue.attributes.data.langID
-    } :
+        'short': rescue.attributes.data.langID,
+        'long': rescue.attributes.data.langID
+      } :
       frConst.language.unknown;
 
     let platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown;
@@ -294,14 +309,18 @@ export default class ClientControl {
         .prop('title', `Last Updated: ${makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt))}`);
     }
 
-    setTimeout(() => { this.UpdateClocks(); }, MILLISECONDS_IN_SECOND - nowTime.getMilliseconds());
+    setTimeout(() => {
+      this.UpdateClocks();
+    }, MILLISECONDS_IN_SECOND - nowTime.getMilliseconds());
   }
 
   SetSelectedRescue(key, preventPush) {
     if (key === null || this.SelectedRescue && key.toString() === this.SelectedRescue.id.split('-')[0]) {
       this.SelectedRescue = null;
       if (history.pushState && !preventPush) {
-        window.history.pushState({'a': null}, document.title, window.location.pathname);
+        window.history.pushState({
+          'a': null
+        }, document.title, window.location.pathname);
       }
       this.UpdateRescueDetail();
       return;
@@ -313,7 +332,9 @@ export default class ClientControl {
     window.console.debug(`fr.client.SetSelectedRescue - New SelectedRescue: ${this.CachedRescues[key].id}`);
     this.SelectedRescue = this.CachedRescues[key];
     if (history.pushState && !preventPush) {
-      window.history.pushState({'a': key}, document.title, `${window.location.pathname}?a=${encodeURIComponent(key)}`);
+      window.history.pushState({
+        'a': key
+      }, document.title, `${window.location.pathname}?a=${encodeURIComponent(key)}`);
     }
     this.UpdateRescueDetail();
   }
@@ -330,13 +351,15 @@ export default class ClientControl {
     let title = rescue.attributes.title ? `Operation ${rescue.attributes.title}` : rescue.attributes.client;
     let tags = (rescue.attributes.codeRed ? ' <span class="badge badge-red">Code Red</span>' : '') + (rescue.attributes.status === 'inactive' ? ' <span class="badge badge-yellow">Inactive</span>' : '');
 
-    let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : 
-      { 'short': rescue.attributes.data.langID, 'long': rescue.attributes.data.langID } : frConst.language.unknown;
+    let language = rescue.attributes.data.langID ? frConst.language[rescue.attributes.data.langID] ? frConst.language[rescue.attributes.data.langID] : {
+      'short': rescue.attributes.data.langID,
+      'long': rescue.attributes.data.langID
+    } : frConst.language.unknown;
 
     let platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown;
 
     // Construct detail html.
-    let detailContent =                `<div class="rdetail-header">
+    let detailContent = `<div class="rdetail-header">
                                           <div class="rdetail-title">${caseNo + title + tags}</div>
                                           <div class="rdetail-timer">00:00:00</div>
                                         </div>
@@ -430,7 +453,7 @@ export default class ClientControl {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`, html);
     }).catch(() => {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`,
-        '<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>');
+        '<a target="_blank" href="https://www.edsm.net/"><span class="badge badge-red" title="Go to EDSM.net" >NOT IN EDSM</span></a>');
     });
   }
 
@@ -439,47 +462,56 @@ export default class ClientControl {
       return Promise.reject('');
     }
     return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
-      window.console.debug('this.UpdateRescueDetail - Additional info found! Adding system-related warnings and eddb link.');
+      window.console.debug('this.UpdateRescueDetail - Additional info found! Adding system-related warnings and edsm link.');
 
       let sysInfo = data;
-      let sysInfoHtml = '';
+      let sysInfoHtml = [];
 
-      if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
+      // The new systems API doesn't contain information about permits
+      /*if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
         sysInfoHtml += '<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span> ';
-      }
+      }*/
 
       if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
-        sysInfoHtml += ' <span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span> ';
+        sysInfoHtml.push('<span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span>');
       }
 
       if (sysInfo.bodies && sysInfo.bodies.length > 0) {
-        let mainStar = sysInfo.bodies.find(function(body) {
-          return body.attributes.is_main_star;
+        let mainStar = sysInfo.bodies.find(function (body) {
+          return body.attributes.isMainStar;
         });
-        if (mainStar && frConst.scoopables.includes(mainStar.attributes.spectral_class)) {
-          sysInfoHtml += ' <span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span> ';
-        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => frConst.scoopables.includes(body.attributes.spectral_class)).length > 0) {
-          sysInfoHtml += ' <span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span> ';
+        if (mainStar && mainStar.attributes.isScoopable) {
+          sysInfoHtml.push('<span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span>');
+        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => body.attributes.isScoopable).length > 0) {
+          sysInfoHtml.push('<span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span>');
         }
       }
 
       if (sysInfo.id) {
-        sysInfoHtml += `<a target="_blank" href="https://www.eddb.io/system/${sysInfo.id}"><span class="badge badge-green" title="View on EDDB.io" >EDDB</span></a>`;
+        sysInfoHtml.push(`<a target="_blank" href="https://www.edsm.net/en/system/id/${sysInfo.id}/name/${sysInfo.attributes.name}"><span class="badge badge-green" title="View on EDSM.net" >EDSM</span></a>`);
       }
-      return Promise.resolve(sysInfoHtml);
+      return Promise.resolve(sysInfoHtml.join(' '));
     });
   }
   setHtml(target, html) {
     Jq(target)
-      .animate({ opacity: 0.2 }, ANIMATE_OPACITY_DOWN_SPEED)
+      .animate({
+        opacity: 0.2
+      }, ANIMATE_OPACITY_DOWN_SPEED)
       .html(html)
-      .animate({ opacity: 1 }, ANIMATE_OPACITY_UP_SPEED);
+      .animate({
+        opacity: 1
+      }, ANIMATE_OPACITY_UP_SPEED);
   }
   replaceHtml(target, html) {
     Jq(target).replaceWith(html);
     Jq(target)
-      .animate({opacity: 0.2}, ANIMATE_OPACITY_DOWN_SPEED)
-      .animate({opacity: 1}, ANIMATE_OPACITY_UP_SPEED);
+      .animate({
+        opacity: 0.2
+      }, ANIMATE_OPACITY_DOWN_SPEED)
+      .animate({
+        opacity: 1
+      }, ANIMATE_OPACITY_UP_SPEED);
   }
   appendHtml(target, html) {
     Jq(target).append(html);
