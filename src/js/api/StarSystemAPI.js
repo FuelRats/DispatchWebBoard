@@ -30,13 +30,32 @@ const processNewStarSystemData = (data) => {
   }
   const [sysData] = system.data
 
-  if (system.included && system.included[0]) {
-    sysData.bodies = system.included.filter((body) => body.attributes.group_name === 'Star')
-    // cleanup body info
-    Object.keys(sysData.bodies).forEach((body) => {
-      delete sysData.bodies[body].relationships
-      delete sysData.bodies[body].type
-      delete sysData.bodies[body].links
+  if (sysData.attributes.bodies && sysData.attributes.bodies.length > 0) {
+    sysData.attributes.is_populated = 1
+    sysData.bodies = sysData.attributes.bodies.filter(body => body.type === 'Star')
+  } else {
+    sysData.attributes.is_populated = 0
+    let bodies = get(`/api/stars?filter[systemId:eq]=${sysData.id}`)
+
+    // clean up other json properties.
+    delete sysData.relationships
+    delete sysData.type
+    delete sysData.links
+
+    return Promise.all([sysData, bodies]).then(values => {
+      let _sysData = values[0]
+      let _bodies = values[1].json()
+      if (isObject(_bodies) && _bodies.meta.results.returned > 0) {
+        _sysData.bodies = _bodies.data
+
+        Object.keys(sysData.bodies).forEach((body) => {
+          delete sysData.bodies[body].relationships
+          delete sysData.bodies[body].type
+          delete sysData.bodies[body].links
+        })
+      }
+
+      return _sysData
     })
   }
 
@@ -52,7 +71,7 @@ const processNewStarSystemData = (data) => {
 
 
 
-const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts)
+const get = (endpoint, opts) => http.get(url.resolve(AppConfig.SystemsURI, endpoint), opts)
 
 /**
  * Gets system information for the given system name
@@ -72,12 +91,31 @@ const getSystem = (_system) => {
 
     return Promise.resolve(sysData)
   }
-  return get(`/systems?filter[name:eq]=${encodeURIComponent(system)}&include=bodies`)
-    .then((response) => {
-      const sysData = htmlSanitizeObject(processNewStarSystemData(response.json()))
-      sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, sysData === null ? sysData : JSON.stringify(sysData))
+  const populated_systems = get(`/api/populated_systems?filter[name:eq]=${encodeURIComponent(system)}`)
+  const systems = get(`/api/systems?filter[name:eq]=${encodeURIComponent(system)}`)
+
+  return Promise.all([populated_systems, systems]).then(values => {
+    let _populated_system = values[0].json()
+
+    if (!isObject(_populated_system) || _populated_system.meta.results.returned < 1) {
+      let _system = values[1].json()
+      if (!isObject(_system) || _system.meta.results.returned < 1) {
+        return null
+      }
+
+      let sysData = htmlSanitizeObject(processNewStarSystemData(_system).then(r => {
+        sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, r !== null ? JSON.stringify(r) : r)
+        return r
+      }))
       return sysData
-    })
+    }
+
+    let sysData = htmlSanitizeObject(processNewStarSystemData(_populated_system).then(r => {
+      sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, r !== null ? JSON.stringify(r) : r)
+      return r
+    }))
+    return sysData
+  })
 }
 
 
