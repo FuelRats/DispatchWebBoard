@@ -80,7 +80,7 @@ gulp.task('postBuild', (next) => {
     return undefined
   }
 
-  const rsync = require('gulp-rsync') /* eslint-disable-line global-require */// only load rsync if needed
+  const rsync = require('gulp-rsync') /* eslint-disable-line global-require */ // only load rsync if needed
   const rsconf = {
     root: `${paths.buildDir}/`,
     recursive: true,
@@ -131,6 +131,7 @@ gulp.task('webpack', () => {
         WSSURI: JSON.stringify(gulpConf.appconf.WssURI),
         APIURI: JSON.stringify(gulpConf.appconf.ApiURI),
         WEBURI: JSON.stringify(gulpConf.appconf.WebURI),
+        SYSTEMURI: JSON.stringify(gulpConf.appconf.SystemsURI),
       },
       APP: {
         CLIENTID: JSON.stringify(gulpConf.appconf.ClientID),
@@ -144,8 +145,8 @@ gulp.task('webpack', () => {
 
   if (gulpConf.gulp.production) {
     // Minify
-    const Ujs = require('uglifyjs-webpack-plugin') /* eslint-disable-line global-require */// only load uglifyjs if needed
-    /* eslint-disable camelcase */// Camelcase is needed for uglify options
+    const Ujs = require('uglifyjs-webpack-plugin') /* eslint-disable-line global-require */ // only load uglifyjs if needed
+    /* eslint-disable camelcase */ // Camelcase is needed for uglify options
     conf.plugins.push(new Ujs({
       uglifyOptions: {
         compress: {
@@ -170,15 +171,13 @@ gulp.task('webpack', () => {
       test: /\.js$/u,
       enforce: 'pre',
       exclude: /(node_modules|\.spec\.js)/u,
-      use: [
-        {
-          loader: 'webpack-strip-block',
-          options: {
-            start: 'DEVBLOCK:START',
-            end: 'DEVBLOCK:END',
-          },
+      use: [{
+        loader: 'webpack-strip-block',
+        options: {
+          start: 'DEVBLOCK:START',
+          end: 'DEVBLOCK:END',
         },
-      ],
+      }, ],
     })
   }
 
