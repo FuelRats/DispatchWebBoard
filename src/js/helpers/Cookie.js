@@ -1,33 +1,44 @@
-export function GetCookie(name) {
+const getCookie = (name) => {
   try {
-    let cookie = document.cookie;
-    let valueStart = cookie.indexOf(`${name}=`) + 1;
+    const { cookie } = document
+    let valueStart = cookie.indexOf(`${name}=`) + 1
     if (valueStart === 0) {
-      return null;
+      return null
     }
-    valueStart += name.length;
-    let valueEnd = cookie.indexOf(';', valueStart);
+    valueStart += name.length
+    let valueEnd = cookie.indexOf(';', valueStart)
     if (valueEnd === -1) {
-      valueEnd = cookie.length;
+      valueEnd = cookie.length
     }
-    return decodeURIComponent(cookie.substring(valueStart, valueEnd));
+    return decodeURIComponent(cookie.substring(valueStart, valueEnd))
   } catch (error) {
-    return null;
+    return null
   }
 }
 
-export function SetCookie(name, value, expire) {
-  let temp = `${name}=${encodeURIComponent(value)}${(expire !== 0 ? `; path=/; expires=${(new Date((new Date()).getTime() + expire)).toUTCString()};` : '; path=/;')}`;
-  document.cookie = temp;
+const setCookie = (name, value, expire) => {
+  const temp = `${name}=${encodeURIComponent(value)}${(expire === 0 ? '; path=/;' : `; path=/; expires=${(new Date((new Date()).getTime() + expire)).toUTCString()};`)}`
+  document.cookie = temp
 }
 
-export function DelCookie(name) {
-  document.cookie = `${name}=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+const delCookie = (name) => {
+  document.cookie = `${name}=0; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`
 }
 
-export function CanSetCookies() {
-  SetCookie('CookieTest', 'true', 0);
-  let can = GetCookie('CookieTest') !== null;
-  DelCookie('CookieTest');
-  return can;
+const canSetCookies = () => {
+  setCookie('CookieTest', 'true', 0)
+  const can = getCookie('CookieTest') !== null
+  delCookie('CookieTest')
+  return can
+}
+
+
+
+
+
+export {
+  getCookie,
+  setCookie,
+  delCookie,
+  canSetCookies,
 }

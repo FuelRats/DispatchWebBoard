@@ -1,12 +1,12 @@
-import User from './User.js';
+import User from './User'
 
 /* DEVBLOCK:START */
-window.console.debug = window.console.log.bind(window.console);
+window.console.debug = window.console.log.bind(window.console)
 /* DEVBLOCK:END */
 
 
-let dwbApp = new User();
+const dwbApp = new User()
 
 /* DEVBLOCK:START */
-window._dwbDebug = dwbApp;
+window._dwbDebug = dwbApp
 /* DEVBLOCK:END */
