@@ -68,8 +68,7 @@ const _mapRelationshipItems = (relationships, included) => {
  */
 const mapRelationships = (data) => {
   // Ensure some level of integrity, just to be safe.
-  if (!isObject(data)
-      || !isValidProperty(data, 'data', ['array', 'object'])) {
+  if (!isObject(data) || !isValidProperty(data, 'data', ['array', 'object'])) {
     throw new TypeError('Invalid data model')
   }
 
