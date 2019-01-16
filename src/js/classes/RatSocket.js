@@ -220,9 +220,9 @@ class RatSocket {
       this.openRequests[requestID] = (res) => {
         window.clearTimeout(timeout)
         if (res.errors) {
-          reject({ context: this, res })
+          reject({ context: this, data: res })
         }
-        resolve({ context: this, res })
+        resolve({ context: this, data: res })
       }
     })
   }
@@ -334,7 +334,7 @@ class RatSocket {
     const evtListeners = this.listeners[evt]
 
     window.console.debug(`RatSocket - Executing listener functions for: ${evt} with args:`, args)
-    Object.entries(evtListeners).forEach((listener) => {
+    evtListeners.forEach((listener) => {
       // Execute function and get response from it.
       const res = listener.func.apply(this, evtargs)
 
