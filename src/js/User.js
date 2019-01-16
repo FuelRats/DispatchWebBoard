@@ -42,7 +42,7 @@ export default class UserControl {
         localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader)
       }
     } else {
-      this.displayLogin()
+      UserControl.displayLogin()
       return
     }
 
@@ -60,7 +60,7 @@ export default class UserControl {
 
         this.handleLoginSuccess()
       }).catch((error) => {
-        this.handleApiDataFailure(error)
+        UserControl.handleApiDataFailure(error)
       })
     }
   }
@@ -144,9 +144,9 @@ export default class UserControl {
    * Handles API information retrieval errors. TODO: add better user notification that retrieval went wrong.
    * @param {Object} error Error object passed from an Api XHR request error.
    */
-  handleApiDataFailure (error) {
+  static handleApiDataFailure (error) {
     window.console.debug('fr.user.handleApiDataFailure - Api retrieval failure - Displaying login - Error Info: ', error)
-    this.displayLogin()
+    UserControl.displayLogin()
   }
 
   /**
