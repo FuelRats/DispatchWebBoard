@@ -5,22 +5,11 @@ import { getCookie, setCookie, canSetCookies, delCookie } from './helpers'
 import * as FuelRatsApi from './api/FuelRatsApi'
 
 
-const
-      DAYS_IN_YEAR = 365
-
-
+const DAYS_IN_YEAR = 365
 const HOURS_IN_DAY = 24
-
-
 const MINUTES_IN_HOUR = 60
-
-
 const SECONDS_IN_MINUTES = 60
-
-
 const MILLISECONDS_IN_SECOND = 1000
-
-
 const MILLISECONDS_IN_YEAR = DAYS_IN_YEAR * HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTES * MILLISECONDS_IN_SECOND
 
 export default class UserControl {
