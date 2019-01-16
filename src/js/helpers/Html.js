@@ -46,7 +46,7 @@ class Sanitizers {
    * @return {Object}     Sanitized object.
    */
   static htmlSanitizeObject (obj) {
-    Object.entries(obj).reduce((acc, [key, value]) => {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
       if (typeof value === 'string') {
         return {
           ...acc,
