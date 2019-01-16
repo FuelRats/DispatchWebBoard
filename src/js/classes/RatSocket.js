@@ -14,7 +14,7 @@ const REQUEST_TIMEOUT_SEC = 60
 const MILLISECONDS_IN_SECOND = 1000
 
 
-export default class RatSocket {
+class RatSocket {
   /**
    * Websocket handler for the FuelRats API
    * @param  {String} uri - Address of the API to connect to.
@@ -347,3 +347,9 @@ export default class RatSocket {
     return this
   }
 }
+
+
+
+
+
+export default RatSocket
