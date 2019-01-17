@@ -14,7 +14,7 @@ const REQUEST_TIMEOUT_SEC = 60
 const MILLISECONDS_IN_SECOND = 1000
 
 
-export default class RatSocket {
+class RatSocket {
   /**
    * Websocket handler for the FuelRats API
    * @param  {String} uri - Address of the API to connect to.
@@ -220,9 +220,9 @@ export default class RatSocket {
       this.openRequests[requestID] = (res) => {
         window.clearTimeout(timeout)
         if (res.errors) {
-          reject({ context: this, res })
+          reject({ context: this, data: res })
         }
-        resolve({ context: this, res })
+        resolve({ context: this, data: res })
       }
     })
   }
@@ -334,7 +334,7 @@ export default class RatSocket {
     const evtListeners = this.listeners[evt]
 
     window.console.debug(`RatSocket - Executing listener functions for: ${evt} with args:`, args)
-    Object.entries(evtListeners).forEach((listener) => {
+    evtListeners.forEach((listener) => {
       // Execute function and get response from it.
       const res = listener.func.apply(this, evtargs)
 
@@ -347,3 +347,9 @@ export default class RatSocket {
     return this
   }
 }
+
+
+
+
+
+export default RatSocket

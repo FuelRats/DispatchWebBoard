@@ -102,6 +102,8 @@ gulp.task('postBuild', (next) => {
 
 gulp.task('webpack', () => {
   const conf = {
+    mode: gulpConf.gulp.production ? 'production' : 'development',
+    devtool: gulpConf.gulp.production ? false : 'source-map',
     bail: true,
     module: {
       rules: [],
@@ -144,28 +146,6 @@ gulp.task('webpack', () => {
   }))
 
   if (gulpConf.gulp.production) {
-    // Minify
-    const Ujs = require('uglifyjs-webpack-plugin') /* eslint-disable-line global-require */ // only load uglifyjs if needed
-    /* eslint-disable camelcase */ // Camelcase is needed for uglify options
-    conf.plugins.push(new Ujs({
-      uglifyOptions: {
-        compress: {
-          sequences: true,
-          dead_code: true,
-          conditionals: true,
-          booleans: true,
-          unused: true,
-          if_return: true,
-          join_vars: true,
-          pure_funcs: ['window.console.debug'],
-        },
-        output: {
-          comments: false,
-        },
-      },
-    }))
-    /* eslint-enable camelcase */
-
     // Strip debug code.
     conf.module.rules.push({
       test: /\.js$/u,

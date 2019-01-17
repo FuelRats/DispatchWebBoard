@@ -293,7 +293,7 @@ export default class ClientControl {
     row.attr('title',
       rescue.attributes.quotes === null
         ? 'No known quotes....'
-        : rescue.attributes.quotes.map((quote) => `[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}] "${quote.message}" - ${quote.author}`).join('\n'))
+        : rescue.attributes.quotes.map((quote) => `[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}] "${quote.message}" - ${quote.author}`).join('\n'))
     return row
   }
 
@@ -425,7 +425,7 @@ export default class ClientControl {
 
     // Quotes
     if (Array.isArray(rescue.attributes.quotes) && rescue.attributes.quotes.length > 0) {
-      const quotes = rescue.attributes.quotes.map((quote) => `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}Z`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`)
+      const quotes = rescue.attributes.quotes.map((quote) => `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`)
 
       detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes.shift()}</td></tr>`
 

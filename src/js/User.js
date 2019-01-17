@@ -5,22 +5,11 @@ import { getCookie, setCookie, canSetCookies, delCookie } from './helpers'
 import * as FuelRatsApi from './api/FuelRatsApi'
 
 
-const
-      DAYS_IN_YEAR = 365
-
-
+const DAYS_IN_YEAR = 365
 const HOURS_IN_DAY = 24
-
-
 const MINUTES_IN_HOUR = 60
-
-
 const SECONDS_IN_MINUTES = 60
-
-
 const MILLISECONDS_IN_SECOND = 1000
-
-
 const MILLISECONDS_IN_YEAR = DAYS_IN_YEAR * HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTES * MILLISECONDS_IN_SECOND
 
 export default class UserControl {
@@ -53,7 +42,7 @@ export default class UserControl {
         localStorage.setItem(`${AppConfig.AppNamespace}.token`, this.AuthHeader)
       }
     } else {
-      this.displayLogin()
+      UserControl.displayLogin()
       return
     }
 
@@ -71,7 +60,7 @@ export default class UserControl {
 
         this.handleLoginSuccess()
       }).catch((error) => {
-        this.handleApiDataFailure(error)
+        UserControl.handleApiDataFailure(error)
       })
     }
   }
@@ -155,9 +144,9 @@ export default class UserControl {
    * Handles API information retrieval errors. TODO: add better user notification that retrieval went wrong.
    * @param {Object} error Error object passed from an Api XHR request error.
    */
-  handleApiDataFailure (error) {
+  static handleApiDataFailure (error) {
     window.console.debug('fr.user.handleApiDataFailure - Api retrieval failure - Displaying login - Error Info: ', error)
-    this.displayLogin()
+    UserControl.displayLogin()
   }
 
   /**

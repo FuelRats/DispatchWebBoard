@@ -10,24 +10,28 @@ module.exports = {
 
   appconf: {
 
-    // API URLS
-
     // Set this to the WebSocket URL of the FuelRats API instance you're connecting to.
     WssURI: 'wss://api.fuelrats.com:443',
+
     // Set this to the FuelRats API instance you're connecting to.
     ApiURI: 'https://api.fuelrats.com/',
+
     // FuelRats Website instance. www.fuelrats.com for production, beta.fuelrats.com for development
     // This is required for APIv2's implicit grant flow. The authorization process is handled by the FuelRats' main website.
     WebURI: 'https://www.fuelrats.com/',
 
     // FuelRats API ClientID
     ClientID: '00000000-0000-4000-a000-000000000000',
+
     // Title of the page
     AppTitle: 'Page Title',
+
     // This app's publicly accessible address. This is the same address as the oAuth Redirect URL.
     AppURI: 'https://dispatch.domain.tld/',
+
     // Permission scope to request from the API. It is generally recommended you leave this be, but can be edited if creating a feature that requires a new scope.
     AppScope: 'user.read.me rescues.read',
+
     // Namespacing for domain-scoped storage. This is to prevent conflicts with multiple instances on the same sub-domain.
     AppNamespace: 'SomeNamespace',
   },
