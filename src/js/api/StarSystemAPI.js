@@ -28,9 +28,11 @@ const processNewStarSystemData = (data) => {
   if (!isObject(system) || system.meta.results.returned < 1) {
     return null
   }
+  
   const [sysData] = system.data
+  window.console.debug(sysData)
 
-  if (sysData.attributes.bodies && sysData.attributes.bodies.length > 0) {
+  if (sysData.bodies && sysData.bodies.length > 0) {
     sysData.attributes.is_populated = 1
     sysData.bodies = sysData.attributes.bodies.filter(body => body.type === 'Star')
   } else {
@@ -111,6 +113,7 @@ const getSystem = (_system) => {
     }
 
     let sysData = htmlSanitizeObject(processNewStarSystemData(_populated_system).then(r => {
+      window.console.debug(r)
       sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, r !== null ? JSON.stringify(r) : r)
       return r
     }))

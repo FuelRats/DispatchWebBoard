@@ -456,7 +456,7 @@ export default class ClientControl {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`, html)
     }).catch(() => {
       this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`,
-        '<a target="_blank" href="https://www.eddb.io/"><span class="badge badge-red" title="Go to EDDB.io" >NOT IN EDDB</span></a>')
+        '<a target="_blank" href="https://www.edsm.net/"><span class="badge badge-red" title="Go to EDSM.net" >NOT IN EDSM</span></a>')
     })
   }
 
@@ -465,32 +465,32 @@ export default class ClientControl {
       return Promise.reject('')
     }
     return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
-      window.console.debug('this.updateRescueDetail - Additional info found! Adding system-related warnings and eddb link.')
+      window.console.debug('this.updateRescueDetail - Additional info found! Adding system-related warnings and edsm link.')
 
       const sysInfo = data
-      let sysInfoHtml = ''
+      let sysInfoHtmlArray = []
 
       if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
-        sysInfoHtml += '<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span> '
+        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span>');
       }
 
       if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
-        sysInfoHtml += ' <span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span> '
+        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span>')
       }
 
       if (sysInfo.bodies && sysInfo.bodies.length > 0) {
-        const mainStar = sysInfo.bodies.find((body) => body.attributes.is_main_star)
-        if (mainStar && frConst.scoopables.includes(mainStar.attributes.spectral_class)) {
-          sysInfoHtml += ' <span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span> '
+        const mainStar = sysInfo.bodies.find((body) => body.attributes.isMainStar)
+        if (mainStar && mainStar.attributes.isScoopable) {
+          sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span>')
         } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => frConst.scoopables.includes(body.attributes.spectral_class)).length > 0) {
-          sysInfoHtml += ' <span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span> '
+          sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span>')
         }
       }
 
       if (sysInfo.id) {
-        sysInfoHtml += `<a target="_blank" href="https://www.eddb.io/system/${sysInfo.id}"><span class="badge badge-green" title="View on EDDB.io" >EDDB</span></a>`
+        sysInfoHtmlArray.push(`<a target="_blank" href="https://www.edsm.net/en/system/id/${sysInfo.id}/name/${sysInfo.attributes.name}"><span class="badge badge-green" title="View on EDSM.net">EDSM</span></a>`)
       }
-      return Promise.resolve(sysInfoHtml)
+      return Promise.resolve(sysInfoHtmlArray.join(' '))
     })
   }
 
