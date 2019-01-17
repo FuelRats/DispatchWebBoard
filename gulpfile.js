@@ -106,7 +106,14 @@ gulp.task('webpack', () => {
     devtool: gulpConf.gulp.production ? false : 'source-map',
     bail: true,
     module: {
-      rules: [],
+      rules: [
+        {
+          test: /\.(js|jsx|mjs)$/u,
+          exclude: /node_modules/u,
+          loader: 'babel-loader',
+          options: { babelrc: true },
+        },
+      ],
     },
     output: {
       filename: `app.${fingerprint}.js`,
