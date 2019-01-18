@@ -151,13 +151,15 @@ gulp.task('webpack', () => {
       test: /\.js$/u,
       enforce: 'pre',
       exclude: /(node_modules|\.spec\.js)/u,
-      use: [{
-        loader: 'webpack-strip-block',
-        options: {
-          start: 'DEVBLOCK:START',
-          end: 'DEVBLOCK:END',
+      use: [
+        {
+          loader: 'webpack-strip-block',
+          options: {
+            start: 'DEVBLOCK:START',
+            end: 'DEVBLOCK:END',
+          },
         },
-      }, ],
+      ],
     })
   }
 
