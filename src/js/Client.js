@@ -468,13 +468,13 @@ export default class ClientControl {
       window.console.debug('this.updateRescueDetail - Additional info found! Adding system-related warnings and edsm link.')
 
       const sysInfo = data
-      let sysInfoHtmlArray = []
+      const sysInfoHtmlArray = []
 
       if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
-        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span>');
+        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span>')
       }
 
-      if (sysInfo.attributes.is_populated && sysInfo.attributes.is_populated === 1) {
+      if (sysInfo.attributes.isPopulated && sysInfo.attributes.isPopulated === 1) {
         sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span>')
       }
 
@@ -482,7 +482,7 @@ export default class ClientControl {
         const mainStar = sysInfo.bodies.find((body) => body.attributes.isMainStar)
         if (mainStar && mainStar.attributes.isScoopable) {
           sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span>')
-        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => frConst.scoopables.includes(body.attributes.spectral_class)).length > 0) {
+        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => body.attributes.isScoopable).length > 0) {
           sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span>')
         }
       }
