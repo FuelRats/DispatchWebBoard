@@ -13,9 +13,7 @@ import {
   isObject,
 } from '../helpers'
 
-
-
-
+const get = (endpoint, opts) => http.get(url.resolve(AppConfig.SystemsURI, endpoint), opts)
 
 /**
  * Formats returned data into a single object for ease of use.
@@ -28,25 +26,24 @@ const processNewStarSystemData = (data) => {
   if (!isObject(system) || system.meta.results.returned < 1) {
     return null
   }
-  
+
   const [sysData] = system.data
   window.console.debug(sysData)
 
   if (sysData.bodies && sysData.bodies.length > 0) {
-    sysData.attributes.is_populated = 1
-    sysData.bodies = sysData.attributes.bodies.filter(body => body.type === 'Star')
+    sysData.attributes.isPopulated = 1
+    sysData.bodies = sysData.attributes.bodies.filter((body) => body.type === 'Star')
   } else {
-    sysData.attributes.is_populated = 0
-    let bodies = get(`/api/stars?filter[systemId:eq]=${sysData.id}`)
+    sysData.attributes.isPopulated = 0
+    const bodies = get(`/api/stars?filter[systemId:eq]=${sysData.id}`)
 
     // clean up other json properties.
     delete sysData.relationships
     delete sysData.type
     delete sysData.links
 
-    return Promise.all([sysData, bodies]).then(values => {
-      let _sysData = values[0]
-      let _bodies = values[1].json()
+    return Promise.all([sysData, bodies]).then((values) => {
+      const [_sysData, _bodies] = [values[0], values[1].json()]
       if (isObject(_bodies) && _bodies.meta.results.returned > 0) {
         _sysData.bodies = _bodies.data
 
@@ -73,8 +70,6 @@ const processNewStarSystemData = (data) => {
 
 
 
-const get = (endpoint, opts) => http.get(url.resolve(AppConfig.SystemsURI, endpoint), opts)
-
 /**
  * Gets system information for the given system name
  *
@@ -93,29 +88,28 @@ const getSystem = (_system) => {
 
     return Promise.resolve(sysData)
   }
-  const populated_systems = get(`/api/populated_systems?filter[name:eq]=${encodeURIComponent(system)}`)
+  const populatedSystems = get(`/api/populated_systems?filter[name:eq]=${encodeURIComponent(system)}`)
   const systems = get(`/api/systems?filter[name:eq]=${encodeURIComponent(system)}`)
 
-  return Promise.all([populated_systems, systems]).then(values => {
-    let _populated_system = values[0].json()
+  return Promise.all([populatedSystems, systems]).then((values) => {
+    const _populatedSystem = values[0].json()
 
-    if (!isObject(_populated_system) || _populated_system.meta.results.returned < 1) {
-      let _system = values[1].json()
-      if (!isObject(_system) || _system.meta.results.returned < 1) {
+    if (!isObject(_populatedSystem) || _populatedSystem.meta.results.returned < 1) {
+      const _nonPopSystem = values[1].json()
+      if (!isObject(_nonPopSystem) || _nonPopSystem.meta.results.returned < 1) {
         return null
       }
 
-      let sysData = htmlSanitizeObject(processNewStarSystemData(_system).then(r => {
-        sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, r !== null ? JSON.stringify(r) : r)
-        return r
+      const sysData = htmlSanitizeObject(processNewStarSystemData(system).then((resolvedSystem) => {
+        sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, resolvedSystem === null ? resolvedSystem : JSON.stringify(resolvedSystem))
+        return resolvedSystem
       }))
       return sysData
     }
 
-    let sysData = htmlSanitizeObject(processNewStarSystemData(_populated_system).then(r => {
-      window.console.debug(r)
-      sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, r !== null ? JSON.stringify(r) : r)
-      return r
+    const sysData = htmlSanitizeObject(processNewStarSystemData(_populatedSystem).then((resolvedSystem) => {
+      sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, resolvedSystem === null ? resolvedSystem : JSON.stringify(resolvedSystem))
+      return resolvedSystem
     }))
     return sysData
   })
