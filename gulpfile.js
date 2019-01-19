@@ -56,15 +56,15 @@ const gulpConf = require(`./app.${buildEnvironment}.config.js`)
 const paths = {
   jsEntry: 'src/js/app.js',
   cssEntry: 'src/css/app.css',
-  buildDir: 'deploy',
-  distDir: path.resolve(__dirname, 'deploy', 'dist'),
+  buildDir: 'dist',
+  appDir: path.resolve(__dirname, 'dist', 'app'),
 }
 
 // Tasks
 
 gulp.task('preBuild', (next) => {
   del([paths.buildDir]).then(() => {
-    mkdirp(paths.distDir, () => {
+    mkdirp(paths.appDir, () => {
       next()
     })
   })
@@ -172,7 +172,7 @@ gulp.task('webpack', () => {
 
   return gulp.src(paths.jsEntry)
     .pipe(webpackStream(conf))
-    .pipe(gulp.dest(paths.distDir))
+    .pipe(gulp.dest(paths.appDir))
 })
 
 gulp.task('cleancss', () => gulp.src(paths.cssEntry)
@@ -184,11 +184,11 @@ gulp.task('cleancss', () => gulp.src(paths.cssEntry)
   .pipe(rename({
     suffix: `.${fingerprint}`,
   }))
-  .pipe(gulp.dest(paths.distDir)))
+  .pipe(gulp.dest(paths.appDir)))
 
 gulp.task('html', () => gulp.src(`./src/index.${indexSuffix}.html`)
-  .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
-  .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
+  .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="app/app.${fingerprint}.css" />`))
+  .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="app/app.${fingerprint}.js" async defer></script>`))
   .pipe(rename('index.html'))
   .pipe(gulp.dest(paths.buildDir)))
 

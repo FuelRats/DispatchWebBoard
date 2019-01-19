@@ -3,9 +3,9 @@ app.*.config.js
 *.sublime-workspace
 .idea
 
-# Build directory
+# distributable directory
 
-deploy/
+dist/
 
 # From https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
