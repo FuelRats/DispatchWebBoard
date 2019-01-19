@@ -80,7 +80,7 @@ gulp.task('postBuild', (next) => {
     return undefined
   }
 
-  const rsync = require('gulp-rsync') /* eslint-disable-line global-require */// only load rsync if needed
+  const rsync = require('gulp-rsync') /* eslint-disable-line global-require */ // only load rsync if needed
   const rsconf = {
     root: `${paths.buildDir}/`,
     recursive: true,
@@ -133,6 +133,7 @@ gulp.task('webpack', () => {
         WSSURI: JSON.stringify(gulpConf.appconf.WssURI),
         APIURI: JSON.stringify(gulpConf.appconf.ApiURI),
         WEBURI: JSON.stringify(gulpConf.appconf.WebURI),
+        SYSTEMURI: JSON.stringify(gulpConf.appconf.SystemsURI),
       },
       APP: {
         CLIENTID: JSON.stringify(gulpConf.appconf.ClientID),
