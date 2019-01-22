@@ -12,13 +12,10 @@
   -webkit-font-smoothing: antialiased;
   text-overflow: ellipsis;
 }
-.user-menu[data-displaystate="none"] {
-  display: none;
-}
-.user-menu[data-displaystate="login"] {
+#app:not(.loggedIn) .user-menu {
   display: flex;
 }
-.user-menu[data-displaystate="menu"] {
+#app.loggedIn .user-menu {
   display: block;
   min-width: 52px;
   min-height: 52px;
@@ -30,13 +27,7 @@
   background: var(--headerBgColor);
   border: .4rem solid var(--accentColor);
 }
-.user-menu[data-displaystate="login"] *:not(.login) {
-  display: none;
-}
-.user-menu[data-displaystate="menu"] button.button.login {
-  display: none;
-}
-.user-menu.open[data-displaystate="menu"] {
+.loggedIn .user-menu.open {
   max-width: 250px;
   max-height: 250px;
   border-radius: 0;
