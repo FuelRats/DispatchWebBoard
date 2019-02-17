@@ -1,7 +1,7 @@
 /* eslint-disable max-len, no-restricted-syntax, multiline-ternary, class-methods-use-this */
 import jq from 'jquery' // I'm so sorry.
 import Clipboard from 'clipboard'
-import appConfig from './config/config'
+import appConfig from './AppConfig'
 import RatSocket from './classes/RatSocket'
 import * as StarSystemAPI from './api/StarSystemAPI'
 import * as frConst from './util/frConstants'
@@ -462,7 +462,7 @@ export default class ClientControl {
 
   getSystemHtml (rescue) {
     if (!rescue) {
-      return Promise.reject('')
+      return Promise.reject(new Error())
     }
     return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
       window.console.debug('this.updateRescueDetail - Additional info found! Adding system-related warnings and edsm link.')

@@ -136,19 +136,16 @@ gulp.task('webpack', () => {
 
   conf.plugins.push(new webpack.DefinePlugin({
     ENV: {
-      FR: {
-        WSSURI: JSON.stringify(gulpConf.appconf.WssURI),
-        APIURI: JSON.stringify(gulpConf.appconf.ApiURI),
-        WEBURI: JSON.stringify(gulpConf.appconf.WebURI),
-        SYSTEMURI: JSON.stringify(gulpConf.appconf.SystemsURI),
-      },
-      APP: {
-        CLIENTID: JSON.stringify(gulpConf.appconf.ClientID),
-        APPTITLE: JSON.stringify(gulpConf.appconf.AppTitle),
-        APPURI: JSON.stringify(gulpConf.appconf.AppURI),
-        APPSCOPE: JSON.stringify(gulpConf.appconf.AppScope),
-        APPNAMESPACE: JSON.stringify(gulpConf.appconf.AppNamespace),
-      },
+      WssURI: JSON.stringify(gulpConf.appconf.WssURI || 'wss://dev.api.fuelrats.com:443'),
+      ApiURI: JSON.stringify(gulpConf.appconf.ApiURI || 'https://dev.api.fuelrats.com/'),
+      WebURI: JSON.stringify(gulpConf.appconf.WebURI || 'https://beta.fuelrats.com/'),
+      SystemsURI: JSON.stringify(gulpConf.appconf.SystemsURI || 'https://system.api.fuelrats.com/'),
+      ClientID: JSON.stringify(gulpConf.appconf.ClientID || ''),
+      AppTitle: JSON.stringify(gulpConf.appconf.AppTitle || 'Dispatch Web Board'),
+      AppURI: JSON.stringify(gulpConf.appconf.AppURI || ''),
+      AppScope: JSON.stringify(gulpConf.appconf.AppScope || 'user.read.me rescue.read'),
+      AppNamespace: JSON.stringify(gulpConf.appconf.AppNamespace || 'dwb'),
+      production: JSON.stringify(gulpConf.gulp.production),
     },
   }))
 

@@ -11,7 +11,7 @@ import Header from './components/Header'
 import LoginPrompt from './components/LoginPrompt'
 import UserControls from './components/UserControls'
 import RescueBoard from './components/RescueBoard'
-import { withStoreProvider } from './store'
+import { connect, withRedux } from './store'
 
 
 
@@ -25,7 +25,8 @@ window.console.debug = window.console.log.bind(window.console)
 
 
 
-@withStoreProvider
+@withRedux
+@connect
 class App extends Component {
   render = () => (
     <div id="app">
@@ -37,6 +38,8 @@ class App extends Component {
       <UserControls />
     </div>
   )
+
+  mapDispatchToProps('user', 'systems')
 }
 
 
