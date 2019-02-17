@@ -63,11 +63,14 @@ const processNewStarSystemData = (data) => {
   delete sysData.type
   delete sysData.links
 
-  return sysData
+  return htmlSanitizeObject(sysData)
 }
 
 
-
+const cacheSystemData = (sysName, sysData) => {
+  sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${sysName}`, sysData ? JSON.stringify(sysData) : null)
+  return sysData
+}
 
 
 /**
@@ -100,23 +103,12 @@ const getSystem = (_system) => {
         return null
       }
 
-      const sysData = htmlSanitizeObject(processNewStarSystemData(system).then((resolvedSystem) => {
-        sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, resolvedSystem === null ? resolvedSystem : JSON.stringify(resolvedSystem))
-        return resolvedSystem
-      }))
-      return sysData
+      return processNewStarSystemData(_nonPopSystem).then((resolvedSystem) => cacheSystemData(system, resolvedSystem))
     }
 
-    const sysData = htmlSanitizeObject(processNewStarSystemData(_populatedSystem).then((resolvedSystem) => {
-      sessionStorage.setItem(`${AppConfig.AppNamespace}.system.${system}`, resolvedSystem === null ? resolvedSystem : JSON.stringify(resolvedSystem))
-      return resolvedSystem
-    }))
-    return sysData
+    return processNewStarSystemData(_populatedSystem).then((resolvedSystem) => cacheSystemData(system, resolvedSystem))
   })
 }
-
-
-
 
 
 export {
