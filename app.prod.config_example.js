@@ -16,6 +16,9 @@ module.exports = {
     // Set this to the FuelRats API instance you're connecting to.
     ApiURI: 'https://api.fuelrats.com/',
 
+    // Set this to the SystemsAPI instance you're connecting to. This usually shouldn't be changed.
+    SystemsURI: 'https://systems.api.fuelrats.com/',
+
     // FuelRats Website instance. www.fuelrats.com for production, beta.fuelrats.com for development
     // This is required for APIv2's implicit grant flow. The authorization process is handled by the FuelRats' main website.
     WebURI: 'https://www.fuelrats.com/',
