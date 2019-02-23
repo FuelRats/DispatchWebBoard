@@ -12,7 +12,7 @@ before_script:
 script:
 - gulp --env ${ENV_NAME} --buildid ${TRAVIS_COMMIT}
 addons:
-  ssh_known_hosts: cheddar.fuelrats.com
+  ssh_known_hosts: emmental.fuelrats.com
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_0b2fcf215327_key -iv $encrypted_0b2fcf215327_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
 - eval "$(ssh-agent -s)"
@@ -27,11 +27,11 @@ notifications:
 deploy:
 - provider: script
   skip_cleanup: true
-  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy/ fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/prod
+  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy/ fuelrats@emmental.fuelrats.com:/var/www/dispatch.fuelrats.com/prod
   on:
     branch: master
 - provider: script
   skip_cleanup: true
-  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy/ fuelrats@cheddar.fuelrats.com:/var/www/dispatch.fuelrats.com/beta
+  script: rsync -r --delete --delete-after --quiet $TRAVIS_BUILD_DIR/deploy/ fuelrats@emmental.fuelrats.com:/var/www/dispatch.fuelrats.com/beta
   on:
     branch: beta
