@@ -1,108 +1,115 @@
 /* jslint node:true */
 
 // Required Modules
-const 
-  gulp = require('gulp'),
-  gulpUtil = require('gulp-util'),
-  path = require('path'),
-  del = require('del'),
-  cpx = require('cpx'),
-  mkdirp = require('mkdirp'),
-  rename = require('gulp-rename'),
-  inject = require('gulp-inject-string'),
-  cleanCSS = require('gulp-clean-css'),
-  webpack = require('webpack'),
-  webpackStream = require('webpack-stream');
+const gulp = require('gulp')
+const gulpUtil = require('gulp-util')
+const path = require('path')
+const del = require('del')
+const cpx = require('cpx')
+const mkdirp = require('mkdirp')
+const rename = require('gulp-rename')
+const inject = require('gulp-inject-string')
+const cleanCSS = require('gulp-clean-css')
+const webpack = require('webpack')
+const webpackStream = require('webpack-stream')
 
 // Consts
-
-const
-  DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-  DEFAULT_ID_LENGTH = 24;
+const DEFAULT_ALLOWED_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+const DEFAULT_ID_LENGTH = 24
 
 
 // Utility Functions
 
 /**
  * Generates a random base64 ID of a given char length
- * 
+ *
  * @param  {Number=} length Desired length of the ID
  * @return {String}         Generated base64 ID
  */
-function makeID(length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) {
-  // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
-  return Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-}
+// Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
+const makeID = (length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) => Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
+
 
 // Variables
 
-const 
-  buildEnvironment = gulpUtil.env['env'] || 'dev',   // Sets which app config to use
-  indexSuffix = gulpUtil.env['index'] || 'main',     // Sets which index file to use
-  deploy = gulpUtil.env['deploy'],                   // Enables automatic deployment to remote server
-  fingerprint = gulpUtil.env['buildid'] || makeID(); // Randomized fingerprint for the build.
+// Sets which app config to use
+const buildEnvironment = gulpUtil.env.env || 'dev'
 
-gulpUtil.log(`Using Config file: ./app.${buildEnvironment}.config.js`);
-gulpUtil.log(`Using Index file: ./src/index.${indexSuffix}.html`);
-gulpUtil.log(`Using Build ID: ${fingerprint}`);
+// Sets which index file to use
+const indexSuffix = gulpUtil.env.index || 'main'
+
+// Enables automatic deployment to remote server
+const deploy = gulpUtil.env.deploy || false
+
+// Randomized fingerprint for the build.
+const fingerprint = gulpUtil.env.buildid || makeID()
+
+gulpUtil.log(`Using Config file: ./app.${buildEnvironment}.config.js`)
+gulpUtil.log(`Using Index file: ./src/index.${indexSuffix}.html`)
+gulpUtil.log(`Using Build ID: ${fingerprint}`)
 
 // Build Configs
+// eslint-disable-next-line import/no-dynamic-require
+const gulpConf = require(`./app.${buildEnvironment}.config.js`)
 
-const 
-  gulpConf = require(`./app.${buildEnvironment}.config.js`),
-  paths = {
-    jsEntry: 'src/js/app.js',
-    cssEntry: 'src/css/app.css',
-    buildDir: 'deploy',
-    distDir: path.resolve(__dirname, 'deploy', 'dist')
-  };
+
+const paths = {
+  jsEntry: 'src/js/app.js',
+  cssEntry: 'src/css/app.css',
+  buildDir: 'deploy',
+  distDir: path.resolve(__dirname, 'deploy', 'dist'),
+}
 
 // Tasks
 
-gulp.task('preBuild', function(next) {
+gulp.task('preBuild', (next) => {
   del([paths.buildDir]).then(() => {
     mkdirp(paths.distDir, () => {
-      next();
-    });
-  });
-});
+      next()
+    })
+  })
+})
 
-gulp.task('postBuild', function(next) {
-
+gulp.task('postBuild', (next) => {
   // Copy all static files from src dir.
-  cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir);
+  cpx.copySync('src/**/*.{png,jpg,ico}', paths.buildDir)
 
   // Deployment
-  if (!deploy) { next(); return; }
-
-  const rsync = require('gulp-rsync');
-  const rsconf = Object.assign({
-    root: `${paths.buildDir}/`,
-    recursive: true,
-    clean: true
-  }, gulpConf.rsync);
-  
-  if (!rsconf.hostname || !rsconf.destination) {
-    gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`);
-    next();
-    return;
+  if (!deploy) {
+    next()
+    return undefined
   }
 
-  gulpUtil.log(`Deploying build to ${rsconf.hostname}`);
+  const rsync = require('gulp-rsync') /* eslint-disable-line global-require */ // only load rsync if needed
+  const rsconf = {
+    root: `${paths.buildDir}/`,
+    recursive: true,
+    clean: true,
+    ...gulpConf.rsync,
+  }
+
+  if (!rsconf.hostname || !rsconf.destination) {
+    gulpUtil.log(`Deployment failed. Invalid rsync block in app.${buildEnvironment}.config.js`)
+    next()
+    return undefined
+  }
+
+  gulpUtil.log(`Deploying build to ${rsconf.hostname}`)
   return gulp.src(`${paths.buildDir}/**`)
-    .pipe(rsync(rsconf));
-});
+    .pipe(rsync(rsconf))
+})
 
 
-gulp.task('webpack', function() {
-  
-  let conf = {
+gulp.task('webpack', () => {
+  const conf = {
+    mode: gulpConf.gulp.production ? 'production' : 'development',
+    devtool: gulpConf.gulp.production ? false : 'source-map',
     bail: true,
     module: {
-      rules: []
+      rules: [],
     },
     output: {
-      filename: `app.${fingerprint}.js`
+      filename: `app.${fingerprint}.js`,
     },
     plugins: [],
     stats: { // Full preset object required due to an error with current version of webpack? ¯\_(ツ)_/¯
@@ -116,93 +123,70 @@ gulp.task('webpack', function() {
       errorDetails: true,
       publicPath: true,
       exclude: () => false,
-      maxModules: Infinity
-    }
-  };
+      maxModules: Infinity,
+    },
+  }
 
   conf.plugins.push(new webpack.DefinePlugin({
     ENV: {
       FR: {
-        'WSSURI': JSON.stringify(gulpConf.appconf.WssURI),
-        'APIURI': JSON.stringify(gulpConf.appconf.ApiURI),
-        'WEBURI': JSON.stringify(gulpConf.appconf.WebURI)
+        WSSURI: JSON.stringify(gulpConf.appconf.WssURI),
+        APIURI: JSON.stringify(gulpConf.appconf.ApiURI),
+        WEBURI: JSON.stringify(gulpConf.appconf.WebURI),
+        SYSTEMURI: JSON.stringify(gulpConf.appconf.SystemsURI),
       },
       APP: {
-        'CLIENTID': JSON.stringify(gulpConf.appconf.ClientID),
-        'APPTITLE': JSON.stringify(gulpConf.appconf.AppTitle),
-        'APPURI': JSON.stringify(gulpConf.appconf.AppURI),
-        'APPSCOPE': JSON.stringify(gulpConf.appconf.AppScope),
-        'APPNAMESPACE': JSON.stringify(gulpConf.appconf.AppNamespace)
-      }
-    }
-  }));
+        CLIENTID: JSON.stringify(gulpConf.appconf.ClientID),
+        APPTITLE: JSON.stringify(gulpConf.appconf.AppTitle),
+        APPURI: JSON.stringify(gulpConf.appconf.AppURI),
+        APPSCOPE: JSON.stringify(gulpConf.appconf.AppScope),
+        APPNAMESPACE: JSON.stringify(gulpConf.appconf.AppNamespace),
+      },
+    },
+  }))
 
   if (gulpConf.gulp.production) {
-    // Minify
-    const ujs = require('uglifyjs-webpack-plugin');
-    conf.plugins.push(new ujs({
-      uglifyOptions: {
-        compress: {
-          sequences: true,
-          dead_code: true,
-          conditionals: true,
-          booleans: true,
-          unused: true,
-          if_return: true,
-          join_vars: true,
-          pure_funcs: ['window.console.debug']
-        },
-        output: {
-          comments: false
-        }
-      }
-    }));
-
     // Strip debug code.
     conf.module.rules.push({
-      test: /\.js$/,
+      test: /\.js$/u,
       enforce: 'pre',
-      exclude: /(node_modules|\.spec\.js)/,
+      exclude: /(node_modules|\.spec\.js)/u,
       use: [
         {
           loader: 'webpack-strip-block',
           options: {
             start: 'DEVBLOCK:START',
-            end: 'DEVBLOCK:END'
-          }
+            end: 'DEVBLOCK:END',
+          },
         },
-      ]
-    });
+      ],
+    })
   }
 
   return gulp.src(paths.jsEntry)
     .pipe(webpackStream(conf))
-    .pipe(gulp.dest(paths.distDir));
-});
+    .pipe(gulp.dest(paths.distDir))
+})
 
-gulp.task('cleancss', function() {
-  return gulp.src(paths.cssEntry)
-    .pipe(cleanCSS({
-      level: 2,
-      inline: ['local', 'fonts.googleapis.com'],
-      format: gulpConf.gulp.production ? false : 'beautify'
-    }))
-    .pipe(rename({
-      suffix: `.${fingerprint}`
-    }))
-    .pipe(gulp.dest(paths.distDir));
-});
+gulp.task('cleancss', () => gulp.src(paths.cssEntry)
+  .pipe(cleanCSS({
+    level: 2,
+    inline: ['local', 'fonts.googleapis.com'],
+    format: gulpConf.gulp.production ? false : 'beautify',
+  }))
+  .pipe(rename({
+    suffix: `.${fingerprint}`,
+  }))
+  .pipe(gulp.dest(paths.distDir)))
 
-gulp.task('html', function() {
-  return gulp.src(`./src/index.${indexSuffix}.html`)
-    .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
-    .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
-    .pipe(rename('index.html'))
-    .pipe(gulp.dest(paths.buildDir))
-});
+gulp.task('html', () => gulp.src(`./src/index.${indexSuffix}.html`)
+  .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
+  .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
+  .pipe(rename('index.html'))
+  .pipe(gulp.dest(paths.buildDir)))
 
 
 // Task Defaults and Shortcuts
-gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss', 'html'), 'postBuild'));
-gulp.task('js', gulp.series('webpack', 'postBuild'));
-gulp.task('css', gulp.series('cleancss', 'postBuild'));
+gulp.task('default', gulp.series('preBuild', gulp.parallel('webpack', 'cleancss', 'html'), 'postBuild'))
+gulp.task('js', gulp.series('webpack', 'postBuild'))
+gulp.task('css', gulp.series('cleancss', 'postBuild'))

@@ -1,6 +1,7 @@
 # User-specific project files.
 app.*.config.js
 *.sublime-workspace
+.idea
 
 # Build directory
 
