@@ -42,7 +42,7 @@
     "mkdirp": "^0.5.1",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react-dom": "^16.2.1",
     "react-toggle": "^4.0.2",
     "timsort": "^0.3.0",
     "uglify-es": "^3.3.5",
