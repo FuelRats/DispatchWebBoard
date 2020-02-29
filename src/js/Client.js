@@ -392,7 +392,10 @@ export default class ClientControl {
                                         <tbody>
       ${rescue.attributes.data.IRCNick ? `<tr class="rdetail-info">
                                             <td class="rdetail-info-title">IRC Nick</td>
-                                            <td class="rdetail-info-value">${rescue.attributes.data.IRCNick}</td>
+                                            <td class="rdetail-info-value btn-clipboard" data-clipboard-text="${rescue.attributes.data.IRCNick}">
+                                              ${rescue.attributes.data.IRCNick}
+                                              <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+                                            </td>
                                           </tr>` : ''}
       ${rescue.attributes.system ? `<tr class="rdetail-info">
                                             <td class="rdetail-info-title">System</td>
