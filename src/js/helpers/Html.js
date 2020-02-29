@@ -6,8 +6,8 @@ class Sanitizers {
   /**
    * Sanitize a given string to make it DOM safe.
    *
-   * @param  {String} string String to sanitized
-   * @return {String}        String clean of HTML-specific characters.
+   * @param   {string} string String to sanitized
+   * @returns {string}        String clean of HTML-specific characters.
    */
   static htmlSanitize (string) {
     return string.replace(/&/gu, '&amp;')
@@ -21,8 +21,8 @@ class Sanitizers {
   /**
    * Deep HTML sanitation of all string values within an array.
    *
-   * @param  {Object[]} array Array to sanitize
-   * @return {Object}         Sanitized object.
+   * @param   {object[]} array Array to sanitize
+   * @returns {object}         Sanitized object.
    */
   static htmlSanitizeArray (array) {
     return array.map((value) => {
@@ -42,8 +42,8 @@ class Sanitizers {
   /**
    * Deep HTML sanitation of all string values of an object.
    *
-   * @param  {Object} obj Object to sanitize
-   * @return {Object}     Sanitized object.
+   * @param   {object} obj Object to sanitize
+   * @returns {object}     Sanitized object.
    */
   static htmlSanitizeObject (obj) {
     return Object.entries(obj).reduce((acc, [key, value]) => {

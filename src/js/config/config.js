@@ -2,7 +2,9 @@
 
 const environment = ENV
 
-const getEnvironmentVariable = (namespace, prop) => (environment && environment[namespace] && environment[namespace][prop] ? environment[namespace][prop] : null)
+const getEnvironmentVariable = (namespace, prop) => {
+  return (environment && environment[namespace] && environment[namespace][prop] ? environment[namespace][prop] : null)
+}
 
 const config = {
   WssURI: getEnvironmentVariable('FR', 'WSSURI') || 'wss://dev.api.fuelrats.com:443',

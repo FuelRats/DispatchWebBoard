@@ -17,6 +17,11 @@ export const platform = {
     long: 'Unknown...',
   },
 }
+
+
+
+
+
 export const language = {
   bg: {
     short: 'BG',

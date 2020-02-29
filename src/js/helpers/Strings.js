@@ -25,36 +25,30 @@ const TEN = 10
 /**
  * Generates a random base64 ID of a given char length
  *
- * @param  {Number=} length Desired length of the ID
- * @return {String}         Generated base64 ID
+ * @param   {number=} length Desired length of the ID
+ * @param   {string}  chars  Allowed Chars
+ * @returns {string}         Generated base64 ID
  */
-const makeID = (length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) => Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
+const makeID = (length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) => {
+  return Array.from(Array(length), () => {
+    return chars.charAt(Math.floor(Math.random() * chars.length))
+  }).join('')
+}
 
 
 /**
  * Formats a date object to the galactic standard date-time format. (yyyy MMM dd HH:mm:ss)
  *
- * @param  {Object} date Date object to convert
- * @return {String}      Formatted date string
+ * @param   {object} date Date object to convert
+ * @returns {string}      Formatted date string
  */
 const makeDateHumanReadable = (date) => {
   // Extract required information to be formatted
-  const
-        year = date.getUTCFullYear() + GAME_TIME_YEAR_DISPARITY
-
-
+  const year = date.getUTCFullYear() + GAME_TIME_YEAR_DISPARITY
   const month = monthString[date.getUTCMonth()]
-
-
   const day = date.getUTCDate() < TEN ? `0${date.getUTCDate()}` : date.getUTCDate()
-
-
   const hour = date.getUTCHours() < TEN ? `0${date.getUTCHours()}` : date.getUTCHours()
-
-
   const minute = date.getUTCMinutes() < TEN ? `0${date.getUTCMinutes()}` : date.getUTCMinutes()
-
-
   const second = date.getUTCSeconds() < TEN ? `0${date.getUTCSeconds()}` : date.getUTCSeconds()
 
   // Format: 1970 JAN 01 00:00:00
@@ -64,9 +58,9 @@ const makeDateHumanReadable = (date) => {
 /**
  * Takes the difference between the provided start and end time, then formats it into a string. (HH:mm:ss)
  *
- * @param  {Object} startTime starting time
- * @param  {Object} endTime   ending time
- * @return {String}           Formatted time string
+ * @param   {object} startTime starting time
+ * @param   {object} endTime   ending time
+ * @returns {string}           Formatted time string
  */
 const makeTimeSpanString = (startTime, endTime) => {
   // Get disparity between start and end times, then convert that disparity to hours, minutes, and seconds.

@@ -8,11 +8,10 @@ import {
 
 
 
-/**
-  * Private function
-  */
 const _findInclude = (member, included) => {
-  const includeMatches = included.filter((obj) => (!obj.id || !obj.type ? false : obj.id === member.id && obj.type === member.type))
+  const includeMatches = included.filter((obj) => {
+    return (!obj.id || !obj.type ? false : obj.id === member.id && obj.type === member.type)
+  })
   if (includeMatches.length > 1) {
     window.console.error('fr.user.mapProfileRelationships.findInclude - Multiple matches to included filter: ', includeMatches)
   }
@@ -23,9 +22,6 @@ const _findInclude = (member, included) => {
 
 
 
-/**
- * Private function
- */
 const _mapRelationshipItems = (relationships, included) => {
   if (!isObject(relationships) || !Array.isArray(included)) {
     throw new TypeError('Invalid Parameter Types.')
@@ -60,12 +56,6 @@ const _mapRelationshipItems = (relationships, included) => {
 
 
 
-/**
- * Maps included relationship data to the relationship of the main data model.
- *
- * @param  {[type]} data [description]
- * @return {[type]}      [description]
- */
 const mapRelationships = (data) => {
   // Ensure some level of integrity, just to be safe.
   if (!isObject(data) || !isValidProperty(data, 'data', ['array', 'object'])) {

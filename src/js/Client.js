@@ -1,10 +1,8 @@
 /* eslint-disable max-len, no-restricted-syntax, multiline-ternary, class-methods-use-this */
-import jq from 'jquery' // I'm so sorry.
 import Clipboard from 'clipboard'
-import appConfig from './config/config'
+import jq from 'jquery' // I'm so sorry.
 import RatSocket from './classes/RatSocket'
-import * as StarSystemAPI from './api/StarSystemAPI'
-import * as frConst from './util/frConstants'
+import appConfig from './config/config'
 import {
   getUrlParam,
   mapRelationships,
@@ -12,6 +10,7 @@ import {
   makeDateHumanReadable,
   htmlSanitizeObject,
 } from './helpers'
+import * as frConst from './util/frConstants'
 
 const ANIMATE_OPACITY_DOWN_SPEED = 100
 const ANIMATE_OPACITY_UP_SPEED = 500
@@ -34,7 +33,7 @@ export default class ClientControl {
 
     // Theming shit. This needs to be actually made a thing instead of just a hack to make it work.
     const themever = 1
-    const saveTheme = function saveTheme () {
+    const saveTheme = () => {
       window.localStorage.setItem(`${appConfig.AppNamespace}.window.theme`, JSON.stringify({
         style: jq('body').attr('style'),
         _meta: {
@@ -59,9 +58,6 @@ export default class ClientControl {
       this.setSelectedRescue(event.currentTarget.dataset.rescueSid)
     }).on('click', '.class-toggle', (event) => {
       jq(event.currentTarget.dataset.target).toggleClass(event.currentTarget.dataset.targetClass)
-    }).on('click', 'a.panel-settings-toggle', (event) => {
-      window.alert("This doesn't do anything yet. lol!") /* eslint-disable-line no-alert */// ALERTS!
-      event.preventDefault()
     })
 
     if (Clipboard && Clipboard.isSupported()) {
@@ -70,10 +66,14 @@ export default class ClientControl {
     }
 
     this.socket = new RatSocket(appConfig.WssURI)
-    this.socket.on('ratsocket:reconnect', (ctx) => this.handleReconnect(ctx))
+    this.socket
+      .on('ratsocket:reconnect', (ctx) => {
+        return this.handleReconnect(ctx)
+      })
       .on('rescueCreated', (ctx, data) => {
         this.addRescue(ctx, data.included ? mapRelationships(data).data : data.data)
-      }).on('rescueUpdated', (ctx, _data) => {
+      })
+      .on('rescueUpdated', (ctx, _data) => {
         let data = { ..._data }
         if (data.included) {
           data = mapRelationships(data)
@@ -82,11 +82,20 @@ export default class ClientControl {
         data.data.forEach((rescue) => {
           this.updateRescue(ctx, rescue)
         })
-      }).connect(this.AuthHeader)
-      .then(() => this.socket.subscribe('0xDEADBEEF'))
-      .then(() => this.socket.request({ action: ['rescues', 'read'], status: { $not: 'closed' } }))
-      .then((res) => this.populateBoard(res.context, res.data))
-      .catch((error) => window.console.error(error))
+      })
+      .connect(this.AuthHeader)
+      .then(() => {
+        return this.socket.subscribe('0xDEADBEEF')
+      })
+      .then(() => {
+        return this.socket.request({ action: ['rescues', 'read'], status: { $not: 'closed' } })
+      })
+      .then((res) => {
+        return this.populateBoard(res.context, res.data)
+      })
+      .catch((error) => {
+        return window.console.error(error)
+      })
 
     this.updateClocks()
   }
@@ -177,15 +186,6 @@ export default class ClientControl {
 
     this.CachedRescues[sid] = rescue
     this.appendHtml('#rescueRows', this.getRescueTableRow(rescue))
-
-    if (typeof rescue.attributes.system === 'string') {
-      // Retrieve system information now to speed things up later on....
-      StarSystemAPI.getSystem(rescue.attributes.system).then(() => {
-        window.console.debug('fr.client.addRescue - Additional info found! Caching...')
-      }).catch(() => {
-        window.console.debug('fr.client.addRescue - No additional system information found.')
-      })
-    }
   }
 
   updateRescue (ctx, data) {
@@ -229,7 +229,8 @@ export default class ClientControl {
 
   /**
    * Forms the rescue table row HTML.
-   * @param {Object} rescue - Object containing rescue info
+   * @param {object} rescue - Object containing rescue info
+   * @returns {string}
    */
   getRescueTableRow (rescue) {
     if (!rescue) {
@@ -241,11 +242,18 @@ export default class ClientControl {
     const ratHtml = []
 
     Object.entries(rats).forEach(([ratID, ratData]) => {
-      ratHtml.push(`<span class="rat" data-rat-uuid="${ratID}">${ratData.attributes.name}</span>`)
+      ratHtml.push(`
+        <span class="rat btn-clipboard" data-clipboard-text="${ratData.attributes.name}" data-rat-uuid="${ratID}">
+          ${ratData.attributes.name}
+        </span>
+      `)
     })
 
     rescue.attributes.unidentifiedRats.forEach((rat) => {
-      ratHtml.push(`<span class="rat-unidentified">${rat}</span> <span class="badge badge-yellow">unidentified</span>`)
+      ratHtml.push(`
+        <span class="rat-unidentified btn-clipboard" data-clipboard-text="${rat}">${rat}</span>
+        <span class="badge badge-yellow">unidentified</span>
+      `)
     })
 
     let language = frConst.language.unknown
@@ -263,22 +271,27 @@ export default class ClientControl {
 
     const platform = rescue.attributes.platform ? frConst.platform[rescue.attributes.platform] : frConst.platform.unknown
 
-    const row = jq(
-      `<tr class="rescue" data-rescue-sid="${shortid}">
-         <td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?'}</td>
-         <td class="rescue-row-client" title="${rescue.attributes.data.IRCNick || ''}">${rescue.attributes.client || '?'}</td>
-         <td class="rescue-row-language" title="${language.long}">${language.short}</td>
-         <td class="rescue-row-platform" title="${platform.long}">${platform.short}</td>
-         <td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || 'Unknown'}">
-           ${rescue.attributes.system || 'Unknown'}
-           <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
-         </td>
-         <td class="rescue-row-rats">${ratHtml.join(', ')}</td>
-         <td class="rescue-row-detail">
-           <button type="button" class="btn btn-detail" data-rescue-sid="${shortid}" title="More details...">${frConst.iconSVG.more}</button>
-         </td>
-       </tr>`
-    )
+    const ircNick = rescue.attributes.data.IRCNick || rescue.attributes.client || ''
+
+    const row = jq(`
+      <tr class="rescue" data-rescue-sid="${shortid}">
+        <td class="rescue-row-index">${typeof rescue.attributes.data.boardIndex === 'number' ? rescue.attributes.data.boardIndex : '?'}</td>
+        <td class="rescue-row-client${ircNick ? ' btn-clipboard' : ''}" data-clipboard-text="${ircNick}" title="${ircNick}">
+          ${rescue.attributes.client || '?'}
+          <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+        </td>
+        <td class="rescue-row-language" title="${language.long}">${language.short}</td>
+        <td class="rescue-row-platform platform-${platform.short || 'unknown'}" title="${platform.long}">${platform.short}</td>
+        <td class="rescue-row-system btn-clipboard" data-clipboard-text="${rescue.attributes.system || 'Unknown'}">
+          ${rescue.attributes.system || 'Unknown'}
+          <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+        </td>
+        <td class="rescue-row-rats">${ratHtml.join(', ')}</td>
+        <td class="rescue-row-detail">
+          <button type="button" class="btn btn-detail" data-rescue-sid="${shortid}" title="More details...">${frConst.iconSVG.more}</button>
+        </td>
+      </tr>
+    `)
 
     if (rescue.attributes.codeRed) {
       row.addClass('rescue-codered')
@@ -290,10 +303,14 @@ export default class ClientControl {
     } else {
       row.removeClass('rescue-inactive')
     }
-    row.attr('title',
-      rescue.attributes.quotes === null
-        ? 'No known quotes....'
-        : rescue.attributes.quotes.map((quote) => `[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}] "${quote.message}" - ${quote.author}`).join('\n'))
+    row.attr(
+      'title',
+      rescue.attributes.quotes
+        ? rescue.attributes.quotes.map((quote) => {
+          return `[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}] "${quote.message}" - ${quote.author}`
+        }).join('\n')
+        : 'No known quotes....',
+    )
     return row
   }
 
@@ -302,7 +319,7 @@ export default class ClientControl {
 
     jq('.ed-clock').text(makeDateHumanReadable(nowTime))
 
-    if (this.SelectedRescue !== null) {
+    if (this.SelectedRescue) {
       jq('.rdetail-timer').text(makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.createdAt)))
         .prop('title', `Last Updated: ${makeTimeSpanString(nowTime, Date.parse(this.SelectedRescue.attributes.updatedAt))}`)
     }
@@ -313,7 +330,7 @@ export default class ClientControl {
   }
 
   setSelectedRescue (key, preventPush) {
-    if ((key === null || this.SelectedRescue) && key.toString() === this.SelectedRescue.id.split('-')[0]) {
+    if ((!key || this.SelectedRescue) && key.toString() === this.SelectedRescue.id.split('-')[0]) {
       this.SelectedRescue = null
       if (window.history.pushState && !preventPush) {
         /* eslint-disable-next-line id-length */// a Identifier is fine
@@ -379,11 +396,9 @@ export default class ClientControl {
                                           </tr>` : ''}
       ${rescue.attributes.system ? `<tr class="rdetail-info">
                                             <td class="rdetail-info-title">System</td>
-                                            <td class="rdetail-info-value">
+                                            <td class="rdetail-info-value btn-clipboard" data-clipboard-text="${rescue.attributes.system}">
                                               ${rescue.attributes.system}
-                                              <span class="float-right system-apidata" data-system-name="${rescue.attributes.system.toUpperCase()}">
-                                                <i>Retrieving info...</i>
-                                              </span>
+                                              <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
                                             </td>
                                           </tr>` : ''}
       ${rescue.attributes.platform ? `<tr class="rdetail-info">
@@ -404,19 +419,32 @@ export default class ClientControl {
     const ratHtml = []
 
     for (const rat of Object.values(rats)) {
-      ratHtml.push(`<span class="rat" data-rat-uuid="${rat.id}">${rat.attributes.name} ${rat.attributes.platform === rescue.attributes.platform ? '' : '<span class="badge badge-yellow">Wrong Platform!</span>'}</span>`)
+      ratHtml.push(`
+      <td class="rdetail-info-value tbl-border-box btn-clipboard" data-clipboard-text="${rat.attributes.name}">
+        <span class="rat" data-rat-uuid="${rat.id}">
+          ${rat.attributes.name}
+        </span>
+        ${rat.attributes.platform === rescue.attributes.platform ? '' : '<span class="badge badge-yellow">Wrong Platform!</span>'}
+        <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+      `)
     }
 
     for (const rat of rescue.attributes.unidentifiedRats) {
-      ratHtml.push(`<span class="rat-unidentified">${rat}</span> <span class="badge badge-yellow">unidentified</span>`)
+      ratHtml.push(`
+        <td class="rdetail-info-value tbl-border-box btn-clipboard" data-clipboard-text="${rat}">
+          <span class="rat-unidentified">${rat}</span>
+          <span class="badge badge-yellow">unidentified</span>
+          <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+        </td>
+      `)
     }
 
     if (ratHtml.length > 0) {
-      detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td><td class="rdetail-info-value tbl-border-box">${ratHtml.shift()}</td></tr>`
+      detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Rats</td>${ratHtml.shift()}</tr>`
 
       if (ratHtml.length > 0) {
         for (const rat of ratHtml) {
-          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td><td class="rdetail-info-value tbl-border-box">${rat}</td></tr>`
+          detailContent += `<tr class="rdetail-info"><td class="rdetail-info-empty"></td>${rat}</tr>`
         }
       }
 
@@ -425,7 +453,9 @@ export default class ClientControl {
 
     // Quotes
     if (Array.isArray(rescue.attributes.quotes) && rescue.attributes.quotes.length > 0) {
-      const quotes = rescue.attributes.quotes.map((quote) => `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`)
+      const quotes = rescue.attributes.quotes.map((quote) => {
+        return `<span class="rdetail-quote-time">[${makeDateHumanReadable(new Date(`${quote.createdAt}`))}]</span> "<span class="rdetail-quote-message">${quote.message}</span>" - ${quote.lastAuthor}`
+      })
 
       detailContent += `<tr class="rdetail-info"><td class="rdetail-info-title">Quotes</td><td class="rdetail-info-value tbl-border-box">${quotes.shift()}</td></tr>`
 
@@ -446,52 +476,6 @@ export default class ClientControl {
 
     jq(`button.btn.btn-detail[data-rescue-sid="${rescue.id.split('-')[0]}"]`).addClass('active') // Set new active button.
     jq('body').addClass('rdetail-active')
-
-    if (!rescue.attributes.system) {
-      return
-    }
-
-    window.console.debug('fr.client.updateRescueDetail - Checking sysapi for additional system info.')
-    this.getSystemHtml(rescue).then((html) => {
-      this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`, html)
-    }).catch(() => {
-      this.setHtml(`span[data-system-name="${rescue.attributes.system.toUpperCase()}"]`,
-        '<a target="_blank" href="https://www.edsm.net/"><span class="badge badge-red" title="Go to EDSM.net" >NOT IN EDSM</span></a>')
-    })
-  }
-
-  getSystemHtml (rescue) {
-    if (!rescue) {
-      return Promise.reject('')
-    }
-    return StarSystemAPI.getSystem(rescue.attributes.system).then((data) => {
-      window.console.debug('this.updateRescueDetail - Additional info found! Adding system-related warnings and edsm link.')
-
-      const sysInfo = data
-      const sysInfoHtmlArray = []
-
-      if (sysInfo.attributes.needs_permit && sysInfo.attributes.needs_permit === 1) {
-        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system requires a permit!">PERMIT</span>')
-      }
-
-      if (sysInfo.attributes.isPopulated && sysInfo.attributes.isPopulated === 1) {
-        sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system is populated, check for stations!">POPULATED</span>')
-      }
-
-      if (sysInfo.bodies && sysInfo.bodies.length > 0) {
-        const mainStar = sysInfo.bodies.find((body) => body.attributes.isMainStar)
-        if (mainStar && mainStar.attributes.isScoopable) {
-          sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system\'s main star is scoopable!">SCOOPABLE</span>')
-        } else if (sysInfo.bodies.length > 1 && sysInfo.bodies.filter((body) => body.attributes.isScoopable).length > 0) {
-          sysInfoHtmlArray.push('<span class="badge badge-yellow" title="This system contains a scoopable star!">SCOOPABLE [SECONDARY]</span>')
-        }
-      }
-
-      if (sysInfo.id) {
-        sysInfoHtmlArray.push(`<a target="_blank" href="https://www.edsm.net/en/system/id/${sysInfo.id}/name/${sysInfo.attributes.name}"><span class="badge badge-green" title="View on EDSM.net">EDSM</span></a>`)
-      }
-      return Promise.resolve(sysInfoHtmlArray.join(' '))
-    })
   }
 
   setHtml (target, html) {
