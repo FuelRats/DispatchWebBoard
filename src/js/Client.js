@@ -414,7 +414,15 @@ export default class ClientControl {
                                           </tr>` : ''}
                                           <tr class="rdetail-info">
                                             <td class="rdetail-info-title">UUID</td>
-                                            <td class="rdetail-info-value">${rescue.id}</td>
+                                            <td class="rdetail-info-value pad-contents">
+                                              <a class="float-right" href="https://fuelrats.com/paperwork/${rescue.id}">
+                                                <span class="badge badge-red">fuelrats.com</span>
+                                              </a>
+                                              <span class="span-expand btn-clipboard" data-clipboard-text="https://fuelrats.com/paperwork/${rescue.id}">
+                                                ${rescue.id}
+                                                <span class="clipboard-icon">${frConst.iconSVG.clipboard}</span>
+                                              </span>
+                                            </td>
                                           </tr>
                                           <tr class="rdetail-info-seperator"><td class="tbl-border-none"></td><td></td></tr>`
 
