@@ -23,6 +23,12 @@ table {
   line-height: 27px;
   border-top: 1px solid var(--tableBorderColor);
 }
+.table > tbody > tr > td.pad-contents {
+  padding: 0 8px;
+}
+.table > tbody > tr > td.pad-contents > * {
+  padding: 8px 0;
+}
 .table > tbody > tr > td.rescue-row-detail {
   padding: 4px;
   height: 40px;

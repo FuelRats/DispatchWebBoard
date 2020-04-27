@@ -27,7 +27,7 @@ const delCookie = (name) => {
 
 const canSetCookies = () => {
   setCookie('CookieTest', 'true', 0)
-  const can = getCookie('CookieTest') !== null
+  const can = Boolean(getCookie('CookieTest'))
   delCookie('CookieTest')
   return can
 }

@@ -10,3 +10,9 @@
 .tbl-border-left { border-left: 1px solid var(--tableBorderColor); }
 .tbl-border-right { border-right: 1px solid var(--tableBorderColor); }
 .tbl-border-box { border:  1px solid var(--tableBorderColor); }
+
+.span-expand {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

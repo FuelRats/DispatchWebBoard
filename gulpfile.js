@@ -1,15 +1,15 @@
 /* jslint node:true */
 
 // Required Modules
-const gulp = require('gulp')
-const gulpUtil = require('gulp-util')
-const path = require('path')
-const del = require('del')
 const cpx = require('cpx')
-const mkdirp = require('mkdirp')
-const rename = require('gulp-rename')
-const inject = require('gulp-inject-string')
+const del = require('del')
+const gulp = require('gulp')
 const cleanCSS = require('gulp-clean-css')
+const inject = require('gulp-inject-string')
+const rename = require('gulp-rename')
+const gulpUtil = require('gulp-util')
+const mkdirp = require('mkdirp')
+const path = require('path')
 const webpack = require('webpack')
 const webpackStream = require('webpack-stream')
 
@@ -23,11 +23,16 @@ const DEFAULT_ID_LENGTH = 24
 /**
  * Generates a random base64 ID of a given char length
  *
- * @param  {Number=} length Desired length of the ID
- * @return {String}         Generated base64 ID
+ * @param   {number=} length Desired length of the ID
+ * @param   {string}  chars  allowed chars in ID
+ * @returns {string}         Generated base64 ID
  */
 // Make array the size of the desired length, fill values of array with random characters then return as a single joined string.
-const makeID = (length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) => Array.from(Array(length), () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
+const makeID = (length = DEFAULT_ID_LENGTH, chars = DEFAULT_ALLOWED_CHARS) => {
+  return Array.from(Array(length), () => {
+    return chars.charAt(Math.floor(Math.random() * chars.length))
+  }).join('')
+}
 
 
 // Variables
@@ -62,12 +67,10 @@ const paths = {
 
 // Tasks
 
-gulp.task('preBuild', (next) => {
-  del([paths.buildDir]).then(() => {
-    mkdirp(paths.distDir, () => {
-      next()
-    })
-  })
+gulp.task('preBuild', async (next) => {
+  await del([`${paths.buildDir}/**`])
+  mkdirp.sync(paths.distDir)
+  next()
 })
 
 gulp.task('postBuild', (next) => {
@@ -122,7 +125,9 @@ gulp.task('webpack', () => {
       optimizationBailout: true,
       errorDetails: true,
       publicPath: true,
-      exclude: () => false,
+      exclude: () => {
+        return false
+      },
       maxModules: Infinity,
     },
   }
@@ -168,22 +173,26 @@ gulp.task('webpack', () => {
     .pipe(gulp.dest(paths.distDir))
 })
 
-gulp.task('cleancss', () => gulp.src(paths.cssEntry)
-  .pipe(cleanCSS({
-    level: 2,
-    inline: ['local', 'fonts.googleapis.com'],
-    format: gulpConf.gulp.production ? false : 'beautify',
-  }))
-  .pipe(rename({
-    suffix: `.${fingerprint}`,
-  }))
-  .pipe(gulp.dest(paths.distDir)))
+gulp.task('cleancss', () => {
+  return gulp.src(paths.cssEntry)
+    .pipe(cleanCSS({
+      level: 2,
+      inline: ['local', 'fonts.googleapis.com'],
+      format: gulpConf.gulp.production ? false : 'beautify',
+    }))
+    .pipe(rename({
+      suffix: `.${fingerprint}`,
+    }))
+    .pipe(gulp.dest(paths.distDir))
+})
 
-gulp.task('html', () => gulp.src(`./src/index.${indexSuffix}.html`)
-  .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
-  .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
-  .pipe(rename('index.html'))
-  .pipe(gulp.dest(paths.buildDir)))
+gulp.task('html', () => {
+  return gulp.src(`./src/index.${indexSuffix}.html`)
+    .pipe(inject.replace('<!-- inject:CSS -->', `<link rel="stylesheet" type="text/css" href="dist/app.${fingerprint}.css" />`))
+    .pipe(inject.replace('<!-- inject:JS -->', `<script type="text/javascript" charset="utf-8" src="dist/app.${fingerprint}.js" async defer></script>`))
+    .pipe(rename('index.html'))
+    .pipe(gulp.dest(paths.buildDir))
+})
 
 
 // Task Defaults and Shortcuts

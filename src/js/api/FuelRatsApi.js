@@ -20,11 +20,13 @@ import {
 /**
  * Perform a GET XHR on the API
  *
- * @param  {String} endpoint API endpoint path.
- * @param  {Object} opts     Options to pass to underlaying http XHR handler.
- * @return {Object}          Response data from the XHR handler.
+ * @param   {string} endpoint API endpoint path.
+ * @param   {object} opts     Options to pass to underlaying http XHR handler.
+ * @returns {object}          Response data from the XHR handler.
  */
-const get = (endpoint, opts) => http.get(url.resolve(AppConfig.ApiURI, endpoint), opts)
+const get = (endpoint, opts) => {
+  return http.get(url.resolve(AppConfig.ApiURI, endpoint), opts)
+}
 
 
 
@@ -33,7 +35,7 @@ const get = (endpoint, opts) => http.get(url.resolve(AppConfig.ApiURI, endpoint)
 /**
  * Gets the current user profile
  *
- * @return {Object} Object containing API user profile data.
+ * @returns {object} Object containing API user profile data.
  */
 const getProfile = () => {
   const token = localStorage.getItem(`${AppConfig.AppNamespace}.token`)
@@ -43,7 +45,9 @@ const getProfile = () => {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-  }).then((response) => htmlSanitizeObject(mapRelationships(response.json()).data))
+  }).then((response) => {
+    return htmlSanitizeObject(mapRelationships(response.json()).data)
+  })
 }
 
 

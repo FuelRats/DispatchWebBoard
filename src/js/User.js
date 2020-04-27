@@ -1,8 +1,8 @@
 import jq from 'jquery' // I'm so sorry.
-import AppConfig from './config/config'
 import Client from './Client'
-import { getCookie, setCookie, canSetCookies, delCookie } from './helpers'
 import * as FuelRatsApi from './api/FuelRatsApi'
+import AppConfig from './config/config'
+import { getCookie, setCookie, canSetCookies, delCookie } from './helpers'
 
 
 const DAYS_IN_YEAR = 365
@@ -67,23 +67,25 @@ export default class UserControl {
 
   /**
    * Checks if the user is currently authenticated with the API
-   * @return {Boolean} Value representing the authentication status of the user.
+   * @returns {boolean} Value representing the authentication status of the user.
    */
   isAuthenticated () {
-    return this.ApiData !== null && this.AuthHeader !== null
+    return Boolean(this.ApiData && this.AuthHeader)
   }
 
   /**
    * Checks if the user is an administrator
-   * @return {Boolean} Value representing the administrator status of the user.
+   * @returns {boolean} Value representing the administrator status of the user.
    */
   isAdministrator () {
-    return Object.keys(this.ApiData.relationships.groups).filter((obj) => this.ApiData.relationships.groups[obj].isAdministrator).length > 0
+    return Object.keys(this.ApiData.relationships.groups).filter((obj) => {
+      return this.ApiData.relationships.groups[obj].isAdministrator
+    }).length > 0
   }
 
   /**
    * Checks if the user has permission to use the dispatch board
-   * @return {Boolean} Value representing the permission status of the user.
+   * @returns {boolean} Value representing the permission status of the user.
    */
   hasPermission () {
     return this.isAuthenticated() && (this.isAdministrator() || Object.prototype.hasOwnProperty.call(this.ApiData.relationships.groups, 'rat'))
@@ -117,7 +119,7 @@ export default class UserControl {
   /**
    * Removes the user's authentication token and reloads the webpage.
    */
-  static logoutUser () {
+  logoutUser () {
     delCookie(`${AppConfig.AppNamespace}.token`)
     localStorage.setItem(`${AppConfig.AppNamespace}.token`, null)
     window.location.reload()
@@ -126,7 +128,7 @@ export default class UserControl {
   /**
    * calculates the display name of the user.
    *
-   * @return {String} name of the authenticated user.
+   * @returns {string} name of the authenticated user.
    */
   getUserDisplayName () {
     return this.ApiData.attributes.displayRatId
@@ -142,7 +144,7 @@ export default class UserControl {
 
   /**
    * Handles API information retrieval errors. TODO: add better user notification that retrieval went wrong.
-   * @param {Object} error Error object passed from an Api XHR request error.
+   * @param {object} error Error object passed from an Api XHR request error.
    */
   static handleApiDataFailure (error) {
     window.console.debug('fr.user.handleApiDataFailure - Api retrieval failure - Displaying login - Error Info: ', error)
