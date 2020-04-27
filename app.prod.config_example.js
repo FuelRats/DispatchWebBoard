@@ -2,16 +2,15 @@
 // You can create any environment config you like with the pattern 'app.<environment>.config.js', Then use it by executing 'gulp --env=<environment>'. The default is 'dev'.
 // Repo .gitignore ignores any 'app.*.config.js', so updating through git pull is possible.
 module.exports = {
-  
   gulp: {
     // Toggles production optimizations and minification. Set this to false if you wish to create a debugging build.
-    production: true
+    production: true,
   },
 
   appconf: {
 
     // API URLS
-    
+
     // Set this to the WebSocket URL of the FuelRats API instance you're connecting to.
     WssURI: 'wss://api.fuelrats.com:443',
     // Set this to the FuelRats API instance you're connecting to.
@@ -19,6 +18,8 @@ module.exports = {
     // FuelRats Website instance. www.fuelrats.com for production, beta.fuelrats.com for development
     // This is required for APIv2's implicit grant flow. The authorization process is handled by the FuelRats' main website.
     WebURI: 'https://www.fuelrats.com/',
+    // Systems API URL
+    SAPIURI: 'https://sapi.fuelrats.dev/',
 
     // FuelRats API ClientID
     ClientID: '00000000-0000-4000-a000-000000000000',
@@ -56,8 +57,8 @@ module.exports = {
     // ===================================================== //
     // 
     // Options documentation: https://www.npmjs.com/package/gulp-rsync#options
-    
+
     hostname: 'dwbrsync',
-    destination: '/path/to/destination/path'
-  }
+    destination: '/path/to/destination/path',
+  },
 };
