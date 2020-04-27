@@ -7,10 +7,12 @@ import {
 
 // Module Imports
 import url from 'url';
+import AppConfig from "../Config/Config";
 
 
 const
   SYSTEM_NOT_FOUND = 'System not found.',
+  SYSTEM_TOO_SHORT = 'System name too short for search.',
   REQUEST_ERROR = 'Systems API request error.';
 
 /**
@@ -20,7 +22,7 @@ const
  * @param   {Object} opts     Options to pass to the XHR request handler.
  * @returns {Object}          XHRResponse object containing information from the request.
  */
-export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.fuelrats.com/', endpoint), opts);
+export const get = (endpoint, opts) => http.get(url.resolve(AppConfig.SAPIURI, endpoint), opts);
 
 /**
  * Gets system information for the given system name
@@ -29,7 +31,9 @@ export const get = (endpoint, opts) => http.get(url.resolve('https://system.api.
  * @returns {Object}        Object containing information pertaining to the given starsystem name.
  */
 export async function getSystem(system) {
-  system = system.toUpperCase();
+  if (system.length <3){
+    throw new SystemNameTooShortError(system, SYSTEM_TOO_SHORT);
+  }
 
   if (WebStore.session[`system.${system}`]) {
 
@@ -68,6 +72,23 @@ export async function getSystem(system) {
 
       throw new Error(REQUEST_ERROR);
     }
+  }
+}
+
+/**
+ * Error thrown when the system name is too short to search for.
+ */
+export class SystemNameTooShortError extends Error{
+  /**
+   * Creates a SystemTooShortError
+   *
+   * @param   {String} system Name of the system that was too short.
+   * @param   {...*}   params Params to be passed to super.
+   * @returns {void}
+   */
+  constructor(system, ...params) {
+    super(...params);
+    this.system = system;
   }
 }
 
