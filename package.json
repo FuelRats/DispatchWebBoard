@@ -32,7 +32,7 @@
     "@babel/plugin-proposal-optional-catch-binding": "^7.2.0",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-loader": "^8.0.5",
     "classnames": "^2.2.6",
     "clipboard": "^2.0.4",
